@@ -160,6 +160,44 @@ LOCK TABLES `customer` WRITE;
 UNLOCK TABLES;
 
 --
+-- Table structure for table `event_log`
+--
+
+DROP TABLE IF EXISTS `event_log`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `event_log` (
+  `ID` int(11) NOT NULL AUTO_INCREMENT,
+  `OBJECT_ID` int(11) NOT NULL,
+  `EVENT_ID` int(11) NOT NULL,
+  `DATE` datetime DEFAULT NULL,
+  `TIMESTAMP` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `USER_ID` int(11) NOT NULL,
+  `USER_ASSIGNED` int(11) DEFAULT NULL,
+  `COMMENTS` text,
+  `OBJECT_TYPE` int(11) NOT NULL,
+  PRIMARY KEY (`ID`),
+  KEY `log_event` (`EVENT_ID`),
+  KEY `log_user` (`USER_ID`),
+  KEY `log_object_type` (`OBJECT_TYPE`),
+  KEY `log_assigned_user` (`USER_ASSIGNED`),
+  CONSTRAINT `log_assigned_user` FOREIGN KEY (`USER_ASSIGNED`) REFERENCES `user` (`ID`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `log_event` FOREIGN KEY (`EVENT_ID`) REFERENCES `lookup` (`ID`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `log_object_type` FOREIGN KEY (`OBJECT_TYPE`) REFERENCES `lookup` (`ID`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `log_user` FOREIGN KEY (`USER_ID`) REFERENCES `user` (`ID`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `event_log`
+--
+
+LOCK TABLES `event_log` WRITE;
+/*!40000 ALTER TABLE `event_log` DISABLE KEYS */;
+/*!40000 ALTER TABLE `event_log` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `job`
 --
 
@@ -446,4 +484,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2011-08-20 20:41:14
+-- Dump completed on 2011-08-21 20:22:33
