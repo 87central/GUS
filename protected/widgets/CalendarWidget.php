@@ -3,13 +3,15 @@ class CalendarWidget extends CWidget {
 	/**
 	 * Name of the view which will be used to render each item contained in
 	 * each day. When rendering, this view will be supplied with an $item variable
-	 * containing the item to render.
+	 * containing the item to render. Note that this content will be rendered inside
+	 * an element with the itemCss class.
 	 */
 	public $itemView;
 	/**
 	 * Name of the view which will be used to render the header portion of each
 	 * day. This will be supplied with a $name, $date, and $items variable when
-	 * rendering.
+	 * rendering. Note that this content will be rendered inside an element with the
+	 * headerCss class.
 	 */
 	public $headerView;
 	/**
@@ -32,6 +34,10 @@ class CalendarWidget extends CWidget {
 	 * The css class to be assigned to the wrapper of each item.
 	 */
 	public $itemCss;
+	/**
+	 * The css class to be assigned to the wrapper of each header.
+	 */
+	public $headerCss;
 	/**
 	 * The css class to be assigned to the container for the current day. This
 	 * will be assigned in addition to $dayCss
@@ -106,19 +112,22 @@ class CalendarWidget extends CWidget {
 		} else {
 			$options = array('id'=>$this->id, 'class'=>$this->containerCss);
 		}
+		
+		if($this->droppable){
+			$this->droppableScript($this->id, $this->itemCss);
+		}		
+		
 		echo CHtml::beginTag('div', $options);
 		
 		//render each day. a base style should be associated with each but extended by the dayCss and hoverCss classes.
 		//TODO add the base style
 		foreach($this->data as $dayName=>$info){
-			$classes = array('ui-cal-day');
-			if(isset($this->dayCss)){
-				$classes[] = $this->dayCss;
-			}
-			if(isset($this->todayCss) && date('Y-m-d') == date('Y-m-d', $info['date'])){
+			$classes = array('ui-cal-day', $this->dayCss);
+			if(date('Y-m-d') == date('Y-m-d', $info['date'])){
 				$classes[] = $this->todayCss;
-			}
-			$options = array('class'=>implode(' ', $classes), 'id'=>$this->id . '-' . strtolower($dayName));
+			}			
+			$id = array($this->id, strtolower($dayName)); //$id is array
+			$options = $this->createOptions($classes, $id);
 			echo CHtml::beginTag('div', $options);
 			
 			$this->renderDay($dayName, $info['items'], $info['date']);
@@ -136,15 +145,65 @@ class CalendarWidget extends CWidget {
 	 * @param date $date The date to render.
 	 */
 	protected function renderDay($name, $items, $date){
+		$classes = array('ui-cal-header', $this->headerCss);
+		$id = array($this->id, strtolower($name), 'header');
+		$options = $this->createOptions($classes, $id);
+		echo CHtml::beginTag('div', $options);
 		
+		$this->renderPartial($this->headerView, array(
+			'name'=>$name,
+			'date'=>$date,
+			'items'=>$items,
+		));
+		
+		echo CHtml::endTag('div');
+		
+		$id = array($this->id, strtolower($name), 'items');
+		$options = $this->createOptions(array(), $id);
+		echo CHtml::beginTag('div', $options);
+		$i = 0;
+		foreach($items as $item){
+			$this->renderItem($i, $name, $item);
+			$i++;
+		}
+		echo CHtml::endTag('div');
 	}
 	
 	/**
 	 * Renders a single item in this widget.
 	 * @param mixed $item The item to render.
+	 * @param integer $index The index of the item to render.
 	 */
-	protected function renderItem($item){
-		
+	protected function renderItem($index, $name, $item){
+		$id = array($this->id, strtolower($name), 'item', $index);
+		$classes = array('ui-cal-item', $this->itemCss);
+		$options = $this->createOptions($classes, $id);
+		echo CHtml::beginTag('div', $options);
+		$this->renderPartial($this->itemView, array('item'=>$item));
+		echo CHtml::endTag('div');
+	}
+	
+	/**
+	 * Creates an HTML options array.
+	 * @param array $classes The CSS classes to apply to the HTML element. Null classes are ignored.
+	 * @param array $id An array of strings which, collectively, give a unique ID to the element.
+	 * @param array $others Any additional HTML options to pass to the element. 
+	 */
+	private function createOptions($classes, $id, $others=array()){
+		$id = implode('-', $id);
+		$usedClasses = array();
+		foreach($classes as $class){
+			if(isset($class) && $class !== null){
+				$usedClasses[] = $class;
+			}
+		}
+		$usedClasses = implode(' ', $usedClasses);
+		$options = array(
+			'id'=>$id,
+			'class'=>$usedClasses,	
+		);
+		$options = array_merge($options, $others);
+		return $options;
 	}
 	
 	/**
@@ -166,5 +225,14 @@ class CalendarWidget extends CWidget {
 	 */	
 	private function getWeekdayOrdinal($date){
 		return date('w', $date);
+	}
+	
+	private function droppableScript($id, $selector){
+		$script = "" .
+				"$(function(){
+					" .
+					"$(#" . $id . ").droppable({accept: '." . $selector . "'});
+				})";
+		Yii::app()->clientScript->registerScript('droppable', $script, CClientScript::POS_BEGIN);
 	}
 }
