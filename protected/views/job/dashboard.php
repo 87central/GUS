@@ -21,9 +21,19 @@ $this->widget('application.components.Menu', array(
 ?>
 <div id="current_cal" class="cal_container">
 <h6>Calendar - This Week</h6>
-<!--calendar goes here-->
+<?php $this->widget('application.widgets.CalendarWidget', array(
+	'droppable'=>false,
+	'itemView'=>'job/_eventDetail',
+	'headerView'=>'job/_dayHeader',
+	'data'=>$currentData,	
+));?>
 </div>
 <div id="next_cal" class="cal_container">
 <h6>Next Week</h6>
-<!--calendar goes here-->
+<?php $this->widget('application.widgets.CalendarWidget', array(
+	'droppable'=>false,
+	'itemView'=>'job/_eventDetail',
+	'headerView'=>'job/_dayHeader',
+	'data'=>$nextData,
+));?>
 </div>

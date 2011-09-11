@@ -128,9 +128,39 @@ class JobController extends Controller
 	public function actionIndex()
 	{
 		$dataProvider=new CActiveDataProvider('Job');
-		$this->render('index',array(
+		$lastSunday = strtotime('last sunday', time());
+		$secondsPerWeek = 24*60*60*7;
+		$nextSaturday = $lastSunday + $secondsPerWeek - 1;
+		$jobsThisWeek = EventLog::model()->findAllByAttributes(array(
+			'USER_ASSIGNED'=>Yii::app()->user->id,
+			'OBJECT_TYPE'=>'Job',			
+		), '`DATE` BETWEEN FROM_UNIXTIME(' . $lastSunday . ') AND FROM_UNIXTIME(' . $nextSaturday . ')');
+		
+		$lastSunday = $lastSunday + $secondsPerWeek;
+		$nextSaturday = $nextSaturday + $secondsPerWeek;
+		$jobsNextWeek = EventLog::model()->findAllByAttributes(array(
+			'USER_ASSIGNED'=>Yii::app()->user->id,
+			'OBJECT_TYPE'=>'Job',
+		), '`DATE` BETWEEN FROM_UNIXTIME(' . $lastSunday . ') AND FROM_UNIXTIME(' . $nextSaturday . ')');
+		
+		$currentWeek = $this->resultToCalendarData($jobsThisWeek);
+		$nextWeek = $this->resultToCalendarData($jobsNextWeek);
+		$this->render('dashboard',array(
 			'dataProvider'=>$dataProvider,
+			'currentData'=>$currentWeek,
+			'nextData'=>$nextWeek,
 		));
+	}
+	
+	private function resultToCalendarData($result){
+		$calendarData = array();
+		foreach($result as $event){
+			$eventDate = strtotime($event->DATE);
+			$dayName = date('l', $eventDate);
+			$calendarData[$dayName]['date'] = $eventDate;
+			$calendarData[$dayName]['items'][] = $event;
+		}
+		return $calendarData;
 	}
 
 	/**

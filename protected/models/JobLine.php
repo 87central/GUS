@@ -66,7 +66,7 @@ class JobLine extends CActiveRecord
 			'pRODUCT' => array(self::BELONGS_TO, 'Product', 'PRODUCT_ID'),
 			'aPPROVALUSER' => array(self::BELONGS_TO, 'User', 'APPROVAL_USER'),
 			'jOB' => array(self::BELONGS_TO, 'Job', 'JOB_ID'),
-			'pRINT' => array(self::BELONGS_TO, 'Print', 'PRINT_ID'),
+			'print' => array(self::BELONGS_TO, 'Print', 'PRINT_ID'),
 		);
 	}
 

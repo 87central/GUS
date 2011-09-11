@@ -114,4 +114,13 @@ class EventLog extends CActiveRecord
 			'criteria'=>$criteria,
 		));
 	}
+	
+	/**
+	 * Gets the object associated with this event.
+	 */
+	public function getObject(){
+		$model = call_user_func(array($this->OBJECT_TYPE, 'model'));
+		$object = $model->findByPk((int) $this->OBJECT_ID);
+		return $object;	
+	}
 }
