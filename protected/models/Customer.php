@@ -18,12 +18,33 @@
 class Customer extends CActiveRecord
 {
 	/**
+	 * The user model associated with this customer.
+	 */
+	private $userModel;
+	
+	/**
 	 * Returns the static model of the specified AR class.
 	 * @return Customer the static model class
 	 */
 	public static function model($className=__CLASS__)
 	{
 		return parent::model($className);
+	}
+	
+	public function __construct(){
+		$this->userModel = new User;
+		//want to have the underlying user loaded alongside the customer
+		$this->USER = $this->userModel;
+	}
+	
+	protected function beforeFind(){
+		parent::beforeFind();
+		$this->USER = null;
+	}
+	
+	protected function afterFind(){
+		parent::afterFind();
+		$this->userModel = $this->USER;
 	}
 
 	/**
@@ -41,7 +62,7 @@ class Customer extends CActiveRecord
 	{
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
-		return array(
+		return array_merge($this->userModel->rules(), array(
 			array('USER_ID', 'required'),
 			array('USER_ID', 'numerical', 'integerOnly'=>true),
 			array('COMPANY', 'length', 'max'=>45),
@@ -49,7 +70,7 @@ class Customer extends CActiveRecord
 			// The following rule is used by search().
 			// Please remove those attributes that should not be searched.
 			array('ID, USER_ID, COMPANY, NOTES, TERMS', 'safe', 'on'=>'search'),
-		);
+		));
 	}
 
 	/**
@@ -71,13 +92,13 @@ class Customer extends CActiveRecord
 	 */
 	public function attributeLabels()
 	{
-		return array(
+		return array_merge($this->userModel->attributeLabels(), array(
 			'ID' => 'ID',
 			'USER_ID' => 'User',
 			'COMPANY' => 'Company',
 			'NOTES' => 'Notes',
 			'TERMS' => 'Terms',
-		);
+		));
 	}
 
 	/**
@@ -100,5 +121,9 @@ class Customer extends CActiveRecord
 		return new CActiveDataProvider(get_class($this), array(
 			'criteria'=>$criteria,
 		));
+	}
+	
+	public function getSummary(){
+		return $this->USER->FIRST . ' ' . $this->USER->LAST . ', ' . $this->COMPANY;
 	}
 }
