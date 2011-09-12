@@ -62,6 +62,14 @@ class JobController extends Controller
 	public function actionCreate()
 	{
 		$model=new Job;
+		$customer = new Customer;
+		$customerUser = $customer->USER;
+		$existingCustomers = Customer::model()->findAll();
+		$existingUsers = User::model()->findAll(); //should be finding those that fit in printer and leader roles
+		$styles = Lookup::model()->findAllByAttributes(array('TYPE'=>'Style'));
+		$sizes = Lookup::model()->findAllByAttributes(array('TYPE'=>'Size'));
+		$colors = Lookup::model()->findAllByAttributes(array('TYPE'=>'Color'));
+		
 
 		// Uncomment the following line if AJAX validation is needed
 		// $this->performAjaxValidation($model);
@@ -75,6 +83,13 @@ class JobController extends Controller
 
 		$this->render('create',array(
 			'model'=>$model,
+			'customerList'=>$existingCustomers,
+			'newCustomer'=>$customer,
+			'newCustomerUser'=>$customerUser,
+			'users'=>$existingUsers,
+			'styles'=>$styles,
+			'colors'=>$colors,
+			'sizes'=>$sizes,
 		));
 	}
 

@@ -1,3 +1,7 @@
+<?php 
+Yii::app()->clientScript->registerScriptFile(Yii::app()->request->baseUrl . '/assets/garmentOps.js');
+?>
+
 <div class="form">
 
 <?php $form=$this->beginWidget('CActiveForm', array(
@@ -5,9 +9,89 @@
 	'enableAjaxValidation'=>false,
 )); ?>
 
-	<p class="note">Fields with <span class="required">*</span> are required.</p>
-
 	<?php echo $form->errorSummary($model); ?>
+	
+	<div class="row">
+		<?php echo $form->labelEx($model, 'NAME');?>
+		<?php echo $form->textField($model, 'NAME');?>
+		<?php echo $form->error($model, 'NAME');?>
+	</div>
+	
+	<div class="row">
+		<?php echo $form->labelEx($model, 'formattedDueDate'); ?>
+		<?php $this->widget('zii.widgets.jui.CJuiDatePicker', array(
+			'name'=>'Job[formattedDueDate]',
+			'model'=>$model,
+			'attribute'=>'formattedDueDate',
+			'options'=>array(
+				'showAnim'=>'fold',
+				'dateFormat'=>'DD, MM d, yy',
+			),
+		));?>
+		<?php echo $form->error($model, 'formattedDueDate'); ?>
+	</div>
+	
+	<div class="separator"></div>
+	
+	<?php 
+		$this->renderPartial('customer/_jobForm', array(
+			'customerList'=>$customerList,
+			'newCustomer'=>$newCustomer,
+			'newCustomerUser'=>$newCustomerUser,
+		));
+	?>
+	
+	<div class="separator"></div>
+	
+	<?php $userList = CHtml::listData($users, 'ID', 'FIRST');?>
+	
+	<div class="row">
+		<?php echo $form->labelEx($model, 'LEADER_ID');?>
+		<?php echo $form->dropDownList($model, 'LEADER_ID', $userList); ?>
+		<?php echo $form->error($model, 'LEADER_ID');?>
+	</div>
+	
+	<div class="row">
+		<?php echo $form->labelEx($model, 'PRINTER_ID');?>
+		<?php echo $form->dropDownList($model, 'PRINTER_ID', $userList);?>
+		<?php echo $form->error($model, 'PRINTER_ID');?>
+	</div>
+	
+	<div class="separator"></div>
+	
+	<?php 
+		$sizeList = CHtml::listData($sizes, 'ID', 'TEXT');
+		$styleList = CHtml::listData($styles, 'ID', 'TEXT');
+		$colorList = CHtml::listData($colors, 'ID', 'TEXT');
+	?>
+	
+	<div id="lines" class="row">
+		<?php echo CHtml::hiddenField('garment_count', 0, array(
+			'id'=>'garment_count',
+		));?>
+		<div class="row garments">
+			Style: <?php echo CHtml::dropDownList('garment_style', null, $styleList, array(
+				'id'=>'garment_style',
+			));?>
+			Size: <?php echo CHtml::dropDownList('garment_size', null, $sizeList, array(
+				'id'=>'garment_size',
+			));?>
+			Color: <?php echo CHtml::dropDownList('garment_color', null, $colorList, array(
+				'id'=>'garment_color',
+			));?>
+		</div>
+		<div class="row prints">
+			Passes: <?php echo CHtml::textField('garment_passes', null, array(
+				'id'=>'garment_passes',
+			));?>
+			Art File: <?php echo CHtml::fileField('garment_file', null, array(
+				'id'=>'garment_file',
+			));?>			
+		</div>
+		<?php echo CHtml::button('Add Garment', array(
+			'onclick'=>$onAddGarment,
+		));?>
+	</div>
 
 	<div class="row">
 		<?php echo $form->labelEx($model,'CUSTOMER_ID'); ?>
