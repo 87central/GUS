@@ -12,6 +12,7 @@ function generateInput(name, id, value, type, readonly){
 		retVal = retVal + " readonly=\"readonly\"";
 	}
 	retVal = retVal + "/>";
+	return retVal;
 }
 
 function addGarment(style, color, size, file, passes, quantity){
@@ -38,7 +39,7 @@ function addGarment(style, color, size, file, passes, quantity){
 	var qty = generateInput(qtyName, qtyID, $('#garment_quantity').val(), 'hidden', false);
 	
 	$('#lines').prepend(style).prepend(color).prepend(size).prepend(file).prepend(pass).prepend(qty);
-	$('#garment_count').val(garmentCount + 1);
+	$('#garment_count').val(garmentCount * 1 + 1);
 	
 }
 
