@@ -1,5 +1,7 @@
-<?php 
+<?php
+Yii::app()->clientScript->registerCoreScript('jquery'); 
 Yii::app()->clientScript->registerScriptFile(Yii::app()->request->baseUrl . '/assets/garmentOps.js');
+$onAddGarment = "addGarment(\$('#garment_style').val(), \$('#garment_color').val(), \$('#garment_size').val(), \$('#garment_file').val(), \$('#garment_passes').val(), 2);"
 ?>
 
 <div class="form">
@@ -18,8 +20,8 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->request->baseUrl . '/as
 	</div>
 	
 	<div class="row">
-		<?php echo $form->labelEx($model, 'formattedDueDate'); ?>
-		<?php $this->widget('zii.widgets.jui.CJuiDatePicker', array(
+		<?php //echo $form->labelEx($model, 'formattedDueDate'); ?>
+		<?php /*$this->widget('zii.widgets.jui.CJuiDatePicker', array(
 			'name'=>'Job[formattedDueDate]',
 			'model'=>$model,
 			'attribute'=>'formattedDueDate',
@@ -27,14 +29,14 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->request->baseUrl . '/as
 				'showAnim'=>'fold',
 				'dateFormat'=>'DD, MM d, yy',
 			),
-		));?>
-		<?php echo $form->error($model, 'formattedDueDate'); ?>
+		));*/?>
+		<?php //echo $form->error($model, 'formattedDueDate'); ?>
 	</div>
 	
 	<div class="separator"></div>
 	
 	<?php 
-		$this->renderPartial('customer/_jobForm', array(
+		$this->renderPartial('//customer/_jobForm', array(
 			'customerList'=>$customerList,
 			'newCustomer'=>$newCustomer,
 			'newCustomerUser'=>$newCustomerUser,
