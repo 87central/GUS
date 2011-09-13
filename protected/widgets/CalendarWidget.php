@@ -117,7 +117,7 @@ class CalendarWidget extends CWidget {
 			$this->droppableScript($this->id, $this->itemCss);
 		}		
 		
-		echo CHtml::beginTag('div', $options);
+		echo CHtml::openTag('div', $options);
 		
 		//render each day. a base style should be associated with each but extended by the dayCss and hoverCss classes.
 		//TODO add the base style
@@ -128,14 +128,14 @@ class CalendarWidget extends CWidget {
 			}			
 			$id = array($this->id, strtolower($dayName)); //$id is array
 			$options = $this->createOptions($classes, $id);
-			echo CHtml::beginTag('div', $options);
+			echo CHtml::openTag('div', $options);
 			
 			$this->renderDay($dayName, $info['items'], $info['date']);
 			
-			echo CHtml::endTag('div');
+			echo CHtml::closeTag('div');
 		}
 		
-		echo CHtml::endTag('div');
+		echo CHtml::closeTag('div');
 	}
 	
 	/**
@@ -148,25 +148,25 @@ class CalendarWidget extends CWidget {
 		$classes = array('ui-cal-header', $this->headerCss);
 		$id = array($this->id, strtolower($name), 'header');
 		$options = $this->createOptions($classes, $id);
-		echo CHtml::beginTag('div', $options);
+		echo CHtml::openTag('div', $options);
 		
-		$this->renderPartial($this->headerView, array(
+		$this->controller->renderPartial($this->headerView, array(
 			'name'=>$name,
 			'date'=>$date,
 			'items'=>$items,
 		));
 		
-		echo CHtml::endTag('div');
+		echo CHtml::closeTag('div');
 		
 		$id = array($this->id, strtolower($name), 'items');
 		$options = $this->createOptions(array(), $id);
-		echo CHtml::beginTag('div', $options);
+		echo CHtml::openTag('div', $options);
 		$i = 0;
 		foreach($items as $item){
 			$this->renderItem($i, $name, $item);
 			$i++;
 		}
-		echo CHtml::endTag('div');
+		echo CHtml::closeTag('div');
 	}
 	
 	/**
@@ -178,9 +178,9 @@ class CalendarWidget extends CWidget {
 		$id = array($this->id, strtolower($name), 'item', $index);
 		$classes = array('ui-cal-item', $this->itemCss);
 		$options = $this->createOptions($classes, $id);
-		echo CHtml::beginTag('div', $options);
-		$this->renderPartial($this->itemView, array('item'=>$item));
-		echo CHtml::endTag('div');
+		echo CHtml::openTag('div', $options);
+		$this->controller->renderPartial($this->itemView, array('item'=>$item));
+		echo CHtml::closeTag('div');
 	}
 	
 	/**
