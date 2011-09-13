@@ -15,4 +15,13 @@ $this->menu=array(
 
 <h1>Update Job <?php echo $model->ID; ?></h1>
 
-<?php echo $this->renderPartial('_form', array('model'=>$model)); ?>
+<?php echo $this->renderPartial('_form', array(
+	'model'=>$model,
+	'customerList'=>$customerList,
+	'newCustomer'=>$newCustomer,
+	'newCustomerUser'=>$newCustomerUser,
+	'users'=>$users,
+	'styles'=>$styles,
+	'colors'=>$colors,
+	'sizes'=>$sizes,
+)); ?>
