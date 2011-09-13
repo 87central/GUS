@@ -31,15 +31,16 @@ class Customer extends CActiveRecord
 		return parent::model($className);
 	}
 	
-	public function __construct(){
+	public function __construct($scenario = 'insert'){
+		parent::__construct($scenario);
 		$this->userModel = new User;
 		//want to have the underlying user loaded alongside the customer
-		$this->USER = $this->userModel;
+		//$this->USER = $this->userModel;
 	}
 	
 	protected function beforeFind(){
 		parent::beforeFind();
-		$this->USER = null;
+		//$this->USER = null;
 	}
 	
 	protected function afterFind(){
@@ -82,7 +83,7 @@ class Customer extends CActiveRecord
 		// class name for the relations automatically generated below.
 		return array(
 			'creditCards' => array(self::HAS_MANY, 'CreditCard', 'CUSTOMER_ID'),
-			'uSER' => array(self::BELONGS_TO, 'User', 'USER_ID'),
+			'USER' => array(self::BELONGS_TO, 'User', 'USER_ID'),
 			'jobs' => array(self::HAS_MANY, 'Job', 'CUSTOMER_ID'),
 		);
 	}
@@ -124,6 +125,22 @@ class Customer extends CActiveRecord
 	}
 	
 	public function getSummary(){
-		return $this->USER->FIRST . ' ' . $this->USER->LAST . ', ' . $this->COMPANY;
+		return $this->userModel->FIRST . ' ' . $this->userModel->LAST . ', ' . $this->COMPANY;
+	}
+	
+	public function __get($name){
+		try {
+			$value = parent::__get($name);
+		} catch(Exception $e){
+			$value = $this->userModel->$name;
+		}
+	}
+	
+	public function __set($name, $value){
+		try {
+			$this->userModel->$name = $value;
+		} catch(Exception $e){
+			parent::__set($name, $value);
+		}
 	}
 }
