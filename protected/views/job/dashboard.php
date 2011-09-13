@@ -14,7 +14,7 @@ $this->widget('application.components.Menu', array(
 		array('label'=>'All Jobs', 'url'=>array('job/index')),
 		array('label'=>'Past Jobs', 'url'=>array('job/index', 'selector'=>'past')),
 	),
-	'options'=>array(
+	'htmlOptions'=>array(
 		'id'=>'job_menu',
 	)
 ));
@@ -23,8 +23,8 @@ $this->widget('application.components.Menu', array(
 <h6>Calendar - This Week</h6>
 <?php $this->widget('application.widgets.CalendarWidget', array(
 	'droppable'=>false,
-	'itemView'=>'job/_eventDetail',
-	'headerView'=>'job/_dayHeader',
+	'itemView'=>'//job/_eventDetail',
+	'headerView'=>'//job/_dayHeader',
 	'data'=>$currentData,	
 ));?>
 </div>
@@ -32,8 +32,8 @@ $this->widget('application.components.Menu', array(
 <h6>Next Week</h6>
 <?php $this->widget('application.widgets.CalendarWidget', array(
 	'droppable'=>false,
-	'itemView'=>'job/_eventDetail',
-	'headerView'=>'job/_dayHeader',
+	'itemView'=>'//job/_eventDetail',
+	'headerView'=>'//job/_dayHeader',
 	'data'=>$nextData,
 ));?>
 </div>
