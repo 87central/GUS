@@ -7,7 +7,7 @@
 
 	<p class="note">Fields with <span class="required">*</span> are required.</p>
 
-	<?php echo $form->errorSummary($model); ?>
+	<?php echo $form->errorSummary($newCustomer); ?>
 	
 	<div class="row">
 		<?php $customerSelections = CHtml::listData($customerList, 'ID', 'summary');?>
