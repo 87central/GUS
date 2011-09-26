@@ -60,6 +60,11 @@ $onAddGarment = "addGarment(\$('#garment_style').val(), \$('#garment_color').val
 	</div>
 	
 	<div class="separator"></div>
+	<?php $this->renderPartial('//print/_jobForm', array(
+		'model'=> $model->printJob === null ? new PrintJob : $model->printJob,
+		'job'=>$model, 
+	));?>
+	<div class="separator"></div>
 	
 	<?php 
 		$sizeList = CHtml::listData($sizes, 'ID', 'TEXT');
@@ -82,30 +87,12 @@ $onAddGarment = "addGarment(\$('#garment_style').val(), \$('#garment_color').val
 				'id'=>'garment_color',
 			));?>
 		</div>
-		<div class="row prints">
-			Passes: <?php echo CHtml::textField('garment_passes', null, array(
-				'id'=>'garment_passes',
-			));?>
-			Art File: <?php echo CHtml::fileField('garment_file', null, array(
-				'id'=>'garment_file',
-			));?>			
-		</div>
 		<?php echo CHtml::button('Add Garment', array(
 			'onclick'=>$onAddGarment,
 		));?>
 	</div>
-
-	<div class="row">
-		<?php echo $form->labelEx($model,'CUSTOMER_ID'); ?>
-		<?php echo $form->textField($model,'CUSTOMER_ID'); ?>
-		<?php echo $form->error($model,'CUSTOMER_ID'); ?>
-	</div>
-
-	<div class="row">
-		<?php echo $form->labelEx($model,'LEADER_ID'); ?>
-		<?php echo $form->textField($model,'LEADER_ID'); ?>
-		<?php echo $form->error($model,'LEADER_ID'); ?>
-	</div>
+	
+	<div class="separator"></div>
 
 	<div class="row">
 		<?php echo $form->labelEx($model,'DESCRIPTION'); ?>
@@ -127,13 +114,13 @@ $onAddGarment = "addGarment(\$('#garment_style').val(), \$('#garment_color').val
 
 	<div class="row">
 		<?php echo $form->labelEx($model,'RUSH'); ?>
-		<?php echo $form->textField($model,'RUSH'); ?>
+		<?php echo $form->checkBox($model,'RUSH'); ?>
 		<?php echo $form->error($model,'RUSH'); ?>
 	</div>
 
 	<div class="row">
 		<?php echo $form->labelEx($model,'SET_UP_FEE'); ?>
-		<?php echo $form->textField($model,'SET_UP_FEE',array('size'=>2,'maxlength'=>2)); ?>
+		<?php echo $form->textField($model,'SET_UP_FEE',array('size'=>6,'maxlength'=>6)); ?>
 		<?php echo $form->error($model,'SET_UP_FEE'); ?>
 	</div>
 
@@ -145,7 +132,7 @@ $onAddGarment = "addGarment(\$('#garment_style').val(), \$('#garment_color').val
 
 	<div class="row">
 		<?php echo $form->labelEx($model,'QUOTE'); ?>
-		<?php echo $form->textField($model,'QUOTE',array('size'=>2,'maxlength'=>2)); ?>
+		<?php echo $form->textField($model,'QUOTE',array('size'=>7,'maxlength'=>7)); ?>
 		<?php echo $form->error($model,'QUOTE'); ?>
 	</div>
 
