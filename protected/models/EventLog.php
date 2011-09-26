@@ -15,13 +15,19 @@
  * @property integer $OBJECT_TYPE
  *
  * The followings are the available model relations:
- * @property User $uSERASSIGNED
- * @property Lookup $eVENT
- * @property Lookup $oBJECTTYPE
- * @property User $uSER
+ * @property User $assigned
+ * @property Lookup $event
+ * @property Lookup $object_type
+ * @property User $USER
+ * 
+ * In order to save correctly, at least the following properties should be set:
+ * $assocObject, $USER_ID, $DATE, $EVENT_ID. The others  are optional.
  */
 class EventLog extends CActiveRecord
 {
+	const JOB_DUE = 10;
+	
+	private $_object;
 	/**
 	 * Returns the static model of the specified AR class.
 	 * @return EventLog the static model class
@@ -64,10 +70,10 @@ class EventLog extends CActiveRecord
 		// NOTE: you may need to adjust the relation name and the related
 		// class name for the relations automatically generated below.
 		return array(
-			'uSERASSIGNED' => array(self::BELONGS_TO, 'User', 'USER_ASSIGNED'),
-			'eVENT' => array(self::BELONGS_TO, 'Lookup', 'EVENT_ID'),
-			'oBJECTTYPE' => array(self::BELONGS_TO, 'Lookup', 'OBJECT_TYPE'),
-			'uSER' => array(self::BELONGS_TO, 'User', 'USER_ID'),
+			'assigned' => array(self::BELONGS_TO, 'User', 'USER_ASSIGNED'),
+			'event' => array(self::BELONGS_TO, 'Lookup', 'EVENT_ID'),
+			'object_type' => array(self::BELONGS_TO, 'Lookup', 'OBJECT_TYPE'),
+			'USER' => array(self::BELONGS_TO, 'User', 'USER_ID'),
 		);
 	}
 
@@ -118,9 +124,20 @@ class EventLog extends CActiveRecord
 	/**
 	 * Gets the object associated with this event.
 	 */
-	public function getObject(){
-		$model = call_user_func(array($this->OBJECT_TYPE, 'model'));
-		$object = $model->findByPk((int) $this->OBJECT_ID);
+	public function getAssocObject(){
+		if($this->_object === null){
+			$model = call_user_func(array($this->OBJECT_TYPE, 'model'));
+			$object = $model->findByPk((int) $this->OBJECT_ID);
+		}
 		return $object;	
+	}
+	
+	/**
+	 * Sets the object associated with this event.
+	 */
+	public function setAssocObject($value){
+		$this->OBJECT_TYPE = gettype($value);
+		$this->OBJECT_ID = $value->ID;
+		$this->_object = $value;
 	}
 }

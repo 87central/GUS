@@ -20,8 +20,8 @@ $onAddGarment = "addGarment(\$('#garment_style').val(), \$('#garment_color').val
 	</div>
 	
 	<div class="row">
-		<?php //echo $form->labelEx($model, 'formattedDueDate'); ?>
-		<?php /*$this->widget('zii.widgets.jui.CJuiDatePicker', array(
+		<?php echo $form->labelEx($model, 'formattedDueDate'); ?>
+		<?php $this->widget('zii.widgets.jui.CJuiDatePicker', array(
 			'name'=>'Job[formattedDueDate]',
 			'model'=>$model,
 			'attribute'=>'formattedDueDate',
@@ -29,8 +29,8 @@ $onAddGarment = "addGarment(\$('#garment_style').val(), \$('#garment_color').val
 				'showAnim'=>'fold',
 				'dateFormat'=>'DD, MM d, yy',
 			),
-		));*/?>
-		<?php //echo $form->error($model, 'formattedDueDate'); ?>
+		));?>
+		<?php echo $form->error($model, 'formattedDueDate'); ?>
 	</div>
 	
 	<div class="separator"></div>
