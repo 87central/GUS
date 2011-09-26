@@ -67,7 +67,8 @@ class Job extends CActiveRecord
 		return array(
 			'cUSTOMER' => array(self::BELONGS_TO, 'Customer', 'CUSTOMER_ID'),
 			'lEADER' => array(self::BELONGS_TO, 'User', 'LEADER_ID'),
-			'jobLines' => array(self::HAS_MANY, 'JobLine', 'JOB_ID'),
+			'jobLines' => array(self::HAS_MANY, 'JobLine', 'JOB_ID'),			
+			'printJob' => array(self::BELONGS_TO, 'PrintJob', 'PRINT_ID'),
 		);
 	}
 
