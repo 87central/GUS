@@ -21,6 +21,10 @@
  */
 class User extends CActiveRecord
 {
+	const CUSTOMER_ROLE = 1;
+	const DEFAULT_ROLE = 2;
+	const ADMIN_ROLE = 3;
+	
 	/**
 	 * Returns the static model of the specified AR class.
 	 * @return User the static model class
@@ -109,5 +113,13 @@ class User extends CActiveRecord
 		return new CActiveDataProvider(get_class($this), array(
 			'criteria'=>$criteria,
 		));
+	}
+	
+	/**
+	 * Gets the list of users with the given role, where the role is one of 
+	 * the constants defined in this class.
+	 */
+	public static function listUsersWithRole($role){
+		return User::model()->findAllByAttributes(array('ROLE'=>$role));
 	}
 }
