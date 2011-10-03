@@ -64,11 +64,11 @@ class Product extends CActiveRecord
 		// class name for the relations automatically generated below.
 		return array(
 			'jobLines' => array(self::HAS_MANY, 'JobLine', 'PRODUCT_ID'),
-			'cOLOR' => array(self::BELONGS_TO, 'Lookup', 'COLOR'),
-			'sIZE' => array(self::BELONGS_TO, 'Lookup', 'SIZE'),
-			'sTATUS' => array(self::BELONGS_TO, 'Lookup', 'STATUS'),
-			'sTYLE' => array(self::BELONGS_TO, 'Lookup', 'STYLE'),
-			'productOrders' => array(self::HAS_MANY, 'ProductOrder', 'PRODUCT_ID'),
+			'color' => array(self::BELONGS_TO, 'Lookup', 'COLOR'),
+			'size' => array(self::BELONGS_TO, 'Lookup', 'SIZE'),
+			'status' => array(self::BELONGS_TO, 'Lookup', 'STATUS'),
+			'style' => array(self::BELONGS_TO, 'Lookup', 'STYLE'),
+			'orders' => array(self::HAS_MANY, 'ProductOrder', 'PRODUCT_ID'),
 		);
 	}
 
