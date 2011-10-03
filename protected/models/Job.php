@@ -109,7 +109,7 @@ class Job extends CActiveRecord
 		$found = false;
 		$originalName = $name;
 		//first, determine if client code is requesting a "formatted" attribute
-		if(($pos = strpos('formatted', $name)) === 0){
+		if(($pos = strpos($name, 'formatted')) === 0){
 			$formatted = true;
 			$name = substr($name, 9); //9 is length of "formatted"
 			$first = substr($name, 0, 1); //get first character
