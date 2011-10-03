@@ -2,11 +2,7 @@
 
 class JobController extends Controller
 {
-	/**
-	 * @var string the default layout for the views. Defaults to '//layouts/column2', meaning
-	 * using two-column layout. See 'protected/views/layouts/column2.php'.
-	 */
-	public $layout='//layouts/column2';
+
 
 	/**
 	 * @return array action filters
@@ -52,6 +48,20 @@ class JobController extends Controller
 	{
 		$this->render('view',array(
 			'model'=>$this->loadModel($id),
+		));
+	}
+	
+	public function actionNewLine(){
+		$namePrefix = $_POST['namePrefix'];
+		$count = $_POST['count'];
+		$styles = Lookup::model()->findAllByAttributes(array('TYPE'=>'Style'));
+		$sizes = Lookup::model()->findAllByAttributes(array('TYPE'=>'Size'));
+		$colors = Lookup::model()->findAllByAttributes(array('TYPE'=>'Color'));
+		$this->renderPartial('//jobLine/_form', array(
+			'styles'=>$styles,
+			'sizes'=>$sizes,
+			'colors'=>$colors,
+			'namePrefix'=>$namePrefix . '[' . $count . ']',
 		));
 	}
 
