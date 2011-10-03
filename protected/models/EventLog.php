@@ -26,6 +26,8 @@
 class EventLog extends CActiveRecord
 {
 	const JOB_DUE = 10;
+	const JOB_PRINT = 11;
+	const JOB_PICKUP = 12;
 	
 	private $_object;
 	/**
