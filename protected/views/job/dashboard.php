@@ -1,11 +1,6 @@
 <?php
 $this->pageTitle = Yii::app()->user->name . ' - ' . 'Dashboard';
 ?>
-Welcome <?php echo Yii::app()->user->name;?>&nbsp;
-<span class="note"><?php echo date('l F j');?></span>
-<br/>
-<strong>Important Messages...</strong>
-<br/>
 <!--table goes here-->
 <?php 
 $this->widget('zii.widgets.grid.CGridView', array(
