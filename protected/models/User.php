@@ -72,6 +72,7 @@ class User extends CActiveRecord
 			'jobLines' => array(self::HAS_MANY, 'JobLine', 'APPROVAL_USER'),
 			'prints' => array(self::HAS_MANY, 'Print', 'APPROVAL_USER'),
 			'rOLE' => array(self::BELONGS_TO, 'Lookup', 'ROLE'),
+			'assignedEvents' => array(self::HAS_MANY, 'EventLog', 'USER_ASSIGNED'),
 		);
 	}
 
