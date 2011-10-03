@@ -45,39 +45,85 @@ body
 {
 	padding: 10px 20px;
 	font-size: 200%;
+	background-color: red;
+	text-align: right;
+	color: white;
+}
+
+.container {
+	width: 1100px;
+}
+
+#page .container {
+	display: block;
+	margin-left: 125px;
+}
+.sidemenu {
+	display: inline;
+	float: left;
+	height: 600px;
+	background-color: #D1D2D4;
+	padding-top: 50px;
+	padding-left: 15px;
 }
 
 #mainmenu
 {
-	background:white url(bg.gif) repeat-x left top;
+	/*background:white url(bg.gif) repeat-x left top;*/
 }
 
 #mainmenu ul
 {
-	padding:6px 20px 5px 20px;
+	padding:6px 0px 5px 0px;
 	margin:0px;
 }
 
 #mainmenu ul li
 {
-	display: inline;
+	display: block;
+	text-align: right;
+	margin-bottom: 6px;
+	margin-top: 6px;
+	border-bottom: 2px solid #C1C2C4;
+	padding-bottom: 6px;
+}
+
+#mainmenu ul li.lastmenu {
+	border-bottom: none;
 }
 
 #mainmenu ul li a
 {
-	color:#ffffff;
+	color:black;
 	background-color:transparent;
 	font-size:12px;
-	font-weight:bold;
+	font-weight:normal;
 	text-decoration:none;
 	padding:5px 8px;
+	text-transform: uppercase;
 }
 
 #mainmenu ul li a:hover, #mainmenu ul li.active a
 {
-	color: #6399cd;
-	background-color:#EFF4FA;
 	text-decoration:none;
+	font-weight: bold;
+}
+
+#mainmenu ul li.active{
+	height: 15px;
+}
+
+#mainmenu ul li.active:after {
+	width: 0px;
+	height: 0px;
+	border-left: 9px solid #D1D2D4;
+	border-top: 9px solid transparent;
+	border-bottom: 9px solid transparent;
+	position: relative;
+	left: 98px;
+	top: -17px;	
+	content: " ";
+	display: block;
 }
 
 div.flash-error, div.flash-notice, div.flash-success

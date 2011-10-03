@@ -21,34 +21,51 @@
 
 <div class="container" id="page">
 
-	<div id="header">
+	<!--<div id="header">-->
+	<div class="sidemenu">
 		<div id="logo"><?php echo CHtml::encode(Yii::app()->name); ?></div>
-	</div><!-- header -->
-
-	<div id="mainmenu">
-		<?php $this->widget('zii.widgets.CMenu',array(
-			'items'=>array(
-				array('label'=>'Home', 'url'=>array('/site/index')),
-				array('label'=>'About', 'url'=>array('/site/page', 'view'=>'about')),
-				array('label'=>'Contact', 'url'=>array('/site/contact')),
-				array('label'=>'Login', 'url'=>array('/site/login'), 'visible'=>Yii::app()->user->isGuest),
-				array('label'=>'Logout ('.Yii::app()->user->name.')', 'url'=>array('/site/logout'), 'visible'=>!Yii::app()->user->isGuest)
-			),
-		)); ?>
-	</div><!-- mainmenu -->
-	<?php if(isset($this->breadcrumbs)):?>
-		<?php $this->widget('zii.widgets.CBreadcrumbs', array(
-			'links'=>$this->breadcrumbs,
-		)); ?><!-- breadcrumbs -->
-	<?php endif?>
+		<!--</div>--><!-- header -->
+	
+		<div id="mainmenu">
+			<?php $isAdmin = true; //should be more complex?>
+			<?php $isCustomer = false;?>
+			<?php if(Yii::app()->user->isGuest){?>
+				<?php $this->widget('zii.widgets.CMenu',array(
+					'items'=>array(
+						array('label'=>'Home', 'url'=>array('/site/index')),
+						array('label'=>'About', 'url'=>array('/site/page', 'view'=>'about')),
+						array('label'=>'Contact', 'url'=>array('/site/contact')),
+						array('label'=>'Login', 'url'=>array('/site/login'), 'visible'=>Yii::app()->user->isGuest),
+						array('label'=>'Logout ('.Yii::app()->user->name.')', 'url'=>array('/site/logout'), 'visible'=>!Yii::app()->user->isGuest)
+					),
+					'lastItemCssClass'=>'lastmenu',
+				)); ?>
+			<?php } else {?>
+				<?php $this->widget('zii.widgets.CMenu', array(
+					'items'=>array(
+						array('label'=>'My Jobs', 'url'=>array('/job/dashboard')),
+						array('label'=>'New Job', 'url'=>array('/job/create')),
+						array('label'=>'All Jobs', 'url'=>array('/job/index')),
+						array('label'=>'Check In', 'url'=>array('/order/checkin')),
+						array('label'=>'Calendar', 'url'=>array('/event/schedule')),
+					),
+					'lastItemCssClass'=>'lastmenu',
+				)); ?>
+			<?php }?>
+		</div><!-- mainmenu -->
+	</div>
+	
+	<?php if(!Yii::app()->user->isGuest){?>
+		Welcome <?php echo Yii::app()->user->name;?>&nbsp;
+		<span class="note"><?php echo date('l F j');?></span>
+		<br/>
+		<div class="messages">
+			<strong>Important Messages...</strong>
+		</div>
+		<br/>
+	<?php }?>
 
 	<?php echo $content; ?>
-
-	<div id="footer">
-		Copyright &copy; <?php echo date('Y'); ?> by My Company.<br/>
-		All Rights Reserved.<br/>
-		<?php echo Yii::powered(); ?>
-	</div><!-- footer -->
 
 </div><!-- page -->
 
