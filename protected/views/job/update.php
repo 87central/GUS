@@ -19,9 +19,9 @@ $this->menu=array(
 	'model'=>$model,
 	'customerList'=>$customerList,
 	'newCustomer'=>$newCustomer,
-	'newCustomerUser'=>$newCustomerUser,
 	'users'=>$users,
 	'styles'=>$styles,
 	'colors'=>$colors,
 	'sizes'=>$sizes,
+	'print'=>$print,
 )); ?>
