@@ -21,6 +21,10 @@
  */
 class JobLine extends CActiveRecord
 {
+	private $_color; //id of the color lookup item
+	private $_size; //id of the size lookup item
+	private $_style; //id of the style lookup item
+	
 	/**
 	 * Returns the static model of the specified AR class.
 	 * @return JobLine the static model class
@@ -46,12 +50,11 @@ class JobLine extends CActiveRecord
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
 		return array(
-			array('JOB_ID, PRODUCT_ID, PRINT_ID, QUANTITY, APPROVAL_USER', 'numerical', 'integerOnly'=>true),
-			array('PRICE', 'length', 'max'=>2),
+			array('JOB_ID, PRODUCT_ID, QUANTITY, APPROVAL_USER', 'numerical', 'integerOnly'=>true),
 			array('APPROVAL_DATE', 'safe'),
 			// The following rule is used by search().
 			// Please remove those attributes that should not be searched.
-			array('ID, JOB_ID, PRODUCT_ID, PRINT_ID, QUANTITY, PRICE, APPROVAL_DATE, APPROVAL_USER', 'safe', 'on'=>'search'),
+			array('ID, JOB_ID, PRODUCT_ID, QUANTITY, PRICE, APPROVAL_DATE, APPROVAL_USER', 'safe', 'on'=>'search'),
 		);
 	}
 
@@ -63,9 +66,9 @@ class JobLine extends CActiveRecord
 		// NOTE: you may need to adjust the relation name and the related
 		// class name for the relations automatically generated below.
 		return array(
-			'pRODUCT' => array(self::BELONGS_TO, 'Product', 'PRODUCT_ID'),
+			'product' => array(self::BELONGS_TO, 'Product', 'PRODUCT_ID'),
 			'aPPROVALUSER' => array(self::BELONGS_TO, 'User', 'APPROVAL_USER'),
-			'jOB' => array(self::BELONGS_TO, 'Job', 'JOB_ID'),
+			'job' => array(self::BELONGS_TO, 'Job', 'JOB_ID'),
 		);
 	}
 
@@ -78,7 +81,6 @@ class JobLine extends CActiveRecord
 			'ID' => 'ID',
 			'JOB_ID' => 'Job',
 			'PRODUCT_ID' => 'Product',
-			'PRINT_ID' => 'Print',
 			'QUANTITY' => 'Quantity',
 			'PRICE' => 'Price',
 			'APPROVAL_DATE' => 'Approval Date',
@@ -100,7 +102,6 @@ class JobLine extends CActiveRecord
 		$criteria->compare('ID',$this->ID);
 		$criteria->compare('JOB_ID',$this->JOB_ID);
 		$criteria->compare('PRODUCT_ID',$this->PRODUCT_ID);
-		$criteria->compare('PRINT_ID',$this->PRINT_ID);
 		$criteria->compare('QUANTITY',$this->QUANTITY);
 		$criteria->compare('PRICE',$this->PRICE,true);
 		$criteria->compare('APPROVAL_DATE',$this->APPROVAL_DATE,true);
@@ -109,5 +110,53 @@ class JobLine extends CActiveRecord
 		return new CActiveDataProvider(get_class($this), array(
 			'criteria'=>$criteria,
 		));
+	}
+	
+	public function getColor(){
+		if(isset($this->_color)){
+			return $this->_color;
+		} else {
+			if($this->product !== null){
+				return $this->product->COLOR;
+			} else {
+				return null;
+			}
+		}
+	}
+	
+	public function setColor($value){
+		$this->_color = $value;
+	}
+	
+	public function getSize(){
+		if(isset($this->_size)){
+			return $this->_size;
+		} else {
+			if($this->product !== null){
+				return $this->product->SIZE;
+			} else {
+				return null;
+			}
+		}
+	}
+	
+	public function setSize($value){
+		$this->_size = $value;
+	}
+	
+	public function getStyle(){
+		if(isset($this->_style)){
+			return $this->_style;
+		} else {
+			if($this->product !== null){
+				return $this->product->STYLE;
+			} else {
+				return null;
+			}
+		}
+	}
+	
+	public function setStyle($value){
+		$this->_style = $value;
 	}
 }
