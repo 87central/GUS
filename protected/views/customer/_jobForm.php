@@ -1,50 +1,61 @@
-<div class="form">
-
-<?php $form=$this->beginWidget('CActiveForm', array(
-	'id'=>'customer-form',
-	'enableAjaxValidation'=>false,
-)); ?>
+<div id="customer" class="form">
 
 	<p class="note">Fields with <span class="required">*</span> are required.</p>
 
-	<?php echo $form->errorSummary($newCustomer); ?>
+	<?php echo CHtml::errorSummary($newCustomer); ?>
 	
 	<div class="row">
 		<?php $customerSelections = CHtml::listData($customerList, 'ID', 'summary');?>
 		<?php echo 'Existing Customer: ';?>
-		<?php echo $form->dropDownList($newCustomer, 'ID', $customerSelections);?>
+		<?php echo CHtml::activeDropDownList($newCustomer, 'ID', $customerSelections, array(
+			'onchange'=>"$.ajax({
+				url: '".CHtml::normalizeUrl(array('customer/retrieve'))."'," .
+				"type: 'POST'," .
+				"data: {
+					id: $(this).val(),
+				}," .
+				"success: function(data){
+					$('#".CHtml::getActiveId($newCustomer, 'FIRST')."').val(data.FIRST);" .
+					"$('#".CHtml::getActiveId($newCustomer, 'LAST')."').val(data.LAST);" .
+					"$('#".CHtml::getActiveId($newCustomer, 'EMAIL')."').val(data.EMAIL);" .
+					"$('#".CHtml::getActiveId($newCustomer, 'COMPANY')."').val(data.COMPANY);" .
+					"$('#".CHtml::getActiveId($newCustomer, 'PHONE')."').val(data.PHONE);
+				}," .
+				"error: function(){
+					$(this).val('');
+				}
+			})"
+		));?>
 	</div>
 	
 	<div class="row">
-		<?php echo $form->labelEx($newCustomer, 'FIRST');?>
-		<?php echo $form->textField($newCustomer, 'FIRST');?>
-		<?php echo $form->error($newCustomer, 'FIRST');?>
+		<?php echo CHtml::activeLabelEx($newCustomer, 'FIRST');?>
+		<?php echo CHtml::activeTextField($newCustomer, 'FIRST');?>
+		<?php echo CHtml::error($newCustomer, 'FIRST');?>
 	</div>
 	
 	<div class="row">
-		<?php echo $form->labelEx($newCustomer, 'LAST');?>
-		<?php echo $form->textField($newCustomer, 'LAST');?>
-		<?php echo $form->error($newCustomer, 'LAST');?>
+		<?php echo CHtml::activeLabelEx($newCustomer, 'LAST');?>
+		<?php echo CHtml::activeTextField($newCustomer, 'LAST');?>
+		<?php echo CHtml::error($newCustomer, 'LAST');?>
 	</div>
 	
 	<div class="row">
-		<?php echo $form->labelEx($newCustomer, 'EMAIL'); ?>
-		<?php echo $form->textField($newCustomer, 'EMAIL'); ?>
-		<?php echo $form->error($newCustomer, 'EMAIL'); ?>
+		<?php echo CHtml::activeLabelEx($newCustomer, 'EMAIL'); ?>
+		<?php echo CHtml::activeTextField($newCustomer, 'EMAIL'); ?>
+		<?php echo CHtml::error($newCustomer, 'EMAIL'); ?>
 	</div>
 
 	<div class="row">
-		<?php echo $form->labelEx($newCustomer,'COMPANY'); ?>
-		<?php echo $form->textField($newCustomer,'COMPANY',array('size'=>45,'maxlength'=>45)); ?>
-		<?php echo $form->error($newCustomer,'COMPANY'); ?>
+		<?php echo CHtml::activeLabelEx($newCustomer,'COMPANY'); ?>
+		<?php echo CHtml::activeTextField($newCustomer,'COMPANY',array('size'=>45,'maxlength'=>45)); ?>
+		<?php echo CHtml::error($newCustomer,'COMPANY'); ?>
 	</div>
 	
 	<div class="row">
-		<?php echo $form->labelEx($newCustomer, 'PHONE');?>
-		<?php echo $form->textField($newCustomer, 'PHONE');?>
-		<?php echo $form->error($newCustomer, 'PHONE');?>
+		<?php echo CHtml::activeLabelEx($newCustomer, 'PHONE');?>
+		<?php echo CHtml::activeTextField($newCustomer, 'PHONE');?>
+		<?php echo CHtml::error($newCustomer, 'PHONE');?>
 	</div>
-
-<?php $this->endWidget(); ?>
 
 </div><!-- form -->
