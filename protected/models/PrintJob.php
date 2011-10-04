@@ -44,7 +44,6 @@ class PrintJob extends CActiveRecord
 		return array(
 			array('PASS, APPROVAL_USER', 'numerical', 'integerOnly'=>true),
 			array('ART', 'length', 'max'=>200),
-			array('COST', 'length', 'max'=>2),
 			array('APPROVAL_DATE', 'safe'),
 			// The following rule is used by search().
 			// Please remove those attributes that should not be searched.
