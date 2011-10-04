@@ -41,15 +41,6 @@ CREATE TABLE `authassignment` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `authassignment`
---
-
-LOCK TABLES `authassignment` WRITE;
-/*!40000 ALTER TABLE `authassignment` DISABLE KEYS */;
-/*!40000 ALTER TABLE `authassignment` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Table structure for table `authitem`
 --
 
@@ -67,15 +58,6 @@ CREATE TABLE `authitem` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `authitem`
---
-
-LOCK TABLES `authitem` WRITE;
-/*!40000 ALTER TABLE `authitem` DISABLE KEYS */;
-/*!40000 ALTER TABLE `authitem` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Table structure for table `authitemchild`
 --
 
@@ -91,15 +73,6 @@ CREATE TABLE `authitemchild` (
   CONSTRAINT `authitemchild_ibfk_2` FOREIGN KEY (`child`) REFERENCES `authitem` (`name`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `authitemchild`
---
-
-LOCK TABLES `authitemchild` WRITE;
-/*!40000 ALTER TABLE `authitemchild` DISABLE KEYS */;
-/*!40000 ALTER TABLE `authitemchild` ENABLE KEYS */;
-UNLOCK TABLES;
 
 --
 -- Table structure for table `credit_card`
@@ -123,15 +96,6 @@ CREATE TABLE `credit_card` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `credit_card`
---
-
-LOCK TABLES `credit_card` WRITE;
-/*!40000 ALTER TABLE `credit_card` DISABLE KEYS */;
-/*!40000 ALTER TABLE `credit_card` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Table structure for table `customer`
 --
 
@@ -147,17 +111,8 @@ CREATE TABLE `customer` (
   PRIMARY KEY (`ID`),
   KEY `customer_user` (`USER_ID`),
   CONSTRAINT `customer_user` FOREIGN KEY (`USER_ID`) REFERENCES `user` (`ID`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `customer`
---
-
-LOCK TABLES `customer` WRITE;
-/*!40000 ALTER TABLE `customer` DISABLE KEYS */;
-/*!40000 ALTER TABLE `customer` ENABLE KEYS */;
-UNLOCK TABLES;
 
 --
 -- Table structure for table `event_log`
@@ -189,15 +144,6 @@ CREATE TABLE `event_log` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `event_log`
---
-
-LOCK TABLES `event_log` WRITE;
-/*!40000 ALTER TABLE `event_log` DISABLE KEYS */;
-/*!40000 ALTER TABLE `event_log` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Table structure for table `job`
 --
 
@@ -208,29 +154,27 @@ CREATE TABLE `job` (
   `ID` int(11) NOT NULL AUTO_INCREMENT,
   `CUSTOMER_ID` int(11) NOT NULL,
   `LEADER_ID` int(11) DEFAULT NULL,
+  `PRINTER_ID` int(11) DEFAULT NULL,
+  `PRINT_ID` int(11) DEFAULT NULL,
+  `NAME` varchar(45) DEFAULT NULL,
   `DESCRIPTION` text,
   `NOTES` text,
   `ISSUES` text,
   `RUSH` tinyint(1) DEFAULT '0',
-  `SET_UP_FEE` decimal(2,0) DEFAULT '0',
+  `SET_UP_FEE` decimal(5,2) DEFAULT '0.00',
   `SCORE` int(11) DEFAULT NULL,
-  `QUOTE` decimal(2,0) DEFAULT '0',
+  `QUOTE` decimal(6,2) DEFAULT '0.00',
   PRIMARY KEY (`ID`),
   KEY `job_customer` (`CUSTOMER_ID`),
   KEY `job_leader` (`LEADER_ID`),
+  KEY `job_printer` (`PRINTER_ID`),
+  KEY `job_print` (`PRINT_ID`),
   CONSTRAINT `job_customer` FOREIGN KEY (`CUSTOMER_ID`) REFERENCES `customer` (`ID`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `job_leader` FOREIGN KEY (`LEADER_ID`) REFERENCES `user` (`ID`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+  CONSTRAINT `job_leader` FOREIGN KEY (`LEADER_ID`) REFERENCES `user` (`ID`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `job_print` FOREIGN KEY (`PRINT_ID`) REFERENCES `print` (`ID`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `job_printer` FOREIGN KEY (`PRINTER_ID`) REFERENCES `user` (`ID`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `job`
---
-
-LOCK TABLES `job` WRITE;
-/*!40000 ALTER TABLE `job` DISABLE KEYS */;
-/*!40000 ALTER TABLE `job` ENABLE KEYS */;
-UNLOCK TABLES;
 
 --
 -- Table structure for table `job_line`
@@ -243,32 +187,20 @@ CREATE TABLE `job_line` (
   `ID` int(11) NOT NULL AUTO_INCREMENT,
   `JOB_ID` int(11) DEFAULT NULL,
   `PRODUCT_ID` int(11) DEFAULT NULL,
-  `PRINT_ID` int(11) DEFAULT NULL,
   `QUANTITY` int(11) DEFAULT NULL,
-  `PRICE` decimal(2,0) DEFAULT NULL,
+  `PRICE` decimal(5,2) DEFAULT NULL,
   `APPROVAL_DATE` datetime DEFAULT NULL,
   `APPROVAL_USER` int(11) DEFAULT NULL,
   PRIMARY KEY (`ID`),
   KEY `line_job` (`JOB_ID`),
-  KEY `line_print` (`PRINT_ID`),
   KEY `line_approver` (`APPROVAL_USER`),
   KEY `line_product` (`PRODUCT_ID`),
   KEY `line_product1` (`PRODUCT_ID`),
-  CONSTRAINT `line_product1` FOREIGN KEY (`PRODUCT_ID`) REFERENCES `product` (`ID`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `line_approver` FOREIGN KEY (`APPROVAL_USER`) REFERENCES `user` (`ID`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `line_job` FOREIGN KEY (`JOB_ID`) REFERENCES `job` (`ID`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `line_print` FOREIGN KEY (`PRINT_ID`) REFERENCES `print` (`ID`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+  CONSTRAINT `line_product1` FOREIGN KEY (`PRODUCT_ID`) REFERENCES `product` (`ID`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `job_line`
---
-
-LOCK TABLES `job_line` WRITE;
-/*!40000 ALTER TABLE `job_line` DISABLE KEYS */;
-/*!40000 ALTER TABLE `job_line` ENABLE KEYS */;
-UNLOCK TABLES;
 
 --
 -- Table structure for table `lookup`
@@ -286,17 +218,8 @@ CREATE TABLE `lookup` (
   `TYPE` varchar(45) NOT NULL,
   PRIMARY KEY (`ID`),
   KEY `LOOKUP_TYPE` (`TYPE`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `lookup`
---
-
-LOCK TABLES `lookup` WRITE;
-/*!40000 ALTER TABLE `lookup` DISABLE KEYS */;
-/*!40000 ALTER TABLE `lookup` ENABLE KEYS */;
-UNLOCK TABLES;
 
 --
 -- Table structure for table `order`
@@ -317,15 +240,6 @@ CREATE TABLE `order` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `order`
---
-
-LOCK TABLES `order` WRITE;
-/*!40000 ALTER TABLE `order` DISABLE KEYS */;
-/*!40000 ALTER TABLE `order` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Table structure for table `print`
 --
 
@@ -336,23 +250,14 @@ CREATE TABLE `print` (
   `ID` int(11) NOT NULL AUTO_INCREMENT,
   `PASS` int(11) DEFAULT NULL,
   `ART` varchar(200) DEFAULT NULL,
-  `COST` decimal(2,0) DEFAULT NULL,
+  `COST` decimal(5,2) DEFAULT NULL,
   `APPROVAL_DATE` datetime DEFAULT NULL,
   `APPROVAL_USER` int(11) DEFAULT NULL,
   PRIMARY KEY (`ID`),
   KEY `print_user` (`APPROVAL_USER`),
   CONSTRAINT `print_user` FOREIGN KEY (`APPROVAL_USER`) REFERENCES `user` (`ID`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `print`
---
-
-LOCK TABLES `print` WRITE;
-/*!40000 ALTER TABLE `print` DISABLE KEYS */;
-/*!40000 ALTER TABLE `print` ENABLE KEYS */;
-UNLOCK TABLES;
 
 --
 -- Table structure for table `product`
@@ -382,15 +287,6 @@ CREATE TABLE `product` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `product`
---
-
-LOCK TABLES `product` WRITE;
-/*!40000 ALTER TABLE `product` DISABLE KEYS */;
-/*!40000 ALTER TABLE `product` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Table structure for table `product_order`
 --
 
@@ -406,19 +302,10 @@ CREATE TABLE `product_order` (
   PRIMARY KEY (`ID`),
   KEY `line_product` (`PRODUCT_ID`),
   KEY `line_order` (`ORDER_ID`),
-  CONSTRAINT `line_product` FOREIGN KEY (`PRODUCT_ID`) REFERENCES `product` (`ID`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `line_order` FOREIGN KEY (`ORDER_ID`) REFERENCES `order` (`ID`) ON DELETE NO ACTION ON UPDATE NO ACTION
+  CONSTRAINT `line_order` FOREIGN KEY (`ORDER_ID`) REFERENCES `order` (`ID`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `line_product` FOREIGN KEY (`PRODUCT_ID`) REFERENCES `product` (`ID`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `product_order`
---
-
-LOCK TABLES `product_order` WRITE;
-/*!40000 ALTER TABLE `product_order` DISABLE KEYS */;
-/*!40000 ALTER TABLE `product_order` ENABLE KEYS */;
-UNLOCK TABLES;
 
 --
 -- Table structure for table `user`
@@ -438,17 +325,8 @@ CREATE TABLE `user` (
   PRIMARY KEY (`ID`),
   KEY `role_lookup` (`ROLE`),
   CONSTRAINT `role_lookup` FOREIGN KEY (`ROLE`) REFERENCES `lookup` (`ID`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `user`
---
-
-LOCK TABLES `user` WRITE;
-/*!40000 ALTER TABLE `user` DISABLE KEYS */;
-/*!40000 ALTER TABLE `user` ENABLE KEYS */;
-UNLOCK TABLES;
 
 --
 -- Table structure for table `vendor`
@@ -465,15 +343,6 @@ CREATE TABLE `vendor` (
   PRIMARY KEY (`ID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `vendor`
---
-
-LOCK TABLES `vendor` WRITE;
-/*!40000 ALTER TABLE `vendor` DISABLE KEYS */;
-/*!40000 ALTER TABLE `vendor` ENABLE KEYS */;
-UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
@@ -484,4 +353,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2011-08-21 20:22:33
+-- Dump completed on 2011-10-04 17:26:04
