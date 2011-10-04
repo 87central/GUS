@@ -47,13 +47,11 @@ class Job extends CActiveRecord
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
 		return array(
-			array('CUSTOMER_ID', 'required'),
-			array('CUSTOMER_ID, LEADER_ID, RUSH, SCORE', 'numerical', 'integerOnly'=>true),
-			array('SET_UP_FEE, QUOTE', 'length', 'max'=>2),
-			array('DESCRIPTION, NOTES, ISSUES', 'safe'),
+			array('RUSH, SCORE', 'numerical', 'integerOnly'=>true),
+			array('ID, NAME, DESCRIPTION, NOTES, ISSUES', 'safe'),
 			// The following rule is used by search().
 			// Please remove those attributes that should not be searched.
-			array('ID, CUSTOMER_ID, LEADER_ID, DESCRIPTION, NOTES, ISSUES, RUSH, SET_UP_FEE, SCORE, QUOTE', 'safe', 'on'=>'search'),
+			array('ID, CUSTOMER_ID, LEADER_ID, NAME, DESCRIPTION, NOTES, ISSUES, RUSH, SET_UP_FEE, SCORE, QUOTE', 'safe', 'on'=>'search'),
 		);
 	}
 
@@ -65,11 +63,11 @@ class Job extends CActiveRecord
 		// NOTE: you may need to adjust the relation name and the related
 		// class name for the relations automatically generated below.
 		return array(
-			'cUSTOMER' => array(self::BELONGS_TO, 'Customer', 'CUSTOMER_ID'),
-			'lEADER' => array(self::BELONGS_TO, 'User', 'LEADER_ID'),
+			'CUSTOMER' => array(self::BELONGS_TO, 'Customer', 'CUSTOMER_ID'),
+			'LEADER' => array(self::BELONGS_TO, 'User', 'LEADER_ID'),
 			'jobLines' => array(self::HAS_MANY, 'JobLine', 'JOB_ID'),			
 			'printJob' => array(self::BELONGS_TO, 'PrintJob', 'PRINT_ID'),
-			'events'=> array(self::HAS_MANY, 'EventLog', 'OBJECT_ID', 'condition'=>'OBJECT_TYPE = \'Job\'', 'index'=>'EVENT_ID'),
+			'events'=> array(self::HAS_MANY, 'EventLog', 'OBJECT_ID', 'condition'=>'OBJECT_TYPE = \'Job\'', 'index'=>'CONCAT(\'\', EVENT_ID)'),
 		);
 	}
 
@@ -90,6 +88,8 @@ class Job extends CActiveRecord
 			'SCORE' => 'Score',
 			'QUOTE' => 'Quote',
 			'totalPasses' => 'Passes',
+			'formattedDueDate'=> 'Due Date',
+			'NAME'=>'Name',
 		);
 	}
 	
@@ -221,6 +221,53 @@ class Job extends CActiveRecord
 		return $event;
 	}
 	
+	/** Fills this model's attributes and relations from an array of attributes.
+	 * @param array $attributes The attribute array. This may contain values for
+	 * all of the attributes as well as the "jobLines" relation, which should
+	 * be the key to an array with sets of attributes of JobLine models.
+	 */
+	public function loadFromArray($attributes){
+		$attributesInternal = $attributes;
+		if(isset($attributesInternal['jobLines'])){
+			$jobLines = $attributesInternal['jobLines'];
+			unset($attributesInternal['jobLines']);
+		} else {
+			$jobLines = null;
+		}
+		$this->attributes = $attributesInternal;
+		if($jobLines){
+			$keyedJobLines = array();
+			foreach($this->jobLines as $line){
+				$keyedJobLines[(string) $line->ID] = $line;
+			}
+			$newJobLines = array();
+			for($i = 0; $i < count($jobLines); $i++){
+				$lineID = $jobLines[$i]['ID'];
+				if(isset($keyedJobLines[$lineID])){
+					$line = $keyedJobLines[$lineID];
+				} else {
+					$line = new JobLine;
+				}
+				$line->attributes = $jobLines[$i];
+				$newJobLines[(string) $lineID] = $line;
+			}
+			$this->jobLines = $newJobLines;
+		}		
+	}
+	
+	protected function beforeValidate(){
+		if(parent::beforeValidate()){
+			$valid = true;
+			foreach($this->jobLines as $line){
+				$line->JOB_ID = $this->ID;
+				$valid = $valid && $line->validate();
+			}
+			return $valid;
+		} else {
+			return false;
+		}
+	}
+	
 	protected function afterSave(){
 		parent::afterSave();
 		if(isset($this->events)){
@@ -229,6 +276,13 @@ class Job extends CActiveRecord
 				$event->save();
 			}
 		}
+		if(isset($this->jobLines)){
+			foreach($this->jobLines as $line){
+				$line->JOB_ID = $this->ID;
+				$line->save();
+			}
+		}
+		
 	}
 	
 	public function getTotalPasses(){
