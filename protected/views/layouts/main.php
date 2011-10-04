@@ -56,13 +56,25 @@
 	</div>
 	
 	<?php if(!Yii::app()->user->isGuest){?>
-		Welcome <?php echo Yii::app()->user->name;?>&nbsp;
-		<span class="note"><?php echo date('l F j');?></span>
-		<br/>
-		<div class="messages">
-			<strong>Important Messages...</strong>
+		<div class="bonnet">
+			<span class="greeting">Welcome <?php echo Yii::app()->user->name;?></span>&nbsp;
+			<span class="note"><?php echo date('l F j');?></span>
+			<br/>
+			<div class="messages">
+				<strong>Important Messages...</strong>
+			</div>
+			<br/>
 		</div>
-		<br/>
+	<?php }?>
+	
+	<?php if(Yii::app()->user->hasFlash('success')){?>
+		<div class="flash-success">
+			<?php echo Yii::app()->user->getFlash('success');?>
+		</div>
+	<?php } else if(Yii::app()->user->hasFlash('failure')){?>
+		<div class="flash-error">
+			<?php echo Yii::app()->user->getFlash('failure');?>
+		</div>
 	<?php }?>
 
 	<?php echo $content; ?>

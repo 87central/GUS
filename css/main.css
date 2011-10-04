@@ -130,6 +130,8 @@ div.flash-error, div.flash-notice, div.flash-success
 {
 	padding:.8em;
 	margin-bottom:1em;
+	margin-left: 125px;
+	margin-right: 20px;
 	border:2px solid #ddd;
 }
 
@@ -272,4 +274,27 @@ div.search-form
 .operations li a:hover
 {
 	background: #80CFFF;
+}
+
+.greeting {
+	font-weight: bold;
+	padding-left: 33px;	
+}
+
+.note {
+	color: gray;
+}
+
+.bonnet {
+	margin-top: 25px;
+}
+
+.messages {
+	min-height: 4em;
+	margin-left: 125px;
+	padding-left: 20px;
+	padding-top: 10px;
+	padding-bottom: 5px;
+	background-color: #FFFDE4;
+	margin-right: 20px;
 }
