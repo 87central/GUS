@@ -43,6 +43,16 @@ class Customer extends CActiveRecord
 		//$this->USER = null;
 	}
 	
+	protected function beforeSave(){
+		if(parent::beforeSave()){
+			$saved = $this->userModel->save();
+			$this->USER_ID = $this->userModel->ID;
+			return $saved;
+		} else {
+			return false;
+		}
+	}
+	
 	protected function afterFind(){
 		parent::afterFind();
 		$this->userModel = $this->USER;
@@ -64,8 +74,6 @@ class Customer extends CActiveRecord
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
 		return array_merge($this->userModel->rules(), array(
-			array('USER_ID', 'required'),
-			array('USER_ID', 'numerical', 'integerOnly'=>true),
 			array('COMPANY', 'length', 'max'=>45),
 			array('NOTES, TERMS', 'safe'),
 			// The following rule is used by search().
@@ -134,13 +142,19 @@ class Customer extends CActiveRecord
 		} catch(Exception $e){
 			$value = $this->userModel->$name;
 		}
-	}
+		return $value;
+	} 
 	
 	public function __set($name, $value){
-		try {
-			$this->userModel->$name = $value;
-		} catch(Exception $e){
+		if($name === 'ID'){
+			//if setting primary key, set that of the customer, not of the user.
 			parent::__set($name, $value);
+		} else {
+			try {
+				$this->userModel->$name = $value;
+			} catch(Exception $e){
+				parent::__set($name, $value);
+			}
 		}
 	}
 }
