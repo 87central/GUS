@@ -55,8 +55,8 @@ class EventLog extends CActiveRecord
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
 		return array(
-			array('OBJECT_ID, EVENT_ID, USER_ID, OBJECT_TYPE', 'required'),
-			array('OBJECT_ID, EVENT_ID, USER_ID, USER_ASSIGNED, OBJECT_TYPE', 'numerical', 'integerOnly'=>true),
+			array('OBJECT_ID, EVENT_ID, OBJECT_TYPE', 'required'),
+			array('OBJECT_ID, EVENT_ID, USER_ASSIGNED, OBJECT_TYPE', 'numerical', 'integerOnly'=>true),
 			array('DATE, TIMESTAMP, COMMENTS', 'safe'),
 			// The following rule is used by search().
 			// Please remove those attributes that should not be searched.
