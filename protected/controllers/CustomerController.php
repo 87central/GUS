@@ -54,6 +54,13 @@ class CustomerController extends Controller
 			'model'=>$this->loadModel($id),
 		));
 	}
+	
+	public function actionRetrieve(){
+		$id = $_POST['id'];
+		$model = $this->loadModel($id);
+		unset($model->PASSWORD);
+		echo CJSON::encode($model);
+	}
 
 	/**
 	 * Creates a new model.
