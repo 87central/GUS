@@ -1,8 +1,18 @@
 <?php
 Yii::app()->clientScript->registerCoreScript('jquery'); 
-Yii::app()->clientScript->registerScriptFile(Yii::app()->request->baseUrl . '/assets/garmentOps.js');
-$onAddGarment = "addGarment(\$('#garment_style').val(), \$('#garment_color').val(), \$('#garment_size').val(), \$('#garment_file').val(), \$('#garment_passes').val(), 2);"
-?>
+Yii::app()->clientScript->registerScript('add-job', "function addLine(sender, namePrefix){
+	$.ajax({
+		url: '".CHtml::normalizeUrl(array('job/newLine'))."'," .
+		"type: 'POST'," .
+		"data: {
+			namePrefix: namePrefix," .
+			"count: $(sender).parent().children('.jobLine').size(),
+		}," .
+		"success: function(data){
+			$(sender).before(data);
+		},
+	});
+}", CClientScript::POS_BEGIN);?>
 
 <div class="form">
 
@@ -39,7 +49,6 @@ $onAddGarment = "addGarment(\$('#garment_style').val(), \$('#garment_color').val
 		$this->renderPartial('//customer/_jobForm', array(
 			'customerList'=>$customerList,
 			'newCustomer'=>$newCustomer,
-			'newCustomerUser'=>$newCustomerUser,
 		));
 	?>
 	
@@ -61,7 +70,7 @@ $onAddGarment = "addGarment(\$('#garment_style').val(), \$('#garment_color').val
 	
 	<div class="separator"></div>
 	<?php $this->renderPartial('//print/_jobForm', array(
-		'model'=> $model->printJob === null ? new PrintJob : $model->printJob,
+		'model'=> $print,
 		'job'=>$model, 
 	));?>
 	<div class="separator"></div>
@@ -73,22 +82,30 @@ $onAddGarment = "addGarment(\$('#garment_style').val(), \$('#garment_color').val
 	?>
 	
 	<div id="lines" class="row">
-		<?php echo CHtml::hiddenField('garment_count', 0, array(
-			'id'=>'garment_count',
-		));?>
-		<div class="row garments">
-			Style: <?php echo CHtml::dropDownList('garment_style', null, $styleList, array(
-				'id'=>'garment_style',
-			));?>
-			Size: <?php echo CHtml::dropDownList('garment_size', null, $sizeList, array(
-				'id'=>'garment_size',
-			));?>
-			Color: <?php echo CHtml::dropDownList('garment_color', null, $colorList, array(
-				'id'=>'garment_color',
-			));?>
-		</div>
+		<?php  
+		if($model->isNewRecord){
+			$this->renderPartial('//jobLine/_form', array(
+				'sizes'=>$sizeList,
+				'colors'=>$colorList,
+				'styles'=>$styleList,
+				'namePrefix'=>CHtml::activeName($model, 'jobLines') . '[0]',
+				'model'=>new JobLine,
+			));
+		} else {
+			$index = 0;
+			foreach($model->jobLines as $line){
+				$this->renderPartial('//jobLine/_form', array(
+					'sizes'=>$sizeList,
+					'colors'=>$colorList,
+					'styles'=>$styleList,
+					'namePrefix'=>CHtml::activeName($model, 'jobLines') . '[' . $index . ']',
+					'model'=>$line,
+				));
+				$index++;
+			}
+		}?>
 		<?php echo CHtml::button('Add Garment', array(
-			'onclick'=>$onAddGarment,
+			'onclick'=>"addLine(this, '".CHtml::activeName($model, 'jobLines')."');",
 		));?>
 	</div>
 	
