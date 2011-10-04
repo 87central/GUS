@@ -27,7 +27,7 @@ class JobController extends Controller
 				'users'=>array('*'),
 			),
 			array('allow', // allow authenticated user to perform 'create' and 'update' actions
-				'actions'=>array('create','update'),
+				'actions'=>array('create','update', 'newLine'),
 				'users'=>array('@'),
 			),
 			array('allow', // allow admin user to perform 'admin' and 'delete' actions
@@ -57,11 +57,16 @@ class JobController extends Controller
 		$styles = Lookup::model()->findAllByAttributes(array('TYPE'=>'Style'));
 		$sizes = Lookup::model()->findAllByAttributes(array('TYPE'=>'Size'));
 		$colors = Lookup::model()->findAllByAttributes(array('TYPE'=>'Color'));
+		
+		$styleList = CHtml::listData($styles, 'ID', 'TEXT');
+		$sizeList = CHtml::listData($sizes, 'ID', 'TEXT');
+		$colorList = CHtml::listData($colors, 'ID', 'TEXT');
 		$this->renderPartial('//jobLine/_form', array(
-			'styles'=>$styles,
-			'sizes'=>$sizes,
-			'colors'=>$colors,
+			'styles'=>$styleList,
+			'sizes'=>$sizeList,
+			'colors'=>$colorList,
 			'namePrefix'=>$namePrefix . '[' . $count . ']',
+			'model'=>new JobLine,
 		));
 	}
 
@@ -73,12 +78,12 @@ class JobController extends Controller
 	{
 		$model=new Job;
 		$customer = new Customer;
-		$customerUser = $customer->USER;
 		$existingCustomers = Customer::model()->findAll();
 		$existingUsers = User::model()->findAll(); //should be finding those that fit in printer and leader roles
 		$styles = Lookup::model()->findAllByAttributes(array('TYPE'=>'Style'));
 		$sizes = Lookup::model()->findAllByAttributes(array('TYPE'=>'Size'));
 		$colors = Lookup::model()->findAllByAttributes(array('TYPE'=>'Color'));
+		$print = new PrintJob;
 		
 
 		// Uncomment the following line if AJAX validation is needed
@@ -86,16 +91,39 @@ class JobController extends Controller
 
 		if(isset($_POST['Job']))
 		{
-			$model->attributes=$_POST['Job'];
-			if($model->save())
-				$this->redirect(array('view','id'=>$model->ID));
+			$model->loadFromArray($_POST['Job']);
+			$customer->attributes = $_POST['Customer'];
+			$print->attributes = $_POST['PrintJob'];
+			
+			$saved = true;
+			if($saved){
+				$saved = $saved && $print->save();
+			} 
+			if($saved) {
+				$saved = $saved && $customer->save();
+			}
+			if($saved){
+				$model->CUSTOMER_ID = $customer->ID;
+				$model->PRINT_ID = $print->ID;
+				$saved = $saved && $model->save();
+			}
+			if($saved){
+				//if saved, redirect
+				Yii::app()->user->setFlash('success', 'The job was created successfully!');
+				$this->redirect(array('update', 'id'=>$model->ID));
+			} else {
+				//otherwise, delete everything
+				if(!$model->isNewRecord) {$model->delete();}
+				if(!$customer->isNewRecord) {$customer->delete();}
+				if(!$print->isNewRecord) {$print->delete();}				
+			}
 		}
 
 		$this->render('create',array(
 			'model'=>$model,
 			'customerList'=>$existingCustomers,
 			'newCustomer'=>$customer,
-			'newCustomerUser'=>$customerUser,
+			'print'=>$print,
 			'users'=>$existingUsers,
 			'styles'=>$styles,
 			'colors'=>$colors,
@@ -111,19 +139,51 @@ class JobController extends Controller
 	public function actionUpdate($id)
 	{
 		$model=$this->loadModel($id);
+		$customer = $model->CUSTOMER;
+		$print = $model->printJob;
+		$existingCustomers = Customer::model()->findAll();
+		$existingUsers = User::model()->findAll(); //should be finding those that fit in printer and leader roles
+		$styles = Lookup::model()->findAllByAttributes(array('TYPE'=>'Style'));
+		$sizes = Lookup::model()->findAllByAttributes(array('TYPE'=>'Size'));
+		$colors = Lookup::model()->findAllByAttributes(array('TYPE'=>'Color'));
 
 		// Uncomment the following line if AJAX validation is needed
 		// $this->performAjaxValidation($model);
 
 		if(isset($_POST['Job']))
 		{
-			$model->attributes=$_POST['Job'];
-			if($model->save())
-				$this->redirect(array('view','id'=>$model->ID));
+			$model->loadFromArray($_POST['Job']);
+			$customer->attributes = $_POST['Customer'];
+			$print->attributes = $_POST['PrintJob'];
+			
+			$saved = true;
+			if($saved){
+				$saved = $saved && $print->save();
+			} 
+			if($saved) {
+				$saved = $saved && $customer->save();
+			}
+			if($saved){
+				$model->CUSTOMER_ID = $customer->ID;
+				$model->PRINT_ID = $print->ID;
+				$saved = $saved && $model->save();
+			}
+			if($saved){
+				//if saved, redirect
+				Yii::app()->user->setFlash('success', 'The job was saved successfully!');
+				$this->redirect(array('update', 'id'=>$model->ID));
+			}
 		}
 
 		$this->render('update',array(
 			'model'=>$model,
+			'customerList'=>$existingCustomers,
+			'newCustomer'=>$customer,
+			'print'=>$print,
+			'users'=>$existingUsers,
+			'styles'=>$styles,
+			'colors'=>$colors,
+			'sizes'=>$sizes,
 		));
 	}
 
