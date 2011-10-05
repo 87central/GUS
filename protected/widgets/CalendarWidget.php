@@ -101,6 +101,8 @@ class CalendarWidget extends CWidget {
 	 			$this->data[$dayName]['date'] = $date;
 	 		}
 	 	}
+	 	
+	 	Yii::app()->clientScript->registerCssFile(Yii::app()->request->baseUrl . '/css/calendar.css');
 	}
 	
 	/**
@@ -108,9 +110,9 @@ class CalendarWidget extends CWidget {
 	 */
 	public function run(){
 		if(!isset($this->containerCss)){
-			$options = array('id'=>$this->id);
+			$options = array('id'=>$this->id, 'class'=>'ui-cal');
 		} else {
-			$options = array('id'=>$this->id, 'class'=>$this->containerCss);
+			$options = array('id'=>$this->id, 'class'=>$this->containerCss . ' ui-cal');
 		}
 		
 		if($this->droppable){

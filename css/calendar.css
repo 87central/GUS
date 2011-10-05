@@ -1,0 +1,25 @@
+.ui-cal-day {
+	display: inline;
+	float: left;
+	width: 13%;
+	background-color: #E7E7E9;
+	border-right: 3px solid white;
+	border-left: 3px solid white;
+	min-height: 10em;
+}
+
+.ui-cal-header {
+	width: 100%;
+	text-align: center;
+}
+
+.ui-cal-item {
+	
+}
+
+.ui-cal {
+	display: block;
+	margin-top: 10px;
+	margin-bottom: 10px;
+	float: none;
+}
