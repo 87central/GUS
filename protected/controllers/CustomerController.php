@@ -31,7 +31,7 @@ class CustomerController extends Controller
 				'users'=>array('*'),
 			),
 			array('allow', // allow authenticated user to perform 'create' and 'update' actions
-				'actions'=>array('create','update'),
+				'actions'=>array('create','update', 'retrieve'),
 				'users'=>array('@'),
 			),
 			array('allow', // allow admin user to perform 'admin' and 'delete' actions
@@ -59,7 +59,7 @@ class CustomerController extends Controller
 		$id = $_POST['id'];
 		$model = $this->loadModel($id);
 		unset($model->PASSWORD);
-		echo CJSON::encode($model);
+		echo CJSON::encode(array_merge($model->USER->attributes, $model->attributes));
 	}
 
 	/**
