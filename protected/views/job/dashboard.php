@@ -1,20 +1,23 @@
 <?php
 $this->pageTitle = Yii::app()->user->name . ' - ' . 'Dashboard';
+Yii::app()->clientScript->registerCssFile(Yii::app()->request->baseUrl . '/css/job_dashboard.css');
 ?>
 <!--table goes here-->
 <?php 
-$this->widget('zii.widgets.grid.CGridView', array(
-	'dataProvider'=>new CActiveDataProvider($jobs),
+$this->widget('zii.widgets.grid.CGridView', array( 
+	'dataProvider'=>$dataProvider,
 	'formatter'=>new CFormatter,
 	'columns'=>array(
 		array(
 			'name'=>'pickUpDate',
-			'value'=>"date('l', \$data->pickUpDate);",
+			'value'=>"date('l', strtotime(\$data->pickUpDate));",
 			'header'=>'Pick-Up',
 		),
 		array(
+			'class'=>'CLinkColumn',
 			'header'=>'Open Jobs',
-			'value'=>"\$data->RUSH ? '<span class=\"warning\">RUSH</span>&nbsp;' : '' . \$data->DESCRIPTION",
+			'labelExpression'=>"\$data->RUSH ? '<span class=\"warning\">RUSH</span>&nbsp;' : '' . \$data->NAME;",
+			'urlExpression'=>"CHtml::normalizeUrl(array('job/update', 'id'=>\$data->ID));",
 		),
 		array(
 			'header'=>'Status',
@@ -23,21 +26,23 @@ $this->widget('zii.widgets.grid.CGridView', array(
 		array(
 			'header'=>'Print',
 			'name'=>'printDate',
-			'value'=>"date('l', \$data->printDate);",
+			'value'=>"date('l', strtotime(\$data->printDate));",
 		),
 		array(
 			'header'=>'Due',
 			'name'=>'dueDate',
-			'value'=>"date('n/j', \$data->dueDate);"
+			'value'=>"date('n/j', strtotime(\$data->dueDate));"
 		),
 		'totalPasses',
 		array(
 			'header'=>'Art',
-			'value'=>"CHtml::image(Yii::app()->request->baseUrl . '/images/' . \$data->hasArt ? 'checked.png' : 'unchecked.png');",
+			'value'=>"CHtml::image(Yii::app()->request->baseUrl . '/images/' . (\$data->hasArt ? 'checked.png' : 'unchecked.png'));",
+			'type'=>'raw',
 		),
 		array(
 			'header'=>'Art',
-			'value'=>"CHtml::image(Yii::app()->request->baseUrl . '/images/' . \$data->hasSizes ? 'checked.png' : 'unchecked.png');",
+			'value'=>"CHtml::image(Yii::app()->request->baseUrl . '/images/' . (\$data->hasSizes ? 'checked.png' : 'unchecked.png'));",
+			'type'=>'raw',
 		)
 	)
 ));
@@ -46,12 +51,10 @@ $this->widget('zii.widgets.grid.CGridView', array(
 $this->widget('application.components.Menu', array(
 	'items'=>array(
 		array('label'=>'+ New Job', 'url'=>array('job/create')),
-		array('label'=>'All Jobs', 'url'=>array('job/index')),
-		array('label'=>'Past Jobs', 'url'=>array('job/index', 'selector'=>'past')),
+		array('label'=>'All Jobs', 'url'=>array('job/list')),
+		array('label'=>'Past Jobs', 'url'=>array('job/archive')),
 	),
-	'htmlOptions'=>array(
-		'id'=>'job_menu',
-	)
+	'id'=>'job_menu',
 ));
 ?>
 <div id="current_cal" class="cal_container">
@@ -63,6 +66,8 @@ $this->widget('application.components.Menu', array(
 	'data'=>$currentData,	
 ));?>
 </div>
+<br/>
+<br/>
 <div id="next_cal" class="cal_container">
 <h6>Next Week</h6>
 <?php $this->widget('application.widgets.CalendarWidget', array(
