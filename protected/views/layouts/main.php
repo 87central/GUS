@@ -43,9 +43,9 @@
 			<?php } else {?>
 				<?php $this->widget('zii.widgets.CMenu', array(
 					'items'=>array(
-						array('label'=>'My Jobs', 'url'=>array('/job/dashboard')),
+						array('label'=>'My Jobs', 'url'=>array('/job/index')),
 						array('label'=>'New Job', 'url'=>array('/job/create')),
-						array('label'=>'All Jobs', 'url'=>array('/job/index')),
+						array('label'=>'All Jobs', 'url'=>array('/job/list')),
 						array('label'=>'Check In', 'url'=>array('/order/checkin')),
 						array('label'=>'Calendar', 'url'=>array('/event/schedule')),
 					),
