@@ -56,7 +56,7 @@ class EventLog extends CActiveRecord
 		// will receive user inputs.
 		return array(
 			array('OBJECT_ID, EVENT_ID, OBJECT_TYPE', 'required'),
-			array('OBJECT_ID, EVENT_ID, USER_ASSIGNED, OBJECT_TYPE', 'numerical', 'integerOnly'=>true),
+			array('OBJECT_ID, EVENT_ID, USER_ASSIGNED', 'numerical', 'integerOnly'=>true),
 			array('DATE, TIMESTAMP, COMMENTS', 'safe'),
 			// The following rule is used by search().
 			// Please remove those attributes that should not be searched.
@@ -138,8 +138,32 @@ class EventLog extends CActiveRecord
 	 * Sets the object associated with this event.
 	 */
 	public function setAssocObject($value){
-		$this->OBJECT_TYPE = gettype($value);
+		$this->OBJECT_TYPE = get_class($value);
 		$this->OBJECT_ID = $value->ID;
 		$this->_object = $value;
+	}
+	
+	protected function afterFind(){
+		parent::afterFind();
+		//convert the dates retrieved from the database to a form
+		//which can be recognized by datepickers and such on the front end,
+		//and which is a little more user-friendly
+
+		$value = $this->DATE;
+		$value = strtotime($value);
+		$value = DateConverter::toUserTime($value, true);
+		$this->DATE = $value;
+	}
+	
+	protected function beforeSave(){
+		if(parent::beforeSave()){
+			$value = $this->DATE;
+			$value = strtotime($value);
+			$value = DateConverter::toDatabaseTime($value, true);
+			$this->DATE = $value;
+			return true;
+		} else {
+			return false;
+		}
 	}
 }
