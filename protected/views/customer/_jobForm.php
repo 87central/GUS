@@ -23,7 +23,8 @@
 				}," .
 				"error: function(){
 					$(this).val('');
-				}
+				}," .
+				"dataType: 'json',
 			})"
 		));?>
 	</div>
