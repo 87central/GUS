@@ -75,7 +75,7 @@ class Customer extends CActiveRecord
 		// will receive user inputs.
 		return array_merge($this->userModel->rules(), array(
 			array('COMPANY', 'length', 'max'=>45),
-			array('NOTES, TERMS', 'safe'),
+			array('NOTES, TERMS, COMPANY', 'safe'),
 			// The following rule is used by search().
 			// Please remove those attributes that should not be searched.
 			array('ID, USER_ID, COMPANY, NOTES, TERMS', 'safe', 'on'=>'search'),
