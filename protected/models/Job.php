@@ -67,7 +67,7 @@ class Job extends CActiveRecord
 			'LEADER' => array(self::BELONGS_TO, 'User', 'LEADER_ID'),
 			'jobLines' => array(self::HAS_MANY, 'JobLine', 'JOB_ID'),			
 			'printJob' => array(self::BELONGS_TO, 'PrintJob', 'PRINT_ID'),
-			'events'=> array(self::HAS_MANY, 'EventLog', 'OBJECT_ID', 'condition'=>'OBJECT_TYPE = \'Job\'', 'index'=>'CONCAT(\'\', EVENT_ID)'),
+			'events'=> array(self::HAS_MANY, 'EventLog', 'OBJECT_ID', 'condition'=>'OBJECT_TYPE = \'Job\'', 'index'=>'EVENT_ID'),
 		);
 	}
 
@@ -126,8 +126,7 @@ class Job extends CActiveRecord
 				$event = $this->getEventModel($eventID);
 				if($formatted){
 					if($event->DATE !== null){
-						$formatter = new CFormatter;
-						$value = $formatter->formatDate($event->DATE);
+						$value = $event->DATE;
 					} else {
 						$value = null;
 					}
@@ -151,7 +150,7 @@ class Job extends CActiveRecord
 		$found = false;
 		$originalName = $name;
 		//first, determine if client code is requesting a "formatted" attribute
-		if(($pos = strpos('formatted', $name)) === 0){
+		if(strlen($name) > 9 && substr($name, 0, 9) === 'formatted'){
 			$formatted = true;
 			$name = substr($name, 9); //9 is length of "formatted"
 			$first = substr($name, 0, 1); //get first character
@@ -167,7 +166,7 @@ class Job extends CActiveRecord
 			if(strcmp($name, $attrName) == 0){
 				$event = $this->getEventModel($eventID);
 				if($formatted){
-					$event->DATE = strtotime($value);
+					$event->DATE = $value;
 				} else {
 					$event->DATE = $value;
 				}
@@ -210,14 +209,23 @@ class Job extends CActiveRecord
 	}
 	
 	protected function getEventModel($eventID){
-		if(!isset($this->events[$eventID])){
+		$events = array();
+		foreach($this->events as $event){
+			$events[(string) $event->EVENT_ID] = $event;
+		}
+		if(!isset($events[(string) $eventID])){
 			$event = new EventLog;
 			$event->assocObject = $this;
 			$event->EVENT_ID = $eventID;
-			$this->events[$eventID] = $event;
+			if($this->events === null){
+				$this->events = array();
+			}
+			$this->events[(string) $eventID] = $event;
+			$events[(string) $eventID] = $event;
 		} else {
-			$event = $this->events[$eventID];
+			$event = $events[(string) $eventID];
 		}
+		$this->events = $events;		
 		return $event;
 	}
 	
@@ -234,7 +242,9 @@ class Job extends CActiveRecord
 		} else {
 			$jobLines = null;
 		}
-		$this->attributes = $attributesInternal;
+		foreach($attributesInternal as $name=>$value){
+			$this->$name = $value;
+		}
 		if($jobLines){
 			$keyedJobLines = array();
 			foreach($this->jobLines as $line){
@@ -271,8 +281,8 @@ class Job extends CActiveRecord
 	protected function afterSave(){
 		parent::afterSave();
 		if(isset($this->events)){
-			foreach($this->events as $event){
-				$event->OBJECT_ID = $this->ID;
+			foreach($this->events as $event){				
+				$event->OBJECT_ID = $this->ID;				
 				$event->save();
 			}
 		}
