@@ -57,6 +57,8 @@ body
 #page .container {
 	display: block;
 	margin-left: 125px;
+	margin-right: 0px;
+	width: 950px;
 }
 .sidemenu {
 	display: inline;

@@ -1,0 +1,26 @@
+#next_cal{
+	margin-top: 120px;
+}
+
+#job_menu  {
+	border-top: 2px solid gray;
+	list-style-type: none;
+}
+
+#job_menu li {
+	display: inline;
+	float; left;
+	margin-left: 10px;
+	margin-right: 10px;
+}
+
+#job_menu li a {
+	text-decoration: none;
+	font-weight: bold;
+	color: gray;
+}
+
+#job_menu li a:hover, #job_menu li a:active {
+	color: black;
+}
+
