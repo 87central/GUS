@@ -22,6 +22,12 @@
  */
 class Product extends CActiveRecord
 {
+	//product statuses
+	const IN_STOCK = 16; //in stock
+	const ORDERED = 17; //no inventory, ordered
+	const BACKORDERED = 18; //backordered by supplier(s)
+	const NO_STOCK = 19; //no inventory, not ordered
+	
 	/**
 	 * Returns the static model of the specified AR class.
 	 * @return Product the static model class
