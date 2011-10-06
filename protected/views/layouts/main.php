@@ -27,8 +27,8 @@
 		<!--</div>--><!-- header -->
 	
 		<div id="mainmenu">
-			<?php $isAdmin = true; //should be more complex?>
-			<?php $isCustomer = false;?>
+			<?php $isAdmin = true;//Yii::app()->user->isAdmin; //should be more complex?>
+			<?php $isCustomer = false;//Yii::app()->user->isCustomer;?>
 			<?php if(Yii::app()->user->isGuest){?>
 				<?php $this->widget('zii.widgets.CMenu',array(
 					'items'=>array(
@@ -46,11 +46,26 @@
 						array('label'=>'My Jobs', 'url'=>array('/job/index')),
 						array('label'=>'New Job', 'url'=>array('/job/create')),
 						array('label'=>'All Jobs', 'url'=>array('/job/list')),
-						array('label'=>'Check In', 'url'=>array('/order/checkin')),
+						array('label'=>'Check In', 'url'=>array('/order/checkin'), 'visible'=>$isAdmin),
 						array('label'=>'Calendar', 'url'=>array('/event/schedule')),
 					),
 					'lastItemCssClass'=>'lastmenu',
 				)); ?>
+				<?php 
+					if($isAdmin){
+						$this->widget('zii.widgets.CMenu', array(
+							'items'=>array(
+								array('label'=>'Add Product', 'url'=>array('/product/create')),
+								array('label'=>'Add Vendor', 'url'=>array('/vendor/create')),
+								array('label'=>'Add User', 'url'=>array('/user/create')),
+								array('label'=>'View Products', 'url'=>array('/product/index')),
+								array('label'=>'View Vendors', 'url'=>array('/vendor/index')),
+								array('label'=>'View Customers', 'url'=>array('/customer/index')),
+							),
+							'lastItemCssClass'=>'lastmenu',
+						));
+					}
+				?>
 			<?php }?>
 		</div><!-- mainmenu -->
 	</div>
