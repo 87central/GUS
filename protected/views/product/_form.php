@@ -17,25 +17,25 @@
 
 	<div class="row">
 		<?php echo $form->labelEx($model,'STATUS'); ?>
-		<?php echo $form->textField($model,'STATUS'); ?>
+		<?php echo $form->dropDownList($model,'STATUS', $statusList); ?>
 		<?php echo $form->error($model,'STATUS'); ?>
 	</div>
 
 	<div class="row">
 		<?php echo $form->labelEx($model,'STYLE'); ?>
-		<?php echo $form->textField($model,'STYLE'); ?>
+		<?php echo $form->dropDownList($model,'STYLE', $styleList); ?>
 		<?php echo $form->error($model,'STYLE'); ?>
 	</div>
 
 	<div class="row">
 		<?php echo $form->labelEx($model,'COLOR'); ?>
-		<?php echo $form->textField($model,'COLOR'); ?>
+		<?php echo $form->dropDownList($model,'COLOR', $colorList); ?>
 		<?php echo $form->error($model,'COLOR'); ?>
 	</div>
 
 	<div class="row">
 		<?php echo $form->labelEx($model,'SIZE'); ?>
-		<?php echo $form->textField($model,'SIZE'); ?>
+		<?php echo $form->dropDownList($model,'SIZE', $sizeList); ?>
 		<?php echo $form->error($model,'SIZE'); ?>
 	</div>
 
