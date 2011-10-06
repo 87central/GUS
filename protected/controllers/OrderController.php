@@ -30,7 +30,7 @@ class OrderController extends Controller
 				'users'=>array('@'),
 			),
 			array('allow', // allow admin user to perform 'admin' and 'delete' actions
-				'actions'=>array('admin','delete'),
+				'actions'=>array('admin','delete', 'checkin', 'place'),
 				'users'=>array('admin'),
 			),
 			array('deny',  // deny all users
@@ -116,20 +116,54 @@ class OrderController extends Controller
 		else
 			throw new CHttpException(400,'Invalid request. Please do not repeat this request again.');
 	}
-
-	/**
-	 * Lists all models.
-	 */
-	public function actionIndex()
-	{
-		$dataProvider=new CActiveDataProvider('Order');
-		$this->render('index',array(
-			'dataProvider'=>$dataProvider,
+	
+	public function actionIndex(){
+		$createdProvider = new CActiveDataProvider('Order', array(
+			'condition'=>'STATUS = '. Order::CREATED,
+		));
+		$orderedProvider = new CActiveDataProvider('Order', array(
+			'condition'=>'STATUS = '. Order::ORDERED,
+		));
+		$arrivedRecords = Order::model()->findAll(array(
+			'condition'=>'STATUS = '. Order::ARRIVED,
+		));
+		$minDate = strtotime('-1 week');
+		$records = array();
+		foreach($arrivedRecords as $order){
+			 $orderArrived = strtotime($order->arrived);
+			 if($orderArrived > $minDate){
+			 	$records[] = $order;
+			 }
+		}
+		$arrivedProvider = new CArrayDataProvider($records);
+		
+		$this->render('index', array(
+			'createdProvider'=>$createdProvider,
+			'orderedProvider'=>$orderedProvider,
+			'arrivedProvider'=>$arrivedProvider, 
 		));
 	}
 	
-	public function actionCheckin(){
-		
+	public function actionCheckin($id, $view){
+		$model = $this->loadModel($id);
+		try {
+			$model->checkin();
+			Yii::app()->user->setFlash('success', 'The order has been checked in successfuly!');
+		} catch(Exception $e){
+			Yii::app()->user->setFlash('failure', $e->message);
+		}
+		$this->redirect(array('order/'.$view));
+	}
+	
+	public function actionPlace($id, $view){
+		$model = $this->loadModel($id);
+		if($model->canPlace) {
+			$model->place();
+			Yii::app()->user->setFlash('success', 'The order was placed successfully!');
+			$this->refresh();
+		} else {
+			$this->redirect(array('order/update', 'id'=>$id));
+		}		
 	}
 
 	/**
