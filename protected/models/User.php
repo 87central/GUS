@@ -21,9 +21,11 @@
  */
 class User extends CActiveRecord
 {
-	const CUSTOMER_ROLE = 1;
-	const DEFAULT_ROLE = 2;
-	const ADMIN_ROLE = 3;
+	private $_retrievedPassword; //the password retreived on a find operation
+	
+	const CUSTOMER_ROLE = 14;
+	const DEFAULT_ROLE = 13;
+	const ADMIN_ROLE = 15;
 	
 	/**
 	 * Returns the static model of the specified AR class.
@@ -122,5 +124,41 @@ class User extends CActiveRecord
 	 */
 	public static function listUsersWithRole($role){
 		return User::model()->findAllByAttributes(array('ROLE'=>$role));
+	}
+	
+	protected function afterFind(){
+		parent::afterFind();
+		$this->_retrievedPassword = $this->getAttribute('PASSWORD');
+		$this->setAttribute('PASSWORD', null);
+	}
+	
+	/**
+	 * Determines whether the given password matches the password retrieved from the database.
+	 * @param string $password The password to test.
+	 * @return boolean True if the passwords match, otherwise false.
+	 */
+	public function validatePassword($password){
+		return $this->hashPassword($password) == $this->_retrievedPassword;
+	}
+	
+	/**
+	 * Gets a hashed version of the password.
+	 * @return The hashed password, in a 40-character string.
+	 */
+	private function hashPassword($pass){
+		$hashed = hash_hmac('md5', $pass, PrivateField::get('hashkey'));
+		$hashed = hash_hmac('sha1', $hashed, PrivateField::get('hashkey'));
+		return $hashed;
+	}
+	
+	protected function beforeSave(){
+		if(parent::beforeSave()){		
+			if($this->PASSWORD != null){
+				$this->setAttribute('PASSWORD', $this->hashPassword($this->PASSWORD));	
+			} else {
+				$this->setAttribute('PASSWORD', $this->_retrievedPassword);				
+			}			
+		}
+		return true;
 	}
 }
