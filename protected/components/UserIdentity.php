@@ -8,6 +8,11 @@
 class UserIdentity extends CUserIdentity
 {
 	/**
+	 * Type: User The user who is logged in.
+	 */
+	private $_user;
+	
+	/**
 	 * Authenticates a user.
 	 * The example implementation makes sure if the username and password
 	 * are both 'demo'.
@@ -17,17 +22,43 @@ class UserIdentity extends CUserIdentity
 	 */
 	public function authenticate()
 	{
-		$users=array(
-			// username => password
-			'demo'=>'demo',
-			'admin'=>'admin',
-		);
-		if(!isset($users[$this->username]))
+		$user = User::model()->findByAttributes(array('EMAIL'=>$this->username));
+		
+		if($user === null ){
 			$this->errorCode=self::ERROR_USERNAME_INVALID;
-		else if($users[$this->username]!==$this->password)
+		} else if(!$user->validatePassword($this->password)) {
 			$this->errorCode=self::ERROR_PASSWORD_INVALID;
-		else
+		} else {
 			$this->errorCode=self::ERROR_NONE;
-		return !$this->errorCode;
+		}
+				
+		if($this->errorCode == self::ERROR_NONE){
+			$this->_user = $user;
+		}
+		return $this->errorCode==self::ERROR_NONE;
+	}
+	
+	public function getId(){
+		return $this->_user->ID;
+	}
+	
+	public function getName(){
+		return $this->_user->FIRST;
+	}
+	
+	public function getRole(){
+		return $this->_user->ROLE;
+	}
+	
+	public function getIsAdmin(){
+		return $this->role == User::ADMIN_ROLE;
+	}
+	
+	public function getIsDefaultRole(){
+		return $this->role == User::DEFAULT_ROLE;
+	}
+	
+	public function getIsCustomer(){
+		return $this->role == User::CUSTOMER_ROLE;
 	}
 }
