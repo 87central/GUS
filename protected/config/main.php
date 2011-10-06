@@ -1,5 +1,5 @@
 <?php
-
+require(dirname(__FILE__).DIRECTORY_SEPARATOR.'PrivateField.php');
 // uncomment the following to define a path alias
 // Yii::setPathOfAlias('local','path/to/local-folder');
 
@@ -17,6 +17,7 @@ return array(
 		'application.models.*',
 		'application.components.*',
 		'application.controllers.*',
+		'application.config.PrivateField',
 		'zii.widgets.jui.*',
 		'zii.widgets.*',
 	),
@@ -59,7 +60,7 @@ return array(
 			'connectionString' => 'mysql:host=localhost;dbname=gus;port=3306',
 			'emulatePrepare' => true,
 			'username' => 'gus',
-			'password' => '87cGus',
+			'password' => PrivateField::get('db'),
 			'charset' => 'utf8',
 		),
 		
@@ -88,6 +89,6 @@ return array(
 	// using Yii::app()->params['paramName']
 	'params'=>array(
 		// this is used in contact page
-		'adminEmail'=>'michael.d.naughton@gmail.com',
+		'adminEmail'=>PrivateField::get('email'),
 	),
 );
