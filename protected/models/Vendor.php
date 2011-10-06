@@ -14,6 +14,8 @@
  */
 class Vendor extends CActiveRecord
 {
+	private $_abbrev; //the name abbreviation
+	
 	/**
 	 * Returns the static model of the specified AR class.
 	 * @return Vendor the static model class
@@ -91,5 +93,20 @@ class Vendor extends CActiveRecord
 		return new CActiveDataProvider(get_class($this), array(
 			'criteria'=>$criteria,
 		));
+	}
+	
+	/**
+	 * Gets an abbreviated version of the vendor name.
+	 */
+	public function getNameAbbreviation(){
+		if($this->_abbrev === null){
+			$split = preg_split('/\s+/', $this->NAME);
+			$abbrev = '';
+			foreach($split as $word){
+				$abbrev = $abbrev + strtoupper($word[0]);
+			}
+			$this->_abbrev = $abbrev;
+		}
+		return $this->_abbrev;
 	}
 }
