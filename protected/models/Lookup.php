@@ -64,11 +64,6 @@ class Lookup extends CActiveRecord
 		// NOTE: you may need to adjust the relation name and the related
 		// class name for the relations automatically generated below.
 		return array(
-			'products' => array(self::HAS_MANY, 'Product', 'COLOR'),
-			'products1' => array(self::HAS_MANY, 'Product', 'SIZE'),
-			'products2' => array(self::HAS_MANY, 'Product', 'STATUS'),
-			'products3' => array(self::HAS_MANY, 'Product', 'STYLE'),
-			'users' => array(self::HAS_MANY, 'User', 'ROLE'),
 		);
 	}
 
@@ -108,5 +103,48 @@ class Lookup extends CActiveRecord
 		return new CActiveDataProvider(get_class($this), array(
 			'criteria'=>$criteria,
 		));
+	}
+	
+	
+	/**
+	 * Gets the text corresponding to the given lookup unique ID, when type is not provided.
+	 * Gets the text corresponding to the given lookup code and type, when type is provided.
+	 * Returns null if no matching item is found.
+	 */
+	public static function getText($id, $type=''){
+		if($type === ''){
+			$result = Lookup::model()->findByPk((int) $id);
+		} else {
+			$result = Lookup::model()->findByAttributes(array('ID'=>$id, 'TYPE'=>$type));	
+		}
+		$text = null;
+		if($result != null){
+			$text = $result->NAME;
+		}
+		return $text;
+	}
+	
+	/**
+	 * Gets an array of values (id=>name) corresponding to the given lookup type.
+	 */
+	public static function listValues($type){
+		$values = Lookup::listItems($type);
+		$result = array();
+		foreach($values as $key=>$item){
+			$result[$key] = $item->TEXT;
+		}
+		return $result;
+	}
+	
+	/**
+	 * Gets an array of Lookup objects (id=>object) corresponding to the given lookup type.
+	 */
+	public static function listItems($type){
+		$result = Lookup::model()->findAllByAttributes(array('TYPE'=>$type), array('order'=>'POSITION, CODE'));
+		$values = array();
+		foreach($result as $resultVal){
+			$values[(string) $resultVal->ID] = $resultVal;
+		}
+		return $values;		
 	}
 }
