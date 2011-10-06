@@ -77,7 +77,96 @@ class Order extends CActiveRecord
 			'EXTERNAL_ID' => 'External',
 			'VENDOR_ID' => 'Vendor',
 			'DATE' => 'Date',
+			'STATUS'=>'Status',
 		);
+	}
+	
+	/**
+	 * Gets an array mapping attribute names to event IDs.
+	 * @return array The resultant array.
+	 */
+	protected function eventAttributes(){
+		return array(
+			'created'=>EventLog::ORDER_CREATED,
+			'ordered'=>EventLog::ORDER_PLACED,
+			'arrived'=>EventLog::ORDER_ARRIVED,
+		);
+	}
+	
+	public function __get($name){
+		$found = false;
+		$originalName = $name;
+		//first, determine if client code is requesting a "formatted" attribute
+		if(($pos = strpos($name, 'formatted')) === 0){
+			$formatted = true;
+			$name = substr($name, 9); //9 is length of "formatted"
+			$first = substr($name, 0, 1); //get first character
+			$first = strtolower($first);
+			$name = substr_replace($name, $first, 0, 1);
+		} else {
+			$formatted = false;
+		}
+		
+		//then, if the (unformatted) attribute is an event attribute,
+		//get the event value
+		foreach($this->eventAttributes() as $attrName => $eventID){
+			if(strcmp($name, $attrName) == 0){
+				$event = $this->getEventModel($eventID);
+				if($formatted){
+					if($event->DATE !== null){
+						$value = $event->DATE;
+					} else {
+						$value = null;
+					}
+				} else {
+					$value = $event->DATE;
+				}
+				$found = true;
+			}
+		}
+		
+		//if we found it, return it, otherwise, return what the parent thinks 
+		//is a matching attribute 
+		if(!$found){
+			return parent::__get($name);
+		} else {
+			return $value;
+		}
+	}
+	
+	public function __set($name, $value){
+		$found = false;
+		$originalName = $name;
+		//first, determine if client code is requesting a "formatted" attribute
+		if(strlen($name) > 9 && substr($name, 0, 9) === 'formatted'){
+			$formatted = true;
+			$name = substr($name, 9); //9 is length of "formatted"
+			$first = substr($name, 0, 1); //get first character
+			$first = strtolower($first);
+			$name = substr_replace($name, $first, 0, 1);
+		} else {
+			$formatted = false;
+		}
+		
+		//then, if the (unformatted) attribute is an event attribute,
+		//set the event value
+		foreach($this->eventAttributes() as $attrName => $eventID){
+			if(strcmp($name, $attrName) == 0){
+				$event = $this->getEventModel($eventID);
+				if($formatted){
+					$event->DATE = $value;
+				} else {
+					$event->DATE = $value;
+				}
+				$found = true;
+			}
+		}
+		
+		//if we found it, set it, otherwise, set what the parent thinks 
+		//is a matching attribute 
+		if(!$found){
+			parent::__set($name, $value);
+		}
 	}
 
 	/**
@@ -99,5 +188,147 @@ class Order extends CActiveRecord
 		return new CActiveDataProvider(get_class($this), array(
 			'criteria'=>$criteria,
 		));
+	}
+	
+	public function getName(){
+		if($this->VENDOR == null || $this->EXTERNAL_ID == null){
+			return 'Order #'.$this->ID;
+		} else {
+			return $this->VENDOR->nameAbbreviation . ' - ' . $this->EXTERNAL_ID;	
+		}		
+	}
+	
+	protected function getEventModel($eventID){
+		$events = array();
+		foreach($this->events as $event){
+			$events[(string) $event->EVENT_ID] = $event;
+		}
+		if(!isset($events[(string) $eventID])){
+			$event = new EventLog;
+			$event->assocObject = $this;
+			$event->EVENT_ID = $eventID;
+			if($this->events === null){
+				$this->events = array();
+			}
+			$this->events[(string) $eventID] = $event;
+			$events[(string) $eventID] = $event;
+		} else {
+			$event = $events[(string) $eventID];
+		}
+		$this->events = $events;		
+		return $event;
+	}
+	
+	/** Fills this model's attributes and relations from an array of attributes.
+	 * @param array $attributes The attribute array. This may contain values for
+	 * all of the attributes as well as the "jobLines" relation, which should
+	 * be the key to an array with sets of attributes of JobLine models.
+	 */
+	public function loadFromArray($attributes){
+		$attributesInternal = $attributes;
+		if(isset($attributesInternal['lines'])){
+			$lines = $attributesInternal['lines'];
+			unset($attributesInternal['lines']);
+		} else {
+			$lines = null;
+		}
+		foreach($attributesInternal as $name=>$value){
+			$this->$name = $value;
+		}
+		if($lines){
+			$keyedLines = array();
+			foreach($this->lines as $line){
+				$keyedLines[(string) $line->ID] = $line;
+			}
+			$newLines = array();
+			for($i = 0; $i < count($lines); $i++){
+				$lineID = $lines[$i]['ID'];
+				if(isset($keyedLines[$lineID])){
+					$line = $keyedLines[$lineID];
+				} else {
+					$line = new ProductOrder;
+				}
+				$line->attributes = $lines[$i];
+				$newLines[(string) $lineID] = $line;
+			}
+			$this->lines = $newLines;
+		}		
+	}
+	
+	protected function beforeValidate(){
+		if(parent::beforeValidate()){
+			$valid = true;
+			foreach($this->lines as $line){
+				$line->ORDER_ID = $this->ID;
+				$valid = $valid && $line->validate();
+			}
+			return $valid;
+		} else {
+			return false;
+		}
+	}
+	
+	protected function afterSave(){
+		parent::afterSave();
+		if(isset($this->events)){
+			foreach($this->events as $event){				
+				$event->OBJECT_ID = $this->ID;				
+				$event->save();
+			}
+		}
+		if(isset($this->lines)){
+			foreach($this->lines as $line){
+				$line->ORDER_ID = $this->ID;
+				$line->save();
+			}
+		}
+		
+	}
+	
+	/**
+	 * Gets a value indicating whether or not this order can be placed.
+	 * @return boolean True if the order can be placed, otherwise false.
+	 */
+	public function getCanPlace(){
+		return $this->STATUS == Order::CREATED && $this->VENDOR_ID != null;
+	}
+	
+	/**
+	 * Gets a value indicating whether or not this order can be checked in.
+	 * @return boolean True if the order can be checked in, otherwise false.
+	 */
+	public function getCanCheckin(){
+		return $this->STATUS == Order::ORDERED;
+	}
+	
+	/**
+	 * Places the order.
+	 */
+	public function place(){
+		if($this->canPlace){
+			$this->STATUS = Order::ORDERED;
+			$this->ordered = DateConverter::toUserDate(time());
+			$this->save();
+		} else {
+			throw new CException('Could not place the order at this time.');
+		}
+	}
+	
+	/**
+	 * Checks in the order, updating inventory where necessary.
+	 */
+	public function checkin(){
+		if($this->canCheckin){
+			$this->STATUS = Order::ARRIVED;
+			$this->arrived = DateConverter::toUserDate(time());
+			foreach($this->lines as $line){
+				$product = $line->PRODUCT;
+				$product->AVAILABLE += $line->QUANTITY_ORDERED;
+				$product->save();
+			}
+			$this->save();
+		} else {
+			throw new CException('Could not check in the order at this time.');
+		}
 	}
 }
