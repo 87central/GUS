@@ -15,6 +15,11 @@
  */
 class Order extends CActiveRecord
 {
+	//order statuses
+	const CREATED = 20; //order has been created, but not yet submitted to a vendor
+	const ORDERED = 21; //order has been submitted to a vendor (and paid)
+	const ARRIVED = 22; //order has been checked in
+	
 	/**
 	 * Returns the static model of the specified AR class.
 	 * @return Order the static model class
@@ -57,8 +62,8 @@ class Order extends CActiveRecord
 		// NOTE: you may need to adjust the relation name and the related
 		// class name for the relations automatically generated below.
 		return array(
-			'vENDOR' => array(self::BELONGS_TO, 'Vendor', 'VENDOR_ID'),
-			'productOrders' => array(self::HAS_MANY, 'ProductOrder', 'ORDER_ID'),
+			'VENDOR' => array(self::BELONGS_TO, 'Vendor', 'VENDOR_ID'),
+			'lines' => array(self::HAS_MANY, 'ProductOrder', 'ORDER_ID'),
 		);
 	}
 
