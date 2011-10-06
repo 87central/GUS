@@ -79,7 +79,7 @@ class JobController extends Controller
 		$model=new Job;
 		$customer = new Customer;
 		$existingCustomers = Customer::model()->findAll();
-		$existingUsers = User::model()->findAll(); //should be finding those that fit in printer and leader roles
+		$existingUsers = User::model()->findAllByAttributes(array('ROLE'=>User::DEFAULT_ROLE)); //should be finding those that fit in printer and leader roles
 		$styles = Lookup::model()->findAllByAttributes(array('TYPE'=>'Style'));
 		$sizes = Lookup::model()->findAllByAttributes(array('TYPE'=>'Size'));
 		$colors = Lookup::model()->findAllByAttributes(array('TYPE'=>'Color'));
@@ -142,7 +142,7 @@ class JobController extends Controller
 		$customer = $model->CUSTOMER;
 		$print = $model->printJob;
 		$existingCustomers = Customer::model()->findAll();
-		$existingUsers = User::model()->findAll(); //should be finding those that fit in printer and leader roles
+		$existingUsers = User::model()->findAllByAttributes(array('ROLE'=>User::DEFAULT_ROLE)); //should be finding those that fit in printer and leader roles
 		$styles = Lookup::model()->findAllByAttributes(array('TYPE'=>'Style'));
 		$sizes = Lookup::model()->findAllByAttributes(array('TYPE'=>'Size'));
 		$colors = Lookup::model()->findAllByAttributes(array('TYPE'=>'Color'));
