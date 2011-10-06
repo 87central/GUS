@@ -47,6 +47,7 @@ class Customer extends CActiveRecord
 		if(parent::beforeSave()){
 			$saved = $this->userModel->save();
 			$this->USER_ID = $this->userModel->ID;
+			$this->userModel->ROLE = User::CUSTOMER_ROLE;
 			return $saved;
 		} else {
 			return false;
