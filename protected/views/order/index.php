@@ -1,17 +1,59 @@
-<?php
-$this->breadcrumbs=array(
-	'Orders',
-);
+<?php $this->widget('zii.widgets.grid.CGridView', array(
+	'dataProvider'=>$createdProvider,
+	'columns'=>array(
+		array(
+			'class'=>'CLinkColumn',
+			'labelExpression'=>"\$data->name",
+			'urlExpression'=>"array('order/view', 'id'=>\$data->ID)",
+			'header'=>'New Orders',
+		),
+		'created::Creation Date',
+		array(
+			'class'=>'CLinkColumn',
+			'label'=>'Place Order',
+			'urlExpression'=>"array('order/place', 'id'=>\$data->ID, 'view'=>'index')",
+		)
+	),
+));?>
 
-$this->menu=array(
-	array('label'=>'Create Order', 'url'=>array('create')),
-	array('label'=>'Manage Order', 'url'=>array('admin')),
-);
-?>
+<?php $this->widget('zii.widgets.grid.CGridView', array(
+	'dataProvider'=>$orderedProvider,
+	'columns'=>array(
+		array(
+			'class'=>'CLinkColumn',
+			'labelExpression'=>"\$data->name",
+			'urlExpression'=>"array('order/view', 'id'=>\$data->ID)",
+			'header'=>'Check In',
+		),
+		'placed::Date Ordered',
+		array(
+			'class'=>'CLinkColumn',
+			'label'=>'Check In',
+			'urlExpression'=>"array('order/checkin', 'id'=>\$data->ID, 'view'=>'index')",
+		),
+		array(
+			'class'=>'CLinkColumn',
+			'label'=>'Short',
+			'urlExpression'=>"array('order/update', 'id'=>\$data->ID)",
+		),
+	)
+));?>
 
-<h1>Orders</h1>
-
-<?php $this->widget('zii.widgets.CListView', array(
-	'dataProvider'=>$dataProvider,
-	'itemView'=>'_view',
-)); ?>
+<?php $this->widget('zii.widgets.grid.CGridView', array(
+	'dataProvider'=>$arrivedProvider,
+	'columns'=>array(
+		array(
+			'class'=>'CLinkColumn',
+			'labelExpression'=>"\$data->name",
+			'urlExpression'=>"array('order/view', 'id'=>\$data->ID)",
+			'header'=>'Check In',
+		),
+		'placed::Date Ordered',
+		'arrived::Date Received',
+		array(
+			'class'=>'CLinkColumn',
+			'label'=>'Short',
+			'urlExpression'=>"array('order/update', 'id'=>\$data->ID)",
+		),
+	)
+));?>
