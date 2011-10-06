@@ -15,4 +15,10 @@ $this->menu=array(
 
 <h1>Update Product <?php echo $model->ID; ?></h1>
 
-<?php echo $this->renderPartial('_form', array('model'=>$model)); ?>
+<?php echo $this->renderPartial('_form', array(
+	'model'=>$model,
+	'statusList'=>$statusList,
+	'colorList'=>$colorList,
+	'styleList'=>$styleList,
+	'sizeList'=>$sizeList,
+)); ?>
