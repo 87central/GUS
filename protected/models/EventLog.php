@@ -28,6 +28,9 @@ class EventLog extends CActiveRecord
 	const JOB_DUE = 10;
 	const JOB_PRINT = 11;
 	const JOB_PICKUP = 12;
+	const ORDER_PLACED = 24;
+	const ORDER_CREATED = 23;
+	const ORDER_ARRIVED = 25;
 	
 	private $_object;
 	/**
