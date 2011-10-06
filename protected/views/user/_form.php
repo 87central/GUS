@@ -40,8 +40,13 @@
 	</div>
 
 	<div class="row">
-		<?php echo $form->labelEx($model,'ROLE'); ?>
-		<?php echo $form->textField($model,'ROLE'); ?>
+		<?php echo $form->labelEx($model,'ROLE', array(
+			'label'=>'Administrator?',
+		)); ?>
+		<?php echo $form->checkBox($model, 'ROLE', array(
+			'value'=>USER::ADMIN_ROLE,
+			'uncheckValue'=>USER::DEFAULT_ROLE,
+		));?>
 		<?php echo $form->error($model,'ROLE'); ?>
 	</div>
 
