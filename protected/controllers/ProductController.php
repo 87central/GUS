@@ -2,11 +2,6 @@
 
 class ProductController extends Controller
 {
-	/**
-	 * @var string the default layout for the views. Defaults to '//layouts/column2', meaning
-	 * using two-column layout. See 'protected/views/layouts/column2.php'.
-	 */
-	public $layout='//layouts/column2';
 
 	/**
 	 * @return array action filters
@@ -62,6 +57,10 @@ class ProductController extends Controller
 	public function actionCreate()
 	{
 		$model=new Product;
+		$statusList = Lookup::listValues('ProductStatus');
+		$colorList = Lookup::listValues('Color');
+		$styleList = Lookup::listValues('Style');
+		$sizeList = Lookup::listValues('Size');
 
 		// Uncomment the following line if AJAX validation is needed
 		// $this->performAjaxValidation($model);
@@ -75,6 +74,10 @@ class ProductController extends Controller
 
 		$this->render('create',array(
 			'model'=>$model,
+			'statusList'=>$statusList,
+			'colorList'=>$colorList,
+			'styleList'=>$styleList,
+			'sizeList'=>$sizeList,
 		));
 	}
 
@@ -86,6 +89,10 @@ class ProductController extends Controller
 	public function actionUpdate($id)
 	{
 		$model=$this->loadModel($id);
+		$statusList = Lookup::listValues('ProductStatus');
+		$colorList = Lookup::listValues('Color');
+		$styleList = Lookup::listValues('Style');
+		$sizeList = Lookup::listValues('Size');
 
 		// Uncomment the following line if AJAX validation is needed
 		// $this->performAjaxValidation($model);
@@ -99,6 +106,10 @@ class ProductController extends Controller
 
 		$this->render('update',array(
 			'model'=>$model,
+			'statusList'=>$statusList,
+			'colorList'=>$colorList,
+			'styleList'=>$styleList,
+			'sizeList'=>$sizeList,
 		));
 	}
 
