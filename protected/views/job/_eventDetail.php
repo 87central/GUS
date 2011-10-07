@@ -1,5 +1,5 @@
 <?php 
-	$job = $item->getObject();
+	$job = $item->getAssocObject();
 ?>
 <?php if($job->RUSH){?>
 	<span class="warning">RUSH</span>&nbsp;
