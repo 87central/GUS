@@ -112,6 +112,24 @@ Yii::app()->clientScript->registerScript('add-job', "function addLine(sender, na
 	<div class="separator"></div>
 
 	<div class="row">
+		<?php echo $form->labelEx($model,'RUSH'); ?>
+		<?php echo $form->checkBox($model,'RUSH'); ?>
+		<?php echo $form->error($model,'RUSH'); ?>
+	</div>
+
+	<div class="row">
+		<?php echo $form->labelEx($model,'SET_UP_FEE'); ?>
+		<?php echo $form->textField($model,'SET_UP_FEE',array('size'=>6,'maxlength'=>6)); ?>
+		<?php echo $form->error($model,'SET_UP_FEE'); ?>
+	</div>
+
+	<div class="row">
+		<?php echo $form->labelEx($model,'QUOTE'); ?>
+		<?php echo $form->textField($model,'QUOTE',array('size'=>7,'maxlength'=>7)); ?>
+		<?php echo $form->error($model,'QUOTE'); ?>
+	</div>
+
+	<div class="row">
 		<?php echo $form->labelEx($model,'DESCRIPTION'); ?>
 		<?php echo $form->textArea($model,'DESCRIPTION',array('rows'=>6, 'cols'=>50)); ?>
 		<?php echo $form->error($model,'DESCRIPTION'); ?>
@@ -127,30 +145,6 @@ Yii::app()->clientScript->registerScript('add-job', "function addLine(sender, na
 		<?php echo $form->labelEx($model,'ISSUES'); ?>
 		<?php echo $form->textArea($model,'ISSUES',array('rows'=>6, 'cols'=>50)); ?>
 		<?php echo $form->error($model,'ISSUES'); ?>
-	</div>
-
-	<div class="row">
-		<?php echo $form->labelEx($model,'RUSH'); ?>
-		<?php echo $form->checkBox($model,'RUSH'); ?>
-		<?php echo $form->error($model,'RUSH'); ?>
-	</div>
-
-	<div class="row">
-		<?php echo $form->labelEx($model,'SET_UP_FEE'); ?>
-		<?php echo $form->textField($model,'SET_UP_FEE',array('size'=>6,'maxlength'=>6)); ?>
-		<?php echo $form->error($model,'SET_UP_FEE'); ?>
-	</div>
-
-	<div class="row">
-		<?php echo $form->labelEx($model,'SCORE'); ?>
-		<?php echo $form->textField($model,'SCORE'); ?>
-		<?php echo $form->error($model,'SCORE'); ?>
-	</div>
-
-	<div class="row">
-		<?php echo $form->labelEx($model,'QUOTE'); ?>
-		<?php echo $form->textField($model,'QUOTE',array('size'=>7,'maxlength'=>7)); ?>
-		<?php echo $form->error($model,'QUOTE'); ?>
 	</div>
 
 	<div class="row buttons">
