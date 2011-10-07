@@ -143,10 +143,10 @@ class OrderController extends Controller
 	
 	public function actionIndex(){
 		$createdProvider = new CActiveDataProvider('Order', array(
-			'condition'=>'STATUS = '. Order::CREATED,
+			'criteria'=>array('condition'=>'STATUS = '. Order::CREATED),
 		));
 		$orderedProvider = new CActiveDataProvider('Order', array(
-			'condition'=>'STATUS = '. Order::ORDERED,
+			'criteria'=>array('condition'=>'STATUS = '. Order::ORDERED),
 		));
 		$arrivedRecords = Order::model()->findAll(array(
 			'condition'=>'STATUS = '. Order::ARRIVED,
