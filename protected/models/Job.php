@@ -22,6 +22,13 @@
  */
 class Job extends CActiveRecord
 {
+	//job statuses 
+	const CREATED = 26; //the job has just been created, and perhaps a quote has been given
+	const INVOICED = 31; //a formal invoice has been sent.
+	const SCHEDULED = 28; //the job has been scheduled on the timeline.
+	const COMPLETED = 29; //the job has been completed.
+	const CANCELED = 30; //the job has been canceled.
+	
 	/**
 	 * Returns the static model of the specified AR class.
 	 * @return Job the static model class
@@ -29,6 +36,11 @@ class Job extends CActiveRecord
 	public static function model($className=__CLASS__)
 	{
 		return parent::model($className);
+	}
+	
+	public function __construct($scenario='insert'){
+		parent::__construct($scenario);
+		$this->STATUS = Job::CREATED;
 	}
 
 	/**
