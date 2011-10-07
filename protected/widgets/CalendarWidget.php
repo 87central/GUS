@@ -79,18 +79,20 @@ class CalendarWidget extends CWidget {
 	 	if($this->data === null){
 	 		$this->data = array();
 	 	}
+	 	$normalizedDate = array();
 	 	$minDate = PHP_INT_MAX;
 	 	$secondsPerDay = 24 * 60 * 60;
-	 	$baseDate = $secondsPerDay * 3; //epoch was a Thursday
+	 	$baseDate = $secondsPerDay * 4; //epoch was a Thursday
 	 	for($i = 0; $i < 7; $i++){
 	 		$date = $baseDate + $secondsPerDay * $i;
 	 		$dayName = $this->getWeekdayName($date);
 	 		if(!isset($this->data[$dayName])){
-	 			$this->data[$dayName] = array('items'=>array(),
-	 										  'date'=>$date,
+	 			$normalizedData[$dayName] = array('items'=>array(),
+	 											  'date'=>$date,
 	 			);
 	 		} else {
-	 			$day = $this->data[$dayName];
+	 			$normalizedData[$dayName] = $this->data[$dayName];
+	 			$day = $normalizedData[$dayName];
 	 			if(!isset($day['items'])){
 	 				$day['items'] = array();
 	 			}
@@ -110,9 +112,11 @@ class CalendarWidget extends CWidget {
 	 		for($i = 0; $i < 7; $i++){
 	 			$date = $baseDate + $secondsPerDay * $i;
 	 			$dayName = $this->getWeekdayName($date);
-	 			$this->data[$dayName]['date'] = $date;
+	 			$normalizedData[$dayName]['date'] = $date;
 	 		}
 	 	}
+	 	
+	 	$this->data = $normalizedData;
 	 	
 	 	Yii::app()->clientScript->registerCssFile(Yii::app()->request->baseUrl . '/css/calendar.css');
 	}
@@ -149,7 +153,7 @@ class CalendarWidget extends CWidget {
 			
 			//associate the date string for retrieval if something is dropped on a day
 			Yii::app()->clientScript->registerScript($options['id'].'-data', "" .
-					"\$('#".$options['id']."').data('date', '".date('d/m/Y', $info['date'])."');", 
+					"\$('#".$options['id']."').data('date', '".date('m/d/Y', $info['date'])."');", 
 			CClientScript::POS_END);
 			
 			echo CHtml::openTag('div', $options);
