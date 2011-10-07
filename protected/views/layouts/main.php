@@ -46,7 +46,7 @@
 						array('label'=>'My Jobs', 'url'=>array('/job/index')),
 						array('label'=>'New Job', 'url'=>array('/job/create')),
 						array('label'=>'All Jobs', 'url'=>array('/job/list')),
-						array('label'=>'Check In', 'url'=>array('/order/checkin'), 'visible'=>$isAdmin),
+						array('label'=>'Check In', 'url'=>array('/order/index'), 'visible'=>$isAdmin),
 						array('label'=>'Calendar', 'url'=>array('/event/schedule')),
 					),
 					'lastItemCssClass'=>'lastmenu',
