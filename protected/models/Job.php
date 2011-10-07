@@ -37,11 +37,6 @@ class Job extends CActiveRecord
 	{
 		return parent::model($className);
 	}
-	
-	public function __construct($scenario='insert'){
-		parent::__construct($scenario);
-		$this->STATUS = Job::CREATED;
-	}
 
 	/**
 	 * @return string the associated database table name
@@ -279,6 +274,9 @@ class Job extends CActiveRecord
 	
 	protected function beforeValidate(){
 		if(parent::beforeValidate()){
+			if($this->STATUS == null){
+				$this->STATUS = Job::CREATED;
+			}
 			$valid = true;
 			foreach($this->jobLines as $line){
 				$line->JOB_ID = $this->ID;

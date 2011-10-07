@@ -29,11 +29,7 @@ class Order extends CActiveRecord
 		return parent::model($className);
 	}
 	
-	public function __construct($scenario='insert'){
-		parent::__construct($scenario);
-		$this->STATUS = Order::CREATED;
-		$this->created = DateConverter::toDatabaseDate(time(), true);
-	}
+	
 
 	/**
 	 * @return string the associated database table name
@@ -263,6 +259,10 @@ class Order extends CActiveRecord
 	
 	protected function beforeValidate(){
 		if(parent::beforeValidate()){
+			if($this->STATUS == null){
+				$this->STATUS = Order::CREATED;
+				$this->created = DateConverter::toDatabaseDate(time(), true);
+			}
 			$valid = true;
 			foreach($this->lines as $line){
 				$line->ORDER_ID = $this->ID;
