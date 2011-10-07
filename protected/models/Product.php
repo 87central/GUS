@@ -54,7 +54,7 @@ class Product extends CActiveRecord
 		// will receive user inputs.
 		return array(
 			array('STATUS, STYLE, COLOR, SIZE, AVAILABLE', 'numerical', 'integerOnly'=>true),
-			array('COST', 'length', 'max'=>2),
+			array('COST', 'numerical'),
 			// The following rule is used by search().
 			// Please remove those attributes that should not be searched.
 			array('ID, COST, STATUS, STYLE, COLOR, SIZE, AVAILABLE', 'safe', 'on'=>'search'),
@@ -116,5 +116,13 @@ class Product extends CActiveRecord
 		return new CActiveDataProvider(get_class($this), array(
 			'criteria'=>$criteria,
 		));
+	}
+	
+	/**
+	 * Gets a string representing a summary of this product. Only style, color,
+	 * and size are included.
+	 */
+	public function getSummary(){
+		return $this->color->TEXT . ' ' . $this->style->TEXT . ', ' . $this->size->TEXT;
 	}
 }
