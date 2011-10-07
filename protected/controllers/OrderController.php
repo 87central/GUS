@@ -189,6 +189,25 @@ class OrderController extends Controller
 			$this->redirect(array('order/update', 'id'=>$id));
 		}		
 	}
+	
+	public function actionNewLine($id = null){
+		$namePrefix = $_POST['namePrefix'];
+		$count = $_POST['count'];
+		$status = $_POST['status'];
+		$products = Product::model()->findAll();
+		$products = CHtml::listData($products, 'ID', 'TEXT');
+		$model = new ProductOrder;
+		if($id){
+			$model->PRODUCT_ID = $id;	
+		}
+		
+		$this->renderPartial('//ProductOrder/_orderForm', array(
+			'products'=>$products,
+			'namePrefix'=>$namePrefix . '[' . $count . ']',
+			'model'=>new ProductOrder,
+			'orderStatus'=>$status,
+		));
+	}
 
 	/**
 	 * Manages all models.
