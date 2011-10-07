@@ -26,10 +26,6 @@ $this->pageTitle = Yii::app()->user->name . ' - ' . 'Schedule';
 </div>
 
 <?php 
-$tabs = array();
-foreach($employees as $emp){
-	$tabs[$emp->FIRST] = array('event/employeeSchedule', 'employee_id'=>$emp->ID);
-}
 $this->widget('zii.widgets.jui.CJuiTabs', array(
-	'tabs'=>$tabs,
+	'tabs'=>$employees,
 ));?>

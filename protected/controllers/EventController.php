@@ -53,9 +53,16 @@ class EventController extends Controller
 			'EVENT_ID'=>EventLog::JOB_DUE,	
 		));
 		$employees = User::listUsersWithRole(User::DEFAULT_ROLE);
+		$resultEmps = array();
+		foreach($employees as $emp){
+			$schedule = $this->findWeekSchedule($emp->ID);
+			$resultEmps[$emp->FIRST] = $this->renderPartial('_employee', array(
+				'calendarData'=>$schedule,
+			), true);
+		}
 		$this->render('schedule', array(
 			'unscheduled'=>$unscheduled,
-			'employees'=>$employees,
+			'employees'=>$resultEmps,
 		));
 	}
 
@@ -88,5 +95,26 @@ class EventController extends Controller
 			$calendarData[$dayName]['items'][] = $event;
 		}
 		return $calendarData;
+	}
+	
+	/**
+	 * Gets an employee's schedule, appropriate for a calendar widget.
+	 * @param string $employee_id The ID of the employee whose schedule should be retrieved.
+	 * @param int $weekOffset The number of weeks from the current week to find in the schedule.
+	 */
+	private function findWeekSchedule($employee_id, $weekOffset = 0){
+		$secondsPerWeek = 24*60*60*7;
+		$lastSunday = strtotime('last sunday', time());		
+		$nextSaturday = $lastSunday + $secondsPerWeek - 1;
+		$lastSunday += $weekOffset * $secondsPerWeek;
+		$nextSaturday += $weekOffset * $secondsPerWeek;
+		$jobsThisWeek = EventLog::model()->findAllByAttributes(array(
+			'USER_ASSIGNED'=>$employee_id,
+			'OBJECT_TYPE'=>'Job',		
+			'EVENT_ID'=>EventLog::JOB_DUE,	
+		), '`DATE` BETWEEN FROM_UNIXTIME(' . $lastSunday . ') AND FROM_UNIXTIME(' . $nextSaturday . ')');
+		
+		$currentWeek = $this->resultToCalendarData($jobsThisWeek);
+		return $currentWeek;
 	}
 }
