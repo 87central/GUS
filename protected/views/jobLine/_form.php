@@ -11,7 +11,7 @@
 	Quantity: <?php echo CHtml::activeTextField($model, 'QUANTITY', array(
 		'name'=>$namePrefix . '[QUANTITY]',
 	));?>
-	Price: <?php echo CHtml::activeTextField($model, 'PRICE', array(
+	Price Each: <?php echo CHtml::activeTextField($model, 'PRICE', array(
 		'name'=>$namePrefix . '[PRICE]',
 	))?>
 	<?php echo CHtml::activeHiddenField($model, 'ID', array(
