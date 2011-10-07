@@ -28,6 +28,12 @@ class Order extends CActiveRecord
 	{
 		return parent::model($className);
 	}
+	
+	public function __construct($scenario='insert'){
+		parent::__construct($scenario);
+		$this->STATUS = Order::CREATED;
+		$this->created = DateConverter::toDatabaseDate(time(), true);
+	}
 
 	/**
 	 * @return string the associated database table name
