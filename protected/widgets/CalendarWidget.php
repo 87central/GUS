@@ -27,6 +27,11 @@ class CalendarWidget extends CWidget {
 	 */
 	public $droppable;
 	/**
+	 * True if calendar items can be sorted, otherwise false. The dayCss attribute
+	 * must also be set in order for this to work.
+	 */
+	public $sortable;
+	/**
 	 * The css class to be assigned to the container for each day.
 	 */
 	public $dayCss;
@@ -117,7 +122,11 @@ class CalendarWidget extends CWidget {
 		
 		if($this->droppable){
 			$this->droppableScript($this->id, $this->itemCss);
-		}		
+		}	
+		
+		if($this->sortable){
+			$this->sortableScript($this->id, $this->dayCss);
+		}	
 		
 		echo CHtml::openTag('div', $options);
 		
@@ -233,8 +242,17 @@ class CalendarWidget extends CWidget {
 		$script = "" .
 				"$(function(){
 					" .
-					"$(#" . $id . ").droppable({accept: '." . $selector . "'});
+					"$('#".$id."').droppable({accept: '." . $selector . "'});
 				})";
 		Yii::app()->clientScript->registerScript('droppable', $script, CClientScript::POS_BEGIN);
+	}
+	
+	private function sortableScript($id, $selector){
+		$script = "" .
+				"$(function(){
+					" .
+					"$('#".$id." .".$selector."').sortable({revert: true});
+				})";
+		Yii::app()->clientScript->registerScript('sortable', $script, CClientScript::POS_BEGIN);
 	}
 }
