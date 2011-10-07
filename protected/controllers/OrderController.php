@@ -57,6 +57,15 @@ class OrderController extends Controller
 	public function actionCreate()
 	{
 		$model=new Order;
+		$vendors = Vendor::model()->findAll();
+		$products = Product::model()->findAll();
+		$neededProducts = array();
+		foreach($products as $product){
+			if($product->AVAILABLE < 0){
+				$neededProducts[] = $product;
+			}
+		}
+		$neededProductsProvider = new CArrayDataProvider($neededProducts);
 
 		// Uncomment the following line if AJAX validation is needed
 		// $this->performAjaxValidation($model);
@@ -70,6 +79,9 @@ class OrderController extends Controller
 
 		$this->render('create',array(
 			'model'=>$model,
+			'vendors'=>$vendors,
+			'products'=>$products,
+			'neededProductsProvider'=>$neededProductsProvider,
 		));
 	}
 
@@ -81,6 +93,15 @@ class OrderController extends Controller
 	public function actionUpdate($id)
 	{
 		$model=$this->loadModel($id);
+		$vendors = Vendor::model()->findAll();
+		$products = Product::model()->findAll();
+		$neededProducts = array();
+		foreach($products as $product){
+			if($product->AVAILABLE < 0){
+				$neededProducts[] = $product;
+			}
+		}
+		$neededProductsProvider = new CArrayDataProvider($neededProducts);
 
 		// Uncomment the following line if AJAX validation is needed
 		// $this->performAjaxValidation($model);
@@ -94,6 +115,9 @@ class OrderController extends Controller
 
 		$this->render('update',array(
 			'model'=>$model,
+			'vendors'=>$vendors,
+			'products'=>$products,
+			'neededProductsProvider'=>$neededProductsProvider,
 		));
 	}
 
