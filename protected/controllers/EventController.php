@@ -27,7 +27,7 @@ class EventController extends Controller
 				'users'=>array('*'),
 			),
 			array('allow', // allow authenticated user to perform 'create' and 'update' actions
-				'actions'=>array('schedule','employeeSchedule'),
+				'actions'=>array('schedule','employeeSchedule', 'assign'),
 				'users'=>array('@'),
 			),
 			array('allow', // allow admin user to perform 'admin' and 'delete' actions
@@ -58,6 +58,7 @@ class EventController extends Controller
 			$schedule = $this->findWeekSchedule($emp->ID);
 			$resultEmps[$emp->FIRST] = $this->renderPartial('_employee', array(
 				'calendarData'=>$schedule,
+				'employee'=>$emp,
 			), true);
 		}
 		$this->render('schedule', array(
@@ -65,25 +66,30 @@ class EventController extends Controller
 			'employees'=>$resultEmps,
 		));
 	}
-
+	
 	/**
-	 * Lists all models.
+	 * Assigns an event to a user to be completed on a given day.
 	 */
-	public function actionEmployeeSchedule($employee_id)
-	{
-		$lastSunday = strtotime('last sunday', time());
-		$secondsPerWeek = 24*60*60*7;
-		$nextSaturday = $lastSunday + $secondsPerWeek - 1;
-		$jobsThisWeek = EventLog::model()->findAllByAttributes(array(
-			'USER_ASSIGNED'=>$employee_id,
-			'OBJECT_TYPE'=>'Job',		
-			'EVENT_ID'=>EventLog::JOB_DUE,	
-		), '`DATE` BETWEEN FROM_UNIXTIME(' . $lastSunday . ') AND FROM_UNIXTIME(' . $nextSaturday . ')');
-		
-		$currentWeek = $this->resultToCalendarData($jobsThisWeek);
-		$this->renderPartial('_employee',array(
-			'calendarData'=>$currentWeek,
-		));
+	public function actionAssign(){
+		if(Yii::app()->request->isPostRequest){
+			$event_id = $_POST['id'];
+			$emp_id = $_POST['emp_id'];
+			$date = $_POST['date'];
+			
+			$model = EventLog::model()->findByPk((int) $event_id);
+			$model->USER_ASSIGNED = $emp_id;
+			$model->DATE = $date;
+			if($model->save()){
+				$employee = User::model()->findByPk((int) $emp_id);
+				$schedule = $this->findWeekSchedule($employee->ID);
+				$this->renderPartial('_employee', array(
+					'calendarData'=>$schedule,
+					'employee'=>$employee,
+				));
+			} else {
+				throw new CException('Could not assign the event.');
+			}
+		}
 	}
 	
 	private function resultToCalendarData($result){
@@ -98,7 +104,8 @@ class EventController extends Controller
 	}
 	
 	/**
-	 * Gets an employee's schedule, appropriate for a calendar widget.
+	 * Gets an employee's schedule, appropriate for a calendar widget. If there is nothing
+	 * on the schedule, the data returned will simply contain today's date.
 	 * @param string $employee_id The ID of the employee whose schedule should be retrieved.
 	 * @param int $weekOffset The number of weeks from the current week to find in the schedule.
 	 */
@@ -115,6 +122,12 @@ class EventController extends Controller
 		), '`DATE` BETWEEN FROM_UNIXTIME(' . $lastSunday . ') AND FROM_UNIXTIME(' . $nextSaturday . ')');
 		
 		$currentWeek = $this->resultToCalendarData($jobsThisWeek);
+		if(count($currentWeek) == 0){
+			$currentWeek[date('l')] = array(
+				'items'=>array(),
+				'date'=>time(),
+			);
+		}
 		return $currentWeek;
 	}
 }
