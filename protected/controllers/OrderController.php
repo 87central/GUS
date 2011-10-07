@@ -26,7 +26,7 @@ class OrderController extends Controller
 				'users'=>array('*'),
 			),
 			array('allow', // allow authenticated user to perform 'create' and 'update' actions
-				'actions'=>array('create','update', 'checkin'),
+				'actions'=>array('create','update', 'checkin', 'newLine'),
 				'users'=>array('@'),
 			),
 			array('allow', // allow admin user to perform 'admin' and 'delete' actions
@@ -65,7 +65,9 @@ class OrderController extends Controller
 				$neededProducts[] = $product;
 			}
 		}
-		$neededProductsProvider = new CArrayDataProvider($neededProducts);
+		$neededProductsProvider = new CArrayDataProvider($neededProducts, array(
+			'keyField'=>'ID',
+		));
 
 		// Uncomment the following line if AJAX validation is needed
 		// $this->performAjaxValidation($model);
@@ -101,7 +103,9 @@ class OrderController extends Controller
 				$neededProducts[] = $product;
 			}
 		}
-		$neededProductsProvider = new CArrayDataProvider($neededProducts);
+		$neededProductsProvider = new CArrayDataProvider($neededProducts, array(
+			'keyField'=>'ID',
+		));
 
 		// Uncomment the following line if AJAX validation is needed
 		// $this->performAjaxValidation($model);
@@ -195,16 +199,18 @@ class OrderController extends Controller
 		$count = $_POST['count'];
 		$status = $_POST['status'];
 		$products = Product::model()->findAll();
-		$products = CHtml::listData($products, 'ID', 'TEXT');
+		$products = CHtml::listData($products, 'ID', 'summary');
 		$model = new ProductOrder;
 		if($id){
+			$product = Product::model()->findByPk((int) $id);
+			$model->QUANTITY_ORDERED = $product->AVAILABLE * -1;
 			$model->PRODUCT_ID = $id;	
 		}
 		
-		$this->renderPartial('//ProductOrder/_orderForm', array(
+		$this->renderPartial('//productOrder/_orderForm', array(
 			'products'=>$products,
 			'namePrefix'=>$namePrefix . '[' . $count . ']',
-			'model'=>new ProductOrder,
+			'model'=>$model,
 			'orderStatus'=>$status,
 		));
 	}
