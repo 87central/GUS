@@ -27,6 +27,13 @@ class CalendarWidget extends CWidget {
 	 */
 	public $droppable;
 	/**
+	 * The javascript function to be called when an item is dropped onto a day.
+	 * The function will receive arguments for the draggable that was dropped, a
+	 * jquery object for the day on which the draggable was dropped, and the date
+	 * on which the draggable was dropped, in the format mm/dd/yyyy. 
+	 */
+	public $onDrop = null;
+	/**
 	 * True if calendar items can be sorted, otherwise false. The dayCss attribute
 	 * must also be set in order for this to work.
 	 */
@@ -139,6 +146,12 @@ class CalendarWidget extends CWidget {
 			}			
 			$id = array($this->id, strtolower($dayName)); //$id is array
 			$options = $this->createOptions($classes, $id);
+			
+			//associate the date string for retrieval if something is dropped on a day
+			Yii::app()->clientScript->registerScript($options['id'].'-data', "" .
+					"\$('#".$options['id']."').data('date', '".date('d/m/Y', $info['date'])."');", 
+			CClientScript::POS_END);
+			
 			echo CHtml::openTag('div', $options);
 			
 			$this->renderDay($dayName, $info['items'], $info['date']);
@@ -170,7 +183,8 @@ class CalendarWidget extends CWidget {
 		echo CHtml::closeTag('div');
 		
 		$id = array($this->id, strtolower($name), 'items');
-		$options = $this->createOptions(array(), $id);
+		$classes = array('ui-cal-items');
+		$options = $this->createOptions($classes, $id);
 		echo CHtml::openTag('div', $options);
 		$i = 0;
 		foreach($items as $item){
@@ -239,20 +253,33 @@ class CalendarWidget extends CWidget {
 	}
 	
 	private function droppableScript($id, $selector){
-		$script = "" .
-				"$(function(){
-					" .
-					"$('#".$id."').droppable({accept: '." . $selector . "'});
-				})";
-		Yii::app()->clientScript->registerScript('droppable', $script, CClientScript::POS_BEGIN);
+		$secondsPerDay = 60*60*24;
+		for($date = 0, $i = 0; $i < 7; $i++, $date+=$secondsPerDay){
+			$droppableID = $id . '-' . strtolower($this->getWeekdayName($date)) . '-items';
+		
+			$script = "" .
+					"$(function(){
+						" .
+						"$('#".$droppableID."').droppable({accept: '." . $selector . "', tolerance: 'pointer'," .
+								($this->onDrop == null ? "" : "drop: function(event, data){var exec = ".$this->onDrop."; exec(data.draggable, \$(this).parent(), \$(this).parent().data('date'));}, ") .
+								"greedy: true});						
+					})";
+			
+			Yii::app()->clientScript->registerScript($droppableID . '-droppable', $script, CClientScript::POS_END);
+		}
 	}
 	
 	private function sortableScript($id, $selector){
-		$script = "" .
-				"$(function(){
-					" .
-					"$('#".$id." .".$selector."').sortable({revert: true});
-				})";
-		Yii::app()->clientScript->registerScript('sortable', $script, CClientScript::POS_BEGIN);
+		$secondsPerDay = 60*60*24;
+		for($date = 0, $i = 0; $i < 7; $i++, $date+=$secondsPerDay){
+			$sortableID = $id . '-' . strtolower($this->getWeekdayName($date)) . '-items';
+			
+			$script = "" .
+					"$(function(){
+						" .
+						"$('#".$sortableID." .".$selector."').sortable({revert: true});
+					})";
+			Yii::app()->clientScript->registerScript($sortableID . '-sortable', $script, CClientScript::POS_END);
+		}
 	}
 }
