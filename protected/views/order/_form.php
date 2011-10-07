@@ -7,13 +7,29 @@ Yii::app()->clientScript->registerScript('add-line', "function addLine(sender, n
 		"data: {
 			namePrefix: namePrefix," .
 			"count: $(sender).parent().children('.orderLine').size()," .
-			"status: status,
+			"status: status == null ? '' : status,
 		}," .
 		"success: function(data){
 			$(sender).before(data);
 		},
 	});
 }", CClientScript::POS_BEGIN);
+Yii::app()->clientScript->registerScript('add-line-with-product', "function addLineWithProduct(sender, namePrefix, status, product, checkbox){
+	$.ajax({
+		url: '".CHtml::normalizeUrl(array('order/newLine', 'id'=>''))."' + product," .
+		"type: 'POST'," .
+		"data: {
+			namePrefix: namePrefix," .
+			"count: $(sender).parent().children('.orderLine').size()," .
+			"status: status == null ? '' : status,
+		}," .
+		"success: function(data){
+			$(sender).before(data);" .
+			"$(checkbox).parentsUntil('tr').parent().remove();
+		},
+	});
+}", CClientScript::POS_BEGIN);
+
 Yii::app()->clientScript->registerCssFile($this->styleDirectory . 'order_form');
 ?>
 
@@ -64,7 +80,7 @@ Yii::app()->clientScript->registerCssFile($this->styleDirectory . 'order_form');
 			}
 		}?>
 		<?php echo CHtml::button('Add Line', array(
-			'onclick'=>"addLine(this, '".CHtml::activeName($model, 'lines')."', ".$model->STATUS.");",
+			'onclick'=>"addLine(this, '".CHtml::activeName($model, 'lines')."', ".($model->STATUS == null ? 'null' : $model->STATUS).");",
 		));?>
 	</div>	
 
@@ -83,7 +99,7 @@ Yii::app()->clientScript->registerCssFile($this->styleDirectory . 'order_form');
 			'columns'=>array(
 				array(
 					'class'=>'CCheckBoxColumn',
-					'value'=>"\data->ID",					
+					'value'=>"\$data->ID",					
 				),
 				'summary::Product Summary',
 				array(
@@ -91,8 +107,13 @@ Yii::app()->clientScript->registerCssFile($this->styleDirectory . 'order_form');
 					'value'=>"\$data->AVAILABLE * -1", //we will only be getting products with negative inventory
 				),
 			),
+			'selectableRows'=>2,
 		));
 		
-		echo CHtml::button('Add Checked Products');
+		echo CHtml::button('Add Checked Products', array(
+			'onclick'=>"$('.products tbody :checked').each(function(index){
+				addLineWithProduct($('#lines').children(':button').first()[0], '".CHtml::activeName($model, 'lines')."', ".($model->STATUS == null ? 'null' : $model->STATUS).", $(this).val(), this);
+			});"
+		));
 	?>
 </div>
