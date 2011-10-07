@@ -1,0 +1,8 @@
+.ui-widget-header {
+	height: 2.5em;
+}
+
+.calendar_item {
+	z-index: 3;
+	cursor: move;
+}
