@@ -159,4 +159,16 @@ class JobLine extends CActiveRecord
 	public function setStyle($value){
 		$this->_style = $value;
 	}
+	
+	/**
+	 * Approves the job line, which subtracts from inventory.
+	 */
+	public function approve(){
+		$this->APPROVAL_USER = Yii::app()->user->id;
+		$this->APPROVAL_DATE = DateConverter::toDatabaseDate(time(), true);
+		$product = $this->product;
+		$product->AVAILABLE -= $this->QUANTITY;
+		$product->save();
+		$this->save();
+	}
 }
