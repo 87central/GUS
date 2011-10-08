@@ -27,7 +27,7 @@ class EventController extends Controller
 				'users'=>array('*'),
 			),
 			array('allow', // allow authenticated user to perform 'create' and 'update' actions
-				'actions'=>array('schedule','employeeSchedule', 'assign'),
+				'actions'=>array('schedule','employeeSchedule', 'assign', 'unassign'),
 				'users'=>array('@'),
 			),
 			array('allow', // allow admin user to perform 'admin' and 'delete' actions
@@ -75,6 +75,7 @@ class EventController extends Controller
 			$event_id = $_POST['id'];
 			$emp_id = $_POST['emp_id'];
 			$date = $_POST['date'];
+			$calendar_id = $_POST['calendar_id'];
 			
 			$model = EventLog::model()->findByPk((int) $event_id);
 			$model->USER_ASSIGNED = $emp_id;
@@ -85,10 +86,25 @@ class EventController extends Controller
 				$this->renderPartial('_employee', array(
 					'calendarData'=>$schedule,
 					'employee'=>$employee,
+					'calendar_id'=>$calendar_id,
 				));
 			} else {
 				throw new CException('Could not assign the event.');
 			}
+		}
+	}
+	
+	/**
+	 * Unassigned an event from a user.
+	 */
+	public function actionUnassign(){
+		if(Yii::app()->request->isPostRequest){
+			$event_id = $_POST['id'];
+			
+			$model = EventLog::model()->findByPk((int) $event_id);
+			$model->USER_ASSIGNED = null;
+			$model->DATE = null;
+			$model->save();
 		}
 	}
 	
