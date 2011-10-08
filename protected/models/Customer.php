@@ -147,7 +147,7 @@ class Customer extends CActiveRecord
 	} 
 	
 	public function __set($name, $value){
-		if($name === 'ID'){
+		if($name === 'ID' || !$this->userModel->hasAttribute($name)){
 			//if setting primary key, set that of the customer, not of the user.
 			parent::__set($name, $value);
 		} else {
