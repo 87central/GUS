@@ -6,7 +6,7 @@
 
 	<div class="row">
 		<?php echo CHtml::activeLabelEx($model,'PASS'); ?>
-		<?php echo CHtml::activeTextField($model,'PASS'); ?>
+		<?php echo CHtml::activeTextField($model,'PASS', array('class'=>'score_pass')); ?>
 		<?php echo CHtml::error($model,'PASS'); ?>
 	</div>
 

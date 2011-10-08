@@ -15,7 +15,8 @@
 	));?>
 	Quantity: <?php echo CHtml::activeTextField($model, 'QUANTITY', array(
 		'name'=>$namePrefix . '[QUANTITY]',
-		'onkeyup'=>"$('".$total."').val((1 * $('".$qty."').val()) * $('".$price."').val()).change();"
+		'onkeyup'=>"$('".$total."').val((1 * $('".$qty."').val()) * $('".$price."').val()).change();",
+		'class'=>'score_part',
 	));?>
 	Price Each: <?php echo CHtml::activeTextField($model, 'PRICE', array(
 		'name'=>$namePrefix . '[PRICE]',
@@ -24,7 +25,7 @@
 	<?php echo CHtml::activeHiddenField($model, 'ID', array(
 		'name'=>$namePrefix . '[ID]',
 	));?>
-	<?php echo CHtml::textField('total', $model->total, array(
+	<?php echo CHtml::hiddenField('total', $model->total, array(
 		'class'=>'part',
 		'id'=>CHtml::getIdByName($namePrefix),
 		'readonly'=>'readonly',

@@ -136,6 +136,26 @@ Yii::app()->clientScript->registerScript('add-job', "function addLine(sender, na
 				})", 
 		CClientScript::POS_END);?>
 	</div>
+	
+	<div class="row">
+		<?php echo CHtml::hiddenField('score_base', 30, array('class'=>'score_base'));?>
+		<?php echo $form->labelEx($model, 'SCORE');?>
+		<?php echo CHtml::textField('score', $model->score, array(
+			'id'=>'score',
+			'readonly'=>'readonly',
+		));?>
+		<?php Yii::app()->clientScript->registerScript('auto-score', "" .
+				"$('.score_part, .score_pass').live('change keyup', function(){
+					var base = 1 * $('.score_base').val();" .
+					"var passes = 1 * $('.score_pass').val();" .
+					"var qty = 0;" .
+					"$('.score_part').each(function(index){
+						qty += 1 * $(this).val();
+					});" .
+					"$('#score').val(base + (passes * qty));
+				});", 
+		CClientScript::POS_END);?>
+	</div>
 
 	<div class="row">
 		<?php echo $form->labelEx($model,'QUOTE'); ?>

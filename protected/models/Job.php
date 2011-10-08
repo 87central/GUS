@@ -328,10 +328,24 @@ class Job extends CActiveRecord
 	 * Gets the total cost (for the customer) of the job.
 	 */
 	public function getTotal(){
-		$lines = 0;
+		$lines = 0; //for total cost of all lines
 		foreach($this->jobLines as $line){
 			$lines += $line->total;
 		}
 		return $lines + $this->SET_UP_FEE + $this->printJob->COST;
+	}
+	
+	/**
+	 * Gets the score of the job. The score is essentially a time
+	 * estimate, in minutes, of how long the job will take.
+	 */
+	public function getScore(){
+		$base = 30; //Ben's request
+		$passes = $this->printJob->PASS;
+		$lines = 0; //for quantity of all lines
+		foreach($this->jobLines as $line) {
+			$lines += $line->QUANTITY;
+		}
+		return $base + $passes * $lines;
 	}
 }
