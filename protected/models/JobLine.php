@@ -171,4 +171,11 @@ class JobLine extends CActiveRecord
 		$product->save();
 		$this->save();
 	}
+	
+	/**
+	 * Gets the total cost of the job line.
+	 */
+	public function getTotal(){
+		return $this->PRICE * $this->QUANTITY;
+	}
 }

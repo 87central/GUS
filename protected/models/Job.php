@@ -323,4 +323,15 @@ class Job extends CActiveRecord
 	public function getHasSizes(){
 		return true;
 	}
+	
+	/**
+	 * Gets the total cost (for the customer) of the job.
+	 */
+	public function getTotal(){
+		$lines = 0;
+		foreach($this->jobLines as $line){
+			$lines += $line->total;
+		}
+		return $lines + $this->SET_UP_FEE + $this->printJob->COST;
+	}
 }

@@ -1,3 +1,8 @@
+<?php /*vars for JS calculations*/?>
+<?php $total = '#'.CHtml::getIdByName($namePrefix);?>
+<?php $qty = '#'.CHtml::getIdByName($namePrefix . '[QUANTITY]');?>
+<?php $price = '#'.CHtml::getIdByName($namePrefix . '[PRICE]');?>
+
 <div class="jobLine">
 	Style: <?php echo CHtml::activeDropDownList($model, 'style', $styles, array(
 		'name'=>$namePrefix . '[style]',
@@ -10,11 +15,18 @@
 	));?>
 	Quantity: <?php echo CHtml::activeTextField($model, 'QUANTITY', array(
 		'name'=>$namePrefix . '[QUANTITY]',
+		'onkeyup'=>"$('".$total."').val((1 * $('".$qty."').val()) * $('".$price."').val()).change();"
 	));?>
 	Price Each: <?php echo CHtml::activeTextField($model, 'PRICE', array(
 		'name'=>$namePrefix . '[PRICE]',
+		'onkeyup'=>"$('".$total."').val((1 * $('".$qty."').val()) * $('".$price."').val()).change();"
 	))?>
 	<?php echo CHtml::activeHiddenField($model, 'ID', array(
 		'name'=>$namePrefix . '[ID]',
+	));?>
+	<?php echo CHtml::textField('total', $model->total, array(
+		'class'=>'part',
+		'id'=>CHtml::getIdByName($namePrefix),
+		'readonly'=>'readonly',
 	));?>
 </div>

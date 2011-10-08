@@ -119,8 +119,22 @@ Yii::app()->clientScript->registerScript('add-job', "function addLine(sender, na
 
 	<div class="row">
 		<?php echo $form->labelEx($model,'SET_UP_FEE'); ?>
-		<?php echo $form->textField($model,'SET_UP_FEE',array('size'=>6,'maxlength'=>6)); ?>
+		<?php echo $form->textField($model,'SET_UP_FEE',array('size'=>6,'maxlength'=>6, 'class'=>'part')); ?>
 		<?php echo $form->error($model,'SET_UP_FEE'); ?>
+	</div>
+	
+	<div class="row">
+		<?php echo CHtml::label('Auto Quote Total', 'auto_total');?>
+		<?php echo CHtml::textField('auto_total', $model->total, array('readonly'=>'readonly', 'id'=>'auto_total'));?>
+		<?php Yii::app()->clientScript->registerScript('auto-totaler', "" .
+				"$('.part').live('change keyup', function(){
+					var total = 0;" .
+					"$('.part').each(function(index){
+						total += (1 * $(this).val());
+					});" .
+					"$('#auto_total').val(total);
+				})", 
+		CClientScript::POS_END);?>
 	</div>
 
 	<div class="row">

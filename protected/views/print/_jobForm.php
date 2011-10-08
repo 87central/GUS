@@ -18,7 +18,7 @@
 
 	<div class="row">
 		<?php echo CHtml::activeLabelEx($model,'COST'); ?>
-		<?php echo CHtml::activeTextField($model,'COST',array('size'=>6,'maxlength'=>6)); ?>
+		<?php echo CHtml::activeTextField($model,'COST',array('size'=>6,'maxlength'=>6, 'class'=>'part')); ?>
 		<?php echo CHtml::error($model,'COST'); ?>
 	</div>
 
