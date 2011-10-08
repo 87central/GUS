@@ -9,11 +9,31 @@ Yii::app()->clientScript->registerCoreScript('jquery');
 <div class="separator"></div>
 
 <h2>UNSCHEDULED JOBS</h2>
-<div id="unscheduled">
+<?php $this->beginWidget('zii.widgets.jui.CJuiDroppable', array(
+	'id'=>'unscheduled',
+	'options'=>array(
+		'accept'=>'.calendar_item',
+		'drop'=>"js:function(event, data){
+			$.ajax({
+				url: '".CHtml::normalizeUrl(array('event/unassign'))."'," .
+				"type: 'POST'," .
+				"data: {
+					id: data.draggable.find(':hidden').val(),
+				},
+			});" .
+			"$(data.draggable).appendTo('#unscheduled').css('left', '').css('top', '');" .
+			"
+		}",
+		'tolerance'=>'pointer',
+	),
+));?>
 	<?php foreach($unscheduled as $event){?>
 		<?php $draggable = $this->beginWidget('zii.widgets.jui.CJuiDraggable', array(
 			'htmlOptions'=>array(
 				'class'=>'calendar_item',
+			),
+			'options'=>array(
+				'connectToSortable'=>'.sortable',
 			),
 		));?>
 		
@@ -29,7 +49,7 @@ Yii::app()->clientScript->registerCoreScript('jquery');
 		
 		<?php $this->endWidget();?>
 	<?php }?>
-</div>
+<?php $this->endWidget();?>
 
 <?php 
 $this->widget('zii.widgets.jui.CJuiTabs', array(
