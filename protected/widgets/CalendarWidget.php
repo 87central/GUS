@@ -66,6 +66,20 @@ class CalendarWidget extends CWidget {
 	 * The css class to be assigned to the entire widget.
 	 */
 	public $containerCss;
+	
+	/**
+	 * The list of scripts which need to be run in order to faciliate dropping
+	 * and sorting.
+	 */
+	private $scripts = array();
+	
+	/**
+	 * Gets the name of the JavaScript function (with parens) which needs to be called
+	 * to initalize the front-end functionality of the calendar.
+	 */
+	public function getInitializeFunction(){
+		return $this->id . 'calendarInit()';
+	}
 	 
 	/**
 	 * Normalizes the items in our data collection. This involves ensuring that all
@@ -131,14 +145,6 @@ class CalendarWidget extends CWidget {
 			$options = array('id'=>$this->id, 'class'=>$this->containerCss . ' ui-cal');
 		}
 		
-		if($this->droppable){
-			$this->droppableScript($this->id, $this->itemCss);
-		}	
-		
-		if($this->sortable){
-			$this->sortableScript($this->id, $this->dayCss);
-		}	
-		
 		echo CHtml::openTag('div', $options);
 		
 		//render each day. a base style should be associated with each but extended by the dayCss and hoverCss classes.
@@ -152,9 +158,7 @@ class CalendarWidget extends CWidget {
 			$options = $this->createOptions($classes, $id);
 			
 			//associate the date string for retrieval if something is dropped on a day
-			Yii::app()->clientScript->registerScript($options['id'].'-data', "" .
-					"\$('#".$options['id']."').data('date', '".date('m/d/Y', $info['date'])."');", 
-			CClientScript::POS_END);
+			$this->scripts[] = "\$('#".$options['id']."').data('date', '".date('m/d/Y', $info['date'])."');";
 			
 			echo CHtml::openTag('div', $options);
 			
@@ -164,6 +168,24 @@ class CalendarWidget extends CWidget {
 		}
 		
 		echo CHtml::closeTag('div');
+		
+		$hasScripts = false;
+		
+		if($this->droppable){
+			$this->droppableScript($this->id, $this->itemCss);
+			$sortCss = $this->sortable ? $this->dayCss : null;
+			$this->draggableScript($this->id, $this->itemCss, $sortCss);
+			$hasScripts = true;
+		}	
+		
+		if($this->sortable){
+			$this->sortableScript($this->id, $this->dayCss);
+			$hasScripts = true;
+		}	
+		
+		if($hasScripts){
+			$this->finalizeScripts();
+		}
 	}
 	
 	/**
@@ -256,20 +278,30 @@ class CalendarWidget extends CWidget {
 		return date('w', $date);
 	}
 	
+	private function draggableScript($id, $selector, $sortableCss){
+		$secondsPerDay = 60*60*24;
+		for($date = 0, $i = 0; $i < 7; $i++, $date+=$secondsPerDay){
+			$droppableID = $id . '-' . strtolower($this->getWeekdayName($date)) . '-items';
+		
+			$script = "$('#".$droppableID."').children('.".$selector."')";
+			if($sortableCss){
+				$script .= ".draggable({connectToSortable: '.".$sortableCss."'});";
+			} else {
+				$script .= ".draggable();";
+			}
+			$this->scripts[] = $script;
+		}
+	}
+	
 	private function droppableScript($id, $selector){
 		$secondsPerDay = 60*60*24;
 		for($date = 0, $i = 0; $i < 7; $i++, $date+=$secondsPerDay){
 			$droppableID = $id . '-' . strtolower($this->getWeekdayName($date)) . '-items';
 		
-			$script = "" .
-					"$(function(){
-						" .
-						"$('#".$droppableID."').droppable({accept: '." . $selector . "', tolerance: 'pointer'," .
+			$script = "$('#".$droppableID."').droppable({accept: '." . $selector . "', tolerance: 'pointer'," .
 								($this->onDrop == null ? "" : "drop: function(event, data){var exec = ".$this->onDrop."; exec(data.draggable, \$(this).parent(), \$(this).parent().data('date'));}, ") .
-								"greedy: true});						
-					})";
-			
-			Yii::app()->clientScript->registerScript($droppableID . '-droppable', $script, CClientScript::POS_END);
+								"greedy: true});";
+			$this->scripts[] = $script;
 		}
 	}
 	
@@ -278,12 +310,19 @@ class CalendarWidget extends CWidget {
 		for($date = 0, $i = 0; $i < 7; $i++, $date+=$secondsPerDay){
 			$sortableID = $id . '-' . strtolower($this->getWeekdayName($date)) . '-items';
 			
-			$script = "" .
-					"$(function(){
-						" .
-						"$('#".$sortableID." .".$selector."').sortable({revert: true});
-					})";
-			Yii::app()->clientScript->registerScript($sortableID . '-sortable', $script, CClientScript::POS_END);
+			$script = "$('#".$sortableID." .".$selector."').sortable({revert: true});";
+			$this->scripts[] = $script;
 		}
+	}
+	
+	/**
+	 * Does the final registration of all of the scripts.
+	 */
+	private function finalizeScripts(){
+		$finalScript = implode($this->scripts, ';');
+		$finalScript = 'function '.$this->initializeFunction."{".$finalScript."}";
+		Yii::app()->clientScript->registerScript('calendar-init-fn-'.$this->id, $finalScript, CClientScript::POS_END);
+		$finalScript = $this->initializeFunction . ';';
+		Yii::app()->clientScript->registerScript('calendar-init-call-'.$this->id, $finalScript, CClientScript::POS_END);
 	}
 }
