@@ -27,6 +27,8 @@ class Product extends CActiveRecord
 	const ORDERED = 17; //no inventory, ordered
 	const BACKORDERED = 18; //backordered by supplier(s)
 	const NO_STOCK = 19; //no inventory, not ordered
+	const PLACEHOLDER = 32; //basically a temporary stock item, which,
+							//if ordered, becomes a permanent stock item.
 	
 	/**
 	 * Returns the static model of the specified AR class.
