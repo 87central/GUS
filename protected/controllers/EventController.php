@@ -50,7 +50,7 @@ class EventController extends Controller
 		$unscheduled = EventLog::model()->findAllByAttributes(array(
 			'USER_ASSIGNED'=>null,
 			'OBJECT_TYPE'=>'Job',		
-			'EVENT_ID'=>EventLog::JOB_DUE,	
+			'EVENT_ID'=>EventLog::JOB_PRINT,	
 		));
 		$employees = User::listUsersWithRole(User::DEFAULT_ROLE);
 		$resultEmps = array();
@@ -134,7 +134,7 @@ class EventController extends Controller
 		$jobsThisWeek = EventLog::model()->findAllByAttributes(array(
 			'USER_ASSIGNED'=>$employee_id,
 			'OBJECT_TYPE'=>'Job',		
-			'EVENT_ID'=>EventLog::JOB_DUE,	
+			'EVENT_ID'=>EventLog::JOB_PRINT,	
 		), '`DATE` BETWEEN FROM_UNIXTIME(' . $lastSunday . ') AND FROM_UNIXTIME(' . $nextSaturday . ')');
 		
 		$currentWeek = $this->resultToCalendarData($jobsThisWeek);
