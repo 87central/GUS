@@ -82,7 +82,7 @@ Yii::app()->clientScript->registerScript('add-job', "function addLine(sender, na
 	?>
 	
 	<div id="lines" class="row">
-		<?php  
+		<?php
 		if($model->isNewRecord){
 			$this->renderPartial('//jobLine/_form', array(
 				'sizes'=>$sizeList,
@@ -90,16 +90,19 @@ Yii::app()->clientScript->registerScript('add-job', "function addLine(sender, na
 				'styles'=>$styleList,
 				'namePrefix'=>CHtml::activeName($model, 'jobLines') . '[0]',
 				'model'=>new JobLine,
+				'formatter'=>new Formatter,
 			));
 		} else {
 			$index = 0;
 			foreach($model->jobLines as $line){
-				$this->renderPartial('//jobLine/_form', array(
+				$view = !Yii::app()->user->getState('isAdmin') && $line->isApproved ? '//jobLine/_view' : '//jobLine/_form';
+				$this->renderPartial($view, array(
 					'sizes'=>$sizeList,
 					'colors'=>$colorList,
 					'styles'=>$styleList,
 					'namePrefix'=>CHtml::activeName($model, 'jobLines') . '[' . $index . ']',
 					'model'=>$line,
+					'formatter'=>new Formatter,
 				));
 				$index++;
 			}
