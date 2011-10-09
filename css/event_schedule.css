@@ -6,3 +6,26 @@
 	z-index: 3;
 	cursor: move;
 }
+
+#unscheduled {
+	min-height: 9em;
+	color: gray;
+	border: 3px solid gray;
+	text-align: center;
+	background-image:url('../images/unscheduled.png');
+	background-position: center center;
+	background-repeat: no-repeat;
+}
+
+.unscheduled, #unscheduled .ui-cal-item{
+	display: block;
+	float: left;
+	width: 112px;
+	background-color: #00FFFF;
+	color: black;
+	margin: 3px;
+}
+
+.expander {
+	margin-top: 10px;
+}

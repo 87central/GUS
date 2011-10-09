@@ -15,7 +15,10 @@
 }
 
 .ui-cal-item {
-	
+	background-color: black;
+	color: white;
+	width: 112px;
+	float: left;
 }
 
 .ui-cal {
