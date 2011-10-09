@@ -24,6 +24,10 @@ class JobLine extends CActiveRecord
 	private $_color; //id of the color lookup item
 	private $_size; //id of the size lookup item
 	private $_style; //id of the style lookup item
+	private $_oldQuantity = 0;
+	private $_oldProductID;
+	private $_changed;
+	
 	
 	/**
 	 * Returns the static model of the specified AR class.
@@ -32,6 +36,74 @@ class JobLine extends CActiveRecord
 	public static function model($className=__CLASS__)
 	{
 		return parent::model($className);
+	}
+	
+	protected function afterFind(){
+		$this->_oldQuantity = $this->QUANTITY;
+		$this->_oldProductID = $this->PRODUCT_ID;
+		$product = $this->product;
+		if($product){
+			$this->_color = $product->COLOR;
+			$this->_style = $product->STYLE;
+			$this->_size = $product->SIZE;
+		}
+	}
+	
+	protected function beforeSave(){
+		/*Because lines may be modified by admins AFTER they are approved,
+		 * we need to adjust the inventory quantity appropriately if the quantity changes.
+		 * We also need to ensure that the product described does exist. If not, we will
+		 * create a placeholder stock item.*/
+		
+		if($this->_oldProductID !== null){
+			if($this->_oldProductID != $this->PRODUCT_ID){
+				$oldProduct = Product::model()->findByPk((int) $this->_oldProductID);
+			} else {
+				$oldProduct = $this->product;
+			}
+		}
+		
+		if($oldProduct && $this->isApproved){
+			$oldProduct->AVAILABLE += $this->_oldQuantity;
+		}
+		
+		$newProduct = Product::model()->findByAttributes(array(
+			'COLOR'=>$this->_color,
+			'STYLE'=>$this->_style,
+			'SIZE'=>$this->_size,
+		));
+		
+		if($newProduct === null){
+			$newProduct = new Product;
+			$newProduct->COLOR = $this->_color;
+			$newProduct->STYLE = $this->_style;
+			$newProduct->SIZE = $this->_size;
+			$newProduct->STATUS = Product::PLACEHOLDER;
+			if($this->isApproved){
+				$newProduct->AVAILABLE = 0 - $this->QUANTITY;
+			}			
+		} else {
+			if($newProduct->ID == $this->product->ID){
+				$newProduct = $this->product;
+			}
+			if($this->isApproved){			
+				$newProduct->AVAILABLE -= $this->QUANTITY;
+			}
+		}		
+		if(parent::beforeSave() && $newProduct->save() && ($oldProduct == null || $oldProduct->save())){
+			$this->PRODUCT_ID = $newProduct->ID;
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
+	protected function beforeDelete(){
+		$product = $this->product;
+		if($this->isApproved){
+			$product->AVAILABLE += $this->QUANTITY;
+		}
+		return parent::beforeDelete() && $product->save();
 	}
 
 	/**
@@ -52,6 +124,8 @@ class JobLine extends CActiveRecord
 		return array(
 			array('JOB_ID, PRODUCT_ID, QUANTITY, APPROVAL_USER', 'numerical', 'integerOnly'=>true),
 			array('APPROVAL_DATE', 'safe'),
+			array('PRICE', 'numerical'),
+			array('color, size, style', 'numerical'),
 			// The following rule is used by search().
 			// Please remove those attributes that should not be searched.
 			array('ID, JOB_ID, PRODUCT_ID, QUANTITY, PRICE, APPROVAL_DATE, APPROVAL_USER', 'safe', 'on'=>'search'),
@@ -125,6 +199,7 @@ class JobLine extends CActiveRecord
 	}
 	
 	public function setColor($value){
+		$this->_changed = $value != $this->_color;
 		$this->_color = $value;
 	}
 	
@@ -141,6 +216,7 @@ class JobLine extends CActiveRecord
 	}
 	
 	public function setSize($value){
+		$this->_changed = $value != $this->_size;
 		$this->_size = $value;
 	}
 	
@@ -157,19 +233,35 @@ class JobLine extends CActiveRecord
 	}
 	
 	public function setStyle($value){
+		$this->_changed = $value != $this->_style;
 		$this->_style = $value;
 	}
 	
 	/**
 	 * Approves the job line, which subtracts from inventory.
+	 * Returns true if approved successfully.
 	 */
 	public function approve(){
 		$this->APPROVAL_USER = Yii::app()->user->id;
-		$this->APPROVAL_DATE = DateConverter::toDatabaseDate(time(), true);
+		$this->APPROVAL_DATE = DateConverter::toDatabaseTime(time(), true);
 		$product = $this->product;
 		$product->AVAILABLE -= $this->QUANTITY;
-		$product->save();
-		$this->save();
+		$value = $product->save();
+		$value = $value && $this->save();
+		return $value;
+	}
+	
+	/**
+	 * Unapproves the job line, which adds back to inventory.
+	 */
+	public function unapprove(){
+		$this->APPROVAL_USER = null;
+		$this->APPROVAL_DATE = null;
+		$product = $this->product;
+		$product->AVAILABLE += $this->QUANTITY;
+		$value = $product->save();
+		$value = $value && $this->save();
+		return $value;
 	}
 	
 	/**
@@ -177,5 +269,12 @@ class JobLine extends CActiveRecord
 	 */
 	public function getTotal(){
 		return $this->PRICE * $this->QUANTITY;
+	}
+	
+	/**
+	 * Gets a value indicating whether or not this line is approved.
+	 */
+	public function getIsApproved(){
+		return ($this->APPROVAL_USER != null);
 	}
 }
