@@ -45,14 +45,14 @@ class Lookup extends CActiveRecord
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
 		return array(
-			array('CODE, TYPE', 'required'),
-			array('CODE, ORDER', 'numerical', 'integerOnly'=>true),
+			array('TYPE', 'required'),
+			array('ORDER', 'numerical', 'integerOnly'=>true),
 			array('TEXT', 'length', 'max'=>60),
 			array('TYPE', 'length', 'max'=>45),
 			array('EXTENDED', 'safe'),
 			// The following rule is used by search().
 			// Please remove those attributes that should not be searched.
-			array('ID, CODE, TEXT, EXTENDED, ORDER, TYPE', 'safe', 'on'=>'search'),
+			array('ID, TEXT, EXTENDED, ORDER, TYPE', 'safe', 'on'=>'search'),
 		);
 	}
 
@@ -74,7 +74,6 @@ class Lookup extends CActiveRecord
 	{
 		return array(
 			'ID' => 'ID',
-			'CODE' => 'Code',
 			'TEXT' => 'Text',
 			'EXTENDED' => 'Extended',
 			'ORDER' => 'Order',
@@ -94,7 +93,6 @@ class Lookup extends CActiveRecord
 		$criteria=new CDbCriteria;
 
 		$criteria->compare('ID',$this->ID);
-		$criteria->compare('CODE',$this->CODE);
 		$criteria->compare('TEXT',$this->TEXT,true);
 		$criteria->compare('EXTENDED',$this->EXTENDED,true);
 		$criteria->compare('ORDER',$this->ORDER);
