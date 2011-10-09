@@ -27,7 +27,7 @@ class JobController extends Controller
 				'users'=>array('*'),
 			),
 			array('allow', // allow authenticated user to perform 'create' and 'update' actions
-				'actions'=>array('create','update', 'newLine'),
+				'actions'=>array('create','update', 'newLine', 'deleteLine', 'approveLine', 'unapproveLine'),
 				'users'=>array('@'),
 			),
 			array('allow', // allow admin user to perform 'admin' and 'delete' actions
@@ -54,13 +54,10 @@ class JobController extends Controller
 	public function actionNewLine(){
 		$namePrefix = $_POST['namePrefix'];
 		$count = $_POST['count'];
-		$styles = Lookup::model()->findAllByAttributes(array('TYPE'=>'Style'));
-		$sizes = Lookup::model()->findAllByAttributes(array('TYPE'=>'Size'));
-		$colors = Lookup::model()->findAllByAttributes(array('TYPE'=>'Color'));
 		
-		$styleList = CHtml::listData($styles, 'ID', 'TEXT');
-		$sizeList = CHtml::listData($sizes, 'ID', 'TEXT');
-		$colorList = CHtml::listData($colors, 'ID', 'TEXT');
+		$styleList = $this->loadList('Style');
+		$sizeList = $this->loadList('Size');
+		$colorList = $this->loadList('Color');
 		$this->renderPartial('//jobLine/_form', array(
 			'styles'=>$styleList,
 			'sizes'=>$sizeList,
@@ -68,6 +65,59 @@ class JobController extends Controller
 			'namePrefix'=>$namePrefix . '[' . $count . ']',
 			'model'=>new JobLine,
 		));
+	}
+	
+	public function actionApproveLine(){
+		$model = JobLine::model()->findByPk((int) $_POST['id']);
+		$namePrefix = $_POST['namePrefix'];
+		if($model){
+			if($model->approve()){
+				$view = '//jobLine/_view';
+				$vars = array('namePrefix'=>$namePrefix, 'model'=>$model, 'formatter'=>new Formatter);
+				if(Yii::app()->user->getState('isAdmin') == true){
+					$view = '//jobLine/_form';
+					$vars['styles'] = $this->loadList('Style');
+					$vars['colors'] = $this->loadList('Color');
+					$vars['sizes'] = $this->loadList('Size');
+				}
+				$this->renderPartial($view, $vars);	
+			} else {
+				throw new CException('Could not approve the job line.');
+			}		
+		} else {
+			throw new CException('Could not approve the job line.');
+		}
+	}
+	
+	public function actionUnapproveLine(){
+		$model = JobLine::model()->findByPk((int) $_POST['id']);
+		$namePrefix = $_POST['namePrefix'];
+		if($model){
+			if($model->unapprove()){
+				$view = '//jobLine/_form';
+				$vars = array(
+					'namePrefix'=>$namePrefix, 
+					'model'=>$model,
+					'styles'=>$this->loadList('Style'),
+					'sizes'=>$this->loadList('Size'),
+					'colors'=>$this->loadList('Color'),
+				);
+				$this->renderPartial($view, $vars);	
+			} else {
+				throw new CException('Could not unapprove the job line.');
+			}
+		} else {
+			throw new CException('Could not unapprove the job line.');
+		}
+	}
+	
+	public function actionDeleteLine(){
+		$model = JobLine::model()->findByPk((int) $_POST['id']);
+		if($model){
+			if(!$model->delete()){
+				throw new CException('Could not delete the job line.');
+			}
+		}
 	}
 
 	/**
@@ -105,6 +155,7 @@ class JobController extends Controller
 			if($saved){
 				$model->CUSTOMER_ID = $customer->ID;
 				$model->PRINT_ID = $print->ID;
+				$model->printDate = $model->dueDate;
 				$saved = $saved && $model->save();
 			}
 			if($saved){
@@ -212,20 +263,28 @@ class JobController extends Controller
 	 */
 	public function actionIndex()
 	{
-		$dataProvider=new CActiveDataProvider('Job');
 		$lastSunday = strtotime('last sunday', time());
 		$secondsPerWeek = 24*60*60*7;
 		$nextSaturday = $lastSunday + $secondsPerWeek - 1;
 		$jobsThisWeek = EventLog::model()->findAllByAttributes(array(
 			'USER_ASSIGNED'=>Yii::app()->user->id,
-			'OBJECT_TYPE'=>'Job',			
+			'OBJECT_TYPE'=>'Job',				
+			'EVENT_ID'=>EventLog::JOB_PRINT,	
 		), '`DATE` BETWEEN FROM_UNIXTIME(' . $lastSunday . ') AND FROM_UNIXTIME(' . $nextSaturday . ')');
+		$jobs = array();
+		foreach($jobsThisWeek as $event){
+			$jobs[] = $event->assocObject;
+		}
+		$dataProvider = new CArrayDataProvider($jobs, array(
+			'keyField'=>'ID',
+		));
 		
 		$lastSunday = $lastSunday + $secondsPerWeek;
 		$nextSaturday = $nextSaturday + $secondsPerWeek;
 		$jobsNextWeek = EventLog::model()->findAllByAttributes(array(
 			'USER_ASSIGNED'=>Yii::app()->user->id,
-			'OBJECT_TYPE'=>'Job',
+			'OBJECT_TYPE'=>'Job',		
+			'EVENT_ID'=>EventLog::JOB_PRINT,
 		), '`DATE` BETWEEN FROM_UNIXTIME(' . $lastSunday . ') AND FROM_UNIXTIME(' . $nextSaturday . ')');
 		
 		$currentWeek = $this->resultToCalendarData($jobsThisWeek);
@@ -274,6 +333,10 @@ class JobController extends Controller
 		if($model===null)
 			throw new CHttpException(404,'The requested page does not exist.');
 		return $model;
+	}
+	
+	public function loadList($type){
+		return CHtml::listData(Lookup::listItems($type), 'ID', 'TEXT');
 	}
 
 	/**
