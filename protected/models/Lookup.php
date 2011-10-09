@@ -119,7 +119,7 @@ class Lookup extends CActiveRecord
 		}
 		$text = null;
 		if($result != null){
-			$text = $result->NAME;
+			$text = $result->TEXT;
 		}
 		return $text;
 	}
