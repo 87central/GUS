@@ -46,10 +46,10 @@ class Lookup extends CActiveRecord
 		// will receive user inputs.
 		return array(
 			array('TYPE', 'required'),
-			array('ORDER', 'numerical', 'integerOnly'=>true),
+			array('POSITION', 'numerical', 'integerOnly'=>true),
 			array('TEXT', 'length', 'max'=>60),
 			array('TYPE', 'length', 'max'=>45),
-			array('EXTENDED', 'safe'),
+			array('EXTENDED, DELETED', 'safe'),
 			// The following rule is used by search().
 			// Please remove those attributes that should not be searched.
 			array('ID, TEXT, EXTENDED, ORDER, TYPE', 'safe', 'on'=>'search'),
@@ -76,7 +76,7 @@ class Lookup extends CActiveRecord
 			'ID' => 'ID',
 			'TEXT' => 'Text',
 			'EXTENDED' => 'Extended',
-			'ORDER' => 'Order',
+			'POSITION' => 'Order',
 			'TYPE' => 'Type',
 		);
 	}
@@ -95,7 +95,7 @@ class Lookup extends CActiveRecord
 		$criteria->compare('ID',$this->ID);
 		$criteria->compare('TEXT',$this->TEXT,true);
 		$criteria->compare('EXTENDED',$this->EXTENDED,true);
-		$criteria->compare('ORDER',$this->ORDER);
+		$criteria->compare('POSITION',$this->ORDER);
 		$criteria->compare('TYPE',$this->TYPE,true);
 
 		return new CActiveDataProvider(get_class($this), array(
@@ -138,7 +138,7 @@ class Lookup extends CActiveRecord
 	 * Gets an array of Lookup objects (id=>object) corresponding to the given lookup type.
 	 */
 	public static function listItems($type){
-		$result = Lookup::model()->findAllByAttributes(array('TYPE'=>$type), array('order'=>'POSITION, CODE'));
+		$result = Lookup::model()->findAllByAttributes(array('TYPE'=>$type, 'DELETED'=>0), array('order'=>'POSITION'));
 		$values = array();
 		foreach($result as $resultVal){
 			$values[(string) $resultVal->ID] = $resultVal;
