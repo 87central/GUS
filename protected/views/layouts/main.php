@@ -62,6 +62,7 @@
 								array('label'=>'View Products', 'url'=>array('/product/index')),
 								array('label'=>'View Vendors', 'url'=>array('/vendor/index')),
 								array('label'=>'View Customers', 'url'=>array('/customer/index')),
+								array('label'=>'Colors, Etc.', 'url'=>array('/lookup/index', 'Color'=>1, 'Style'=>1, 'Size'=>1))
 							),
 							'lastItemCssClass'=>'lastmenu',
 						));
