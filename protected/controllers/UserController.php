@@ -21,17 +21,19 @@ class UserController extends Controller
 	public function accessRules()
 	{
 		return array(
-			array('allow',  // allow all users to perform 'index' and 'view' actions
-				'actions'=>array('index','view'),
-				'users'=>array('*'),
+			array('allow',
+				'actions'=>array('update', 'view'),
+				'users'=>array('@'),
+				'expression'=>"Yii::app()->user->getState('isDefaultRole');",
 			),
-			array('allow', // allow authenticated user to perform 'create' and 'update' actions
-				'actions'=>array('create','update'),
-				'users'=>array('*'),
+			array('allow',
+				'actions'=>array('update', 'view'),
+				'users'=>array('@'),
+				'expression'=>"Yii::app()->user->getState('isCustomer');",
 			),
-			array('allow', // allow admin user to perform 'admin' and 'delete' actions
-				'actions'=>array('admin','delete'),
-				'users'=>array('admin'),
+			array('allow',
+				'users'=>array('@'),
+				'expression'=>"Yii::app()->user->getState('isAdmin');",
 			),
 			array('deny',  // deny all users
 				'users'=>array('*'),
