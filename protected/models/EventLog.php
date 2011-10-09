@@ -164,6 +164,7 @@ class EventLog extends CActiveRecord
 			$value = strtotime($value);
 			$value = DateConverter::toDatabaseTime($value, true);
 			$this->DATE = $value;
+			$this->TIMESTAMP = new CDbExpression('NOW()');
 			return true;
 		} else {
 			return false;
