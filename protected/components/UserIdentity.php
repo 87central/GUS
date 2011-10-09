@@ -34,6 +34,11 @@ class UserIdentity extends CUserIdentity
 				
 		if($this->errorCode == self::ERROR_NONE){
 			$this->_user = $user;
+			$this->setPersistentStates(array(
+				'isAdmin'=>$this->isAdmin,
+				'isDefaultRole'=>$this->isDefaultRole,
+				'isCustomer'=>$this->isCustomer,
+			));			
 		}
 		return $this->errorCode==self::ERROR_NONE;
 	}
