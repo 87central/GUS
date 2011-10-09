@@ -40,7 +40,7 @@ $this->widget('zii.widgets.grid.CGridView', array(
 			'type'=>'raw',
 		),
 		array(
-			'header'=>'Art',
+			'header'=>'Sizes',
 			'value'=>"CHtml::image(Yii::app()->request->baseUrl . '/images/' . (\$data->hasSizes ? 'checked.png' : 'unchecked.png'));",
 			'type'=>'raw',
 		)
