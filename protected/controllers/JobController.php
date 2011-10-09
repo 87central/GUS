@@ -298,6 +298,13 @@ class JobController extends Controller
 		));
 	}
 	
+	public function actionList(){
+		$dataProvider = new CActiveDataProvider('Job');
+		$this->render('list', array(
+			'dataProvider'=>$dataProvider,
+		));
+	}
+	
 	private function resultToCalendarData($result){
 		$calendarData = array();
 		foreach($result as $event){
