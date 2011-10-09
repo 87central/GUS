@@ -43,6 +43,20 @@ Yii::app()->clientScript->registerScript('add-job', "function addLine(sender, na
 		<?php echo $form->error($model, 'formattedDueDate'); ?>
 	</div>
 	
+	<div class="row">
+		<?php echo $form->labelEx($model, 'formattedPickUpDate'); ?>
+		<?php $this->widget('zii.widgets.jui.CJuiDatePicker', array(
+			'name'=>'Job[formattedPickUpDate]',
+			'model'=>$model,
+			'attribute'=>'formattedPickUpDate',
+			'options'=>array(
+				'showAnim'=>'fold',
+				'dateFormat'=>'DD, MM d, yy',
+			),
+		));?>
+		<?php echo $form->error($model, 'formattedPickUpDate'); ?>
+	</div>
+	
 	<div class="separator"></div>
 	
 	<?php 

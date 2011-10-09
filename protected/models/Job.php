@@ -96,6 +96,7 @@ class Job extends CActiveRecord
 			'QUOTE' => 'Quote',
 			'totalPasses' => 'Passes',
 			'formattedDueDate'=> 'Due Date',
+			'formattedPickUpDate' =>'Pickup Date',
 			'NAME'=>'Name',
 		);
 	}
