@@ -27,8 +27,8 @@
 		<!--</div>--><!-- header -->
 	
 		<div id="mainmenu">
-			<?php $isAdmin = true;//Yii::app()->user->isAdmin; //should be more complex?>
-			<?php $isCustomer = false;//Yii::app()->user->isCustomer;?>
+			<?php $isAdmin = Yii::app()->user->getState('isAdmin');//Yii::app()->user->isAdmin; //should be more complex?>
+			<?php $isCustomer = Yii::app()->user->getState('isCustomer');//Yii::app()->user->isCustomer;?>
 			<?php if(Yii::app()->user->isGuest){?>
 				<?php $this->widget('zii.widgets.CMenu',array(
 					'items'=>array(
