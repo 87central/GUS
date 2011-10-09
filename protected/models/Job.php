@@ -288,6 +288,18 @@ class Job extends CActiveRecord
 		}
 	}
 	
+	protected function beforeSave(){
+		if(parent::beforeSave()){
+			//ensures that there is an event created for each event attribute. 
+			foreach($this->eventAttributes() as $eventID){
+				$this->getEventModel($eventID);
+			}
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
 	protected function afterSave(){
 		parent::afterSave();
 		if(isset($this->events)){
@@ -321,7 +333,15 @@ class Job extends CActiveRecord
 	
 	//this was in the mockup, but I'm not quite sure what it's for!
 	public function getHasSizes(){
-		return true;
+		$result = true;
+		if(count($this->jobLines) == 0){
+			$result = false;
+		} else {
+			foreach($this->jobLines as $line){
+				$result = $result && $line->isApproved;
+			}
+		}
+		return $result; 
 	}
 	
 	/**
