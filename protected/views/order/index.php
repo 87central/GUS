@@ -7,7 +7,7 @@
 			'urlExpression'=>"array('order/view', 'id'=>\$data->ID)",
 			'header'=>'New Orders',
 		),
-		'created::Creation Date',
+		'DATE::Creation Date',
 		array(
 			'class'=>'CLinkColumn',
 			'label'=>'Place Order',
