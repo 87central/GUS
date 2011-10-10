@@ -108,6 +108,7 @@ Yii::app()->clientScript->registerCssFile($this->styleDirectory . 'order_form');
 				),
 			),
 			'selectableRows'=>2,
+			'summaryText'=>'',
 		));
 		
 		echo CHtml::button('Add Checked Products', array(
