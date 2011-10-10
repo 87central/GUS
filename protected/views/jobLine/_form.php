@@ -27,6 +27,7 @@
 	))?>
 	<?php echo CHtml::activeHiddenField($model, 'ID', array(
 		'name'=>$namePrefix . '[ID]',
+		'class'=>'line_id',
 	));?>
 	<?php echo CHtml::hiddenField('total', $model->total, array(
 		'class'=>'part',
@@ -59,7 +60,7 @@
 				'url': '".CHtml::normalizeUrl(array('job/approveLine'))."'," .
 				"'type': 'POST'," .
 				"'data': {
-					'id': '".$model->ID."'," .
+					'id': $(div).children('.line_id').val()," .
 					"'namePrefix': $(div).children('.namePrefix').val(),
 				}," .
 				"'success': function(data){
@@ -75,7 +76,7 @@ CClientScript::POS_END);?>
 				'url': '".CHtml::normalizeUrl(array('job/unapproveLine'))."'," .
 				"'type': 'POST'," .
 				"'data': {
-					'id': '".$model->ID."'," .
+					'id': $(div).children('.line_id').val()," .
 					"'namePrefix': $(div).children('.namePrefix').val(),
 				}," .
 				"'success': function(data){
@@ -91,7 +92,7 @@ CClientScript::POS_END);?>
 				'url': '".CHtml::normalizeUrl(array('job/deleteLine'))."'," .
 				"'type': 'POST'," .
 				"'data': {
-					'id': '".$model->ID."'," .
+					'id': $(div).children('.line_id').val()," .
 					"'namePrefix': $(div).children('.namePrefix').val(),
 				}," .
 				"'success': function(data){
