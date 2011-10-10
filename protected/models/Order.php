@@ -314,6 +314,11 @@ class Order extends CActiveRecord
 		if($this->canPlace){
 			$this->STATUS = Order::ORDERED;
 			$this->ordered = DateConverter::toUserDate(time());
+			foreach($this->lines as $line){
+				$product = $line->PRODUCT;
+				$product->STATUS = Product::ORDERED;
+				$product->save();
+			}
 			$this->save();
 		} else {
 			throw new CException('Could not place the order at this time.');
