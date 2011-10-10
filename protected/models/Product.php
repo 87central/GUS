@@ -46,6 +46,18 @@ class Product extends CActiveRecord
 	{
 		return 'product';
 	}
+	
+	public function beforeSave(){
+		if(parent::beforeSave()){
+			//change the product status based on the inventory amount.
+			if($this->AVAILABLE > 0){
+				$this->STATUS = Product::IN_STOCK;
+			}
+			return true;
+		} else {
+			return false;
+		}
+	}
 
 	/**
 	 * @return array validation rules for model attributes.
