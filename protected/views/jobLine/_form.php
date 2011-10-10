@@ -18,10 +18,12 @@
 		'name'=>$namePrefix . '[QUANTITY]',
 		'onkeyup'=>"$('".$total."').val((1 * $('".$qty."').val()) * $('".$price."').val()).change();",
 		'class'=>'score_part',
+		'size'=>5,
 	));?>
 	Price Each: <?php echo CHtml::activeTextField($model, 'PRICE', array(
 		'name'=>$namePrefix . '[PRICE]',
-		'onkeyup'=>"$('".$total."').val((1 * $('".$qty."').val()) * $('".$price."').val()).change();"
+		'onkeyup'=>"$('".$total."').val((1 * $('".$qty."').val()) * $('".$price."').val()).change();",
+		'size'=>5,
 	))?>
 	<?php echo CHtml::activeHiddenField($model, 'ID', array(
 		'name'=>$namePrefix . '[ID]',
