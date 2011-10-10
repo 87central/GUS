@@ -103,7 +103,7 @@ class Vendor extends CActiveRecord
 			$split = preg_split('/\s+/', $this->NAME);
 			$abbrev = '';
 			foreach($split as $word){
-				$abbrev = $abbrev + strtoupper($word[0]);
+				$abbrev = $abbrev . strtoupper($word[0]);
 			}
 			$this->_abbrev = $abbrev;
 		}
