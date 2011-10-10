@@ -66,6 +66,7 @@ class Order extends CActiveRecord
 		return array(
 			'VENDOR' => array(self::BELONGS_TO, 'Vendor', 'VENDOR_ID'),
 			'lines' => array(self::HAS_MANY, 'ProductOrder', 'ORDER_ID'),
+			'events'=> array(self::HAS_MANY, 'EventLog', 'OBJECT_ID', 'condition'=>'OBJECT_TYPE = \'Order\'', 'index'=>'EVENT_ID'),
 		);
 	}
 
@@ -92,6 +93,7 @@ class Order extends CActiveRecord
 			'created'=>EventLog::ORDER_CREATED,
 			'ordered'=>EventLog::ORDER_PLACED,
 			'arrived'=>EventLog::ORDER_ARRIVED,
+			'placed'=>EventLog::ORDER_PLACED,
 		);
 	}
 	
@@ -251,7 +253,7 @@ class Order extends CActiveRecord
 					$line = new ProductOrder;
 				}
 				$line->attributes = $lines[$i];
-				$newLines[(string) $lineID] = $line;
+				$newLines[] = $line;
 			}
 			$this->lines = $newLines;
 		}		
@@ -259,9 +261,9 @@ class Order extends CActiveRecord
 	
 	protected function beforeValidate(){
 		if(parent::beforeValidate()){
-			if($this->STATUS == null){
+			if($this->isNewRecord){
 				$this->STATUS = Order::CREATED;
-				$this->created = DateConverter::toDatabaseDate(time(), true);
+				$this->created = DateConverter::toDatabaseTime(time(), true);
 			}
 			$valid = true;
 			foreach($this->lines as $line){
@@ -276,10 +278,10 @@ class Order extends CActiveRecord
 	
 	protected function afterSave(){
 		parent::afterSave();
-		if(isset($this->events)){
-			foreach($this->events as $event){				
-				$event->OBJECT_ID = $this->ID;				
-				$event->save();
+		//ensures that there is an event created for each event attribute.			
+		if(!isset($this->events) || count($this->events) < count($this->eventAttributes())){
+			foreach($this->eventAttributes() as $eventID){
+				$this->getEventModel($eventID)->save();
 			}
 		}
 		if(isset($this->lines)){
@@ -313,7 +315,7 @@ class Order extends CActiveRecord
 	public function place(){
 		if($this->canPlace){
 			$this->STATUS = Order::ORDERED;
-			$this->ordered = DateConverter::toUserDate(time());
+			$this->ordered = DateConverter::toUserTime(time());
 			foreach($this->lines as $line){
 				$product = $line->PRODUCT;
 				$product->STATUS = Product::ORDERED;
@@ -331,7 +333,7 @@ class Order extends CActiveRecord
 	public function checkin(){
 		if($this->canCheckin){
 			$this->STATUS = Order::ARRIVED;
-			$this->arrived = DateConverter::toUserDate(time());
+			$this->arrived = DateConverter::toUserTime(time());
 			foreach($this->lines as $line){
 				$product = $line->PRODUCT;
 				$product->AVAILABLE += $line->QUANTITY_ORDERED;
