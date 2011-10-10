@@ -44,6 +44,7 @@ class ProductOrder extends CActiveRecord
 		return array(
 			array('QUANTITY_ORDERED, QUANTITY_ARRIVED', 'numerical', 'integerOnly'=>true),
 			array('COST', 'numerical'),
+			array('ORDER_ID, PRODUCT_ID', 'safe'),
 			// The following rule is used by search().
 			// Please remove those attributes that should not be searched.
 			array('ID, PRODUCT_ID, ORDER_ID, QUANTITY_ORDERED, QUANTITY_ARRIVED, COST', 'safe', 'on'=>'search'),
