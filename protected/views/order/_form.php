@@ -14,13 +14,13 @@ Yii::app()->clientScript->registerScript('add-line', "function addLine(sender, n
 		},
 	});
 }", CClientScript::POS_BEGIN);
-Yii::app()->clientScript->registerScript('add-line-with-product', "function addLineWithProduct(sender, namePrefix, status, product, checkbox){
+Yii::app()->clientScript->registerScript('add-line-with-product', "function addLineWithProduct(sender, namePrefix, status, product, checkbox, count){
 	$.ajax({
 		url: '".CHtml::normalizeUrl(array('order/newLine', 'id'=>''))."' + product," .
 		"type: 'POST'," .
 		"data: {
 			namePrefix: namePrefix," .
-			"count: $(sender).parent().children('.orderLine').size()," .
+			"count: count," .
 			"status: status == null ? '' : status,
 		}," .
 		"success: function(data){
@@ -30,7 +30,6 @@ Yii::app()->clientScript->registerScript('add-line-with-product', "function addL
 	});
 }", CClientScript::POS_BEGIN);
 
-Yii::app()->clientScript->registerCssFile($this->styleDirectory . 'order_form');
 ?>
 
 <div class="form">
@@ -86,6 +85,14 @@ Yii::app()->clientScript->registerCssFile($this->styleDirectory . 'order_form');
 
 	<div class="row buttons">
 		<?php echo CHtml::submitButton($model->isNewRecord ? 'Create' : 'Save'); ?>
+		<?php if(!$model->isNewRecord){
+			if($model->canPlace){
+				echo CHtml::link('Place Order', array('order/place', 'id'=>$model->ID, 'view'=>'update'));
+			}
+			if($model->canCheckin){
+				echo CHtml::link('Check In', array('order/checkin', 'id'=>$model->ID, 'view'=>'update'));
+			}
+		}?>
 	</div>
 
 <?php $this->endWidget(); ?>
@@ -112,8 +119,8 @@ Yii::app()->clientScript->registerCssFile($this->styleDirectory . 'order_form');
 		));
 		
 		echo CHtml::button('Add Checked Products', array(
-			'onclick'=>"$('.products tbody :checked').each(function(index){
-				addLineWithProduct($('#lines').children(':button').first()[0], '".CHtml::activeName($model, 'lines')."', ".($model->STATUS == null ? 'null' : $model->STATUS).", $(this).val(), this);
+			'onclick'=>"var count = $('.orderLine').size();$('.products tbody :checked').each(function(index){
+				addLineWithProduct($('#lines').children(':button').first()[0], '".CHtml::activeName($model, 'lines')."', ".($model->STATUS == null ? 'null' : $model->STATUS).", $(this).val(), this, count++);
 			});"
 		));
 	?>
