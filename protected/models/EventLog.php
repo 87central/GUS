@@ -49,6 +49,20 @@ class EventLog extends CActiveRecord
 	{
 		return 'event_log';
 	}
+	
+	/**
+	 * Gets a user-friendly message associated with this event. The message should
+	 * not be HTML-encoded.
+	 */
+	public function getMessage(){
+		$assoc = $this->assocObject;
+		$eventCore = $this->event;
+		if($eventCore && $assoc){
+			return $this->evaluateExpression($eventCore->EXTENDED, array('assoc'=>$assoc));
+		} else {
+			return null;
+		}
+	}
 
 	/**
 	 * @return array validation rules for model attributes.
@@ -165,6 +179,9 @@ class EventLog extends CActiveRecord
 			$value = DateConverter::toDatabaseTime($value, true);
 			$this->DATE = $value;
 			$this->TIMESTAMP = new CDbExpression('NOW()');
+			if($this->USER_ID == null){
+				$this->USER_ID = Yii::app()->user->id; //should have at least the current user associated with the event.
+			}
 			return true;
 		} else {
 			return false;

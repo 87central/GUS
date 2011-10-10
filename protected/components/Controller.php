@@ -100,4 +100,25 @@ class Controller extends CController
 	public function getScriptDirectory(){
 		return Yii::app()->request->baseUrl . '/assets/';
 	}
+	
+	public function getMessages(){
+		$userID = Yii::app()->user->id;
+		$fromDate = strtotime('yesterday');
+		$toDate = strtotime('+1 week');
+		//get all events between yesterday and a week from today with which 
+		//the current user is associated, ordered by timestamp
+		$criteria = new CDbCriteria();
+		$criteria->condition = '`DATE` BETWEEN FROM_UNIXTIME(' . $fromDate . ') AND FROM_UNIXTIME(' . $toDate . ') AND (USER_ID = '.$userID.' OR USER_ASSIGNED = '.$userID.')';
+		$criteria->limit = 5;
+		$criteria->order = '`DATE`, `TIMESTAMP`';
+		$events = EventLog::model()->findAll($criteria);
+		$messages = array();
+		foreach($events as $event){
+			$message = $event->message;
+			if($message){
+				$messages[] = $event->message;
+			}
+		}
+		return $messages;
+	}
 }

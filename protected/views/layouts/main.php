@@ -79,7 +79,10 @@
 			<span class="note"><?php echo date('l F j');?></span>
 			<br/>
 			<div class="messages">
-				<strong>Important Messages...</strong>
+				<?php foreach($this->messages as $message){?>
+					<strong><?php echo $message;?></strong>
+					<br/>
+				<?php }?>
 			</div>
 			<br/>
 		</div>
