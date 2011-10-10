@@ -24,4 +24,5 @@ $this->menu=array(
 	'colors'=>$colors,
 	'sizes'=>$sizes,
 	'print'=>$print,
+	'artLink'=>$artLink,
 )); ?>

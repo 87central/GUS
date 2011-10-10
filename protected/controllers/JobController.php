@@ -149,6 +149,8 @@ class JobController extends Controller
 			
 			$saved = true;
 			if($saved){
+				$printFile = $_FILES['PrintJob_Art'];
+				$print->createArtFile($printFile);
 				$saved = $saved && $print->save();
 			} 
 			if($saved) {
@@ -170,7 +172,8 @@ class JobController extends Controller
 				if(!$customer->isNewRecord) {$customer->delete();}
 				if(!$print->isNewRecord) {$print->delete();}				
 			}
-		}
+		}	
+		
 
 		$this->render('create',array(
 			'model'=>$model,
@@ -211,6 +214,8 @@ class JobController extends Controller
 			
 			$saved = true;
 			if($saved){
+				$printFile = $_FILES['PrintJob_Art'];
+				$print->createArtFile($printFile);
 				$saved = $saved && $print->save();
 			} 
 			if($saved) {
@@ -227,7 +232,14 @@ class JobController extends Controller
 				$this->redirect(array('update', 'id'=>$model->ID));
 			}
 		}
+		
+		if($print->ART != null){
+			$artLink = CHtml::normalizeUrl(array('job/art', 'id'=>$model->ID));
+		} else {
+			$artLink = null;
+		}
 
+		echo $artLink;
 		$this->render('update',array(
 			'model'=>$model,
 			'customerList'=>$existingCustomers,
@@ -237,7 +249,29 @@ class JobController extends Controller
 			'styles'=>$styles,
 			'colors'=>$colors,
 			'sizes'=>$sizes,
+			'artLink'=>$artLink,
 		));
+		
+	}
+	
+	/**
+	 * Let's the user download the art associated with a job.
+	 */
+	public function actionArt($id){
+		$model = $this->loadModel($id);
+		if($model){
+			$file = $model->printJob->ART;
+			if($file){
+				$name = basename($file);
+				//code below obtained from http://iamcam.wordpress.com/2007/03/20/clean-file-names-using-php-preg_replace/
+				$replace="_";
+				$pattern="/([[:alnum:]_\.-]*)/";
+				$name=str_replace(str_split(preg_replace($pattern,$replace,$name)),$replace,$name);
+				//end snippet
+				
+				Yii::app()->request->sendFile($name, file_get_contents($file));
+			}
+		}
 	}
 
 	/**
@@ -299,7 +333,9 @@ class JobController extends Controller
 	}
 	
 	public function actionList(){
-		$dataProvider = new CActiveDataProvider('Job');
+		$dataProvider = new CActiveDataProvider('Job', array(
+			'pagination'=>false,
+		));
 		$this->render('list', array(
 			'dataProvider'=>$dataProvider,
 		));

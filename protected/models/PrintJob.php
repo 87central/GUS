@@ -101,4 +101,20 @@ class PrintJob extends CActiveRecord
 			'criteria'=>$criteria,
 		));
 	}
+	
+	/**
+	 * Does the necessary file manipulation to ensure that the $_FILES
+	 * value given by $rawFile is properly stored in the file system.
+	 */
+	public function createArtFile($rawFile){
+		if($rawFile){
+			$fileDir = dirname(__FILE__).DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'files'.DIRECTORY_SEPARATOR.get_class($this);
+			$destination = $fileDir.DIRECTORY_SEPARATOR.$rawFile['name'];
+			$destination = realpath($destination);
+			
+			if(move_uploaded_file($rawFile['tmp_name'], $destination)){
+				$this->ART = $destination;
+			}			
+		}
+	}
 }

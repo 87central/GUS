@@ -19,6 +19,9 @@ Yii::app()->clientScript->registerScript('add-job', "function addLine(sender, na
 <?php $form=$this->beginWidget('CActiveForm', array(
 	'id'=>'job-form',
 	'enableAjaxValidation'=>false,
+	'htmlOptions'=>array(
+		'enctype'=>'multipart/form-data',
+	),
 )); ?>
 
 	<?php echo $form->errorSummary($model); ?>
@@ -85,7 +88,8 @@ Yii::app()->clientScript->registerScript('add-job', "function addLine(sender, na
 	<div class="separator"></div>
 	<?php $this->renderPartial('//print/_jobForm', array(
 		'model'=> $print,
-		'job'=>$model, 
+		'job'=>$model,
+		'artLink'=>$artLink, 
 	));?>
 	<div class="separator"></div>
 	

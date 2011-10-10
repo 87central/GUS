@@ -12,7 +12,8 @@
 
 	<div class="row">
 		<?php echo CHtml::activeLabelEx($model,'ART'); ?>
-		<?php echo CHtml::activeTextField($model,'ART',array('size'=>60,'maxlength'=>200)); ?>
+		<?php echo CHtml::activeFileField($model,'ART', array('name'=>'PrintJob_Art', 'value'=>'')); ?>
+		&nbsp;<?php echo ($artLink ? CHtml::link('Download Here', $artLink) : '');?>
 		<?php echo CHtml::error($model,'ART'); ?>
 	</div>
 
