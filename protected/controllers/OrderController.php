@@ -22,7 +22,7 @@ class OrderController extends Controller
 	{
 		return array(
 			array('allow',
-				'actions'=>array('create', 'update', 'view', 'index', 'newLine'),
+				'actions'=>array('create', 'update', 'view', 'index', 'newLine', 'deleteLine'),
 				'users'=>array('@'),
 				'expression'=>"Yii::app()->user->getState('isDefaultRole');",
 			),
@@ -76,7 +76,7 @@ class OrderController extends Controller
 
 		if(isset($_POST['Order']))
 		{
-			$model->attributes=$_POST['Order'];
+			$model->loadFromArray($_POST['Order']);
 			if($model->save())
 				$this->redirect(array('view','id'=>$model->ID));
 		}
@@ -114,7 +114,7 @@ class OrderController extends Controller
 
 		if(isset($_POST['Order']))
 		{
-			$model->attributes=$_POST['Order'];
+			$model->loadFromArray($_POST['Order']);
 			if($model->save())
 				$this->redirect(array('view','id'=>$model->ID));
 		}
@@ -219,6 +219,15 @@ class OrderController extends Controller
 			'model'=>$model,
 			'orderStatus'=>$status,
 		));
+	}
+	
+	public function actionDeleteLine(){
+		$model = ProductOrder::model()->findByPk((int) $_POST['id']);
+		if($model){
+			if(!$model->delete()){
+				throw new CException('Could not delete the job line.');
+			}
+		}
 	}
 
 	/**
