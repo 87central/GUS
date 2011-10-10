@@ -47,6 +47,7 @@
 						array('label'=>'New Job', 'url'=>array('/job/create')),
 						array('label'=>'All Jobs', 'url'=>array('/job/list')),
 						array('label'=>'Check In', 'url'=>array('/order/index'), 'visible'=>$isAdmin),
+						array('label'=>'Create Order', 'url'=>array('/order/create')),
 						array('label'=>'Calendar', 'url'=>array('/event/schedule')),
 						array('label'=>'Logout', 'url'=>array('/site/logout')),
 					),
