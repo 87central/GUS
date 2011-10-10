@@ -150,9 +150,11 @@ class OrderController extends Controller
 	public function actionIndex(){
 		$createdProvider = new CActiveDataProvider('Order', array(
 			'criteria'=>array('condition'=>'STATUS = '. Order::CREATED),
+			'pagination'=>false,
 		));
 		$orderedProvider = new CActiveDataProvider('Order', array(
 			'criteria'=>array('condition'=>'STATUS = '. Order::ORDERED),
+			'pagination'=>false,
 		));
 		$arrivedRecords = Order::model()->findAll(array(
 			'condition'=>'STATUS = '. Order::ARRIVED,
@@ -165,7 +167,9 @@ class OrderController extends Controller
 			 	$records[] = $order;
 			 }
 		}
-		$arrivedProvider = new CArrayDataProvider($records);
+		$arrivedProvider = new CArrayDataProvider($records, array(
+			'pagination'=>false,
+		));
 		
 		$this->render('index', array(
 			'createdProvider'=>$createdProvider,
