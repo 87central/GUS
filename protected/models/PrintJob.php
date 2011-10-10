@@ -45,6 +45,7 @@ class PrintJob extends CActiveRecord
 			array('PASS, APPROVAL_USER', 'numerical', 'integerOnly'=>true),
 			array('ART', 'length', 'max'=>200),
 			array('APPROVAL_DATE', 'safe'),
+			array('COST', 'numerical'),
 			// The following rule is used by search().
 			// Please remove those attributes that should not be searched.
 			array('ID, PASS, ART, COST, APPROVAL_DATE, APPROVAL_USER', 'safe', 'on'=>'search'),
@@ -110,7 +111,6 @@ class PrintJob extends CActiveRecord
 		if($rawFile){
 			$fileDir = dirname(__FILE__).DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'files'.DIRECTORY_SEPARATOR.get_class($this);
 			$destination = $fileDir.DIRECTORY_SEPARATOR.$rawFile['name'];
-			$destination = realpath($destination);
 			
 			if(move_uploaded_file($rawFile['tmp_name'], $destination)){
 				$this->ART = $destination;
