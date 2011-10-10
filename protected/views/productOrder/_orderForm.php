@@ -27,7 +27,27 @@
 		'name'=>$namePrefix . '[COST]',
 	));?>
 	
+	<?php echo CHtml::button('Remove Line', array(
+		'class'=>'line_remove',
+	));?>
+	
 	<?php echo CHtml::activeHiddenField($model, 'ID', array(
 		'name'=>$namePrefix . '[ID]',
+		'class'=>'line_id',
 	));?>
 </div>
+<?php Yii::app()->clientScript->registerScript('line-delete', "" .
+		"$('.line_remove').live('click', function(event){
+			var div = $(event.target).parent();" .
+			"$.ajax({
+				url: '".CHtml::normalizeUrl(array('order/deleteLine'))."'," .
+				"type: 'POST'," .
+				"data: {
+					id: $(div).children('.line_id').val(),
+				}," .
+				"success: function(){
+					$(div).remove();
+				},
+			});
+		});",
+CClientScript::POS_END);?>
