@@ -228,7 +228,7 @@ class Job extends CActiveRecord
 			if($this->events === null){
 				$this->events = array();
 			}
-			$this->events[(string) $eventID] = $event;
+			//$this->events[(string) $eventID] = $event;
 			$events[(string) $eventID] = $event;
 		} else {
 			$event = $events[(string) $eventID];
@@ -355,7 +355,7 @@ class Job extends CActiveRecord
 		foreach($this->jobLines as $line){
 			$lines += $line->total;
 		}
-		return $lines + $this->SET_UP_FEE + $this->printJob->COST;
+		return $lines + $this->SET_UP_FEE + $this->printJob == null ? 0 : $this->printJob->COST;
 	}
 	
 	/**
@@ -364,7 +364,7 @@ class Job extends CActiveRecord
 	 */
 	public function getScore(){
 		$base = 30; //Ben's request
-		$passes = $this->printJob->PASS;
+		$passes = $this->printJob == null ? 0 : $this->printJob->PASS;
 		$lines = 0; //for quantity of all lines
 		foreach($this->jobLines as $line) {
 			$lines += $line->QUANTITY;

@@ -90,7 +90,7 @@ Yii::app()->clientScript->registerScript('add-job', "function addLine(sender, na
 	<?php $this->renderPartial('//print/_jobForm', array(
 		'model'=> $print,
 		'job'=>$model,
-		'artLink'=>$artLink, 
+		'artLink'=>isset($artLink) ? $artLink : null, 
 	));?>
 	<div class="separator"></div>
 	

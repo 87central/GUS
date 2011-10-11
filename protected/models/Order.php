@@ -214,7 +214,7 @@ class Order extends CActiveRecord
 			if($this->events === null){
 				$this->events = array();
 			}
-			$this->events[(string) $eventID] = $event;
+			//$this->events[(string) $eventID] = $event;
 			$events[(string) $eventID] = $event;
 		} else {
 			$event = $events[(string) $eventID];
