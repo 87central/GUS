@@ -71,17 +71,18 @@ Yii::app()->clientScript->registerScript('add-job', "function addLine(sender, na
 	
 	<div class="separator"></div>
 	
-	<?php $userList = CHtml::listData($users, 'ID', 'FIRST');?>
+	<?php $printerList = CHtml::listData($printers, 'ID', 'FIRST');?>
+	<?php $leaderList = CHtml::listData($leaders, 'ID', 'FIRST');?>
 	
 	<div class="row">
 		<?php echo $form->labelEx($model, 'LEADER_ID');?>
-		<?php echo $form->dropDownList($model, 'LEADER_ID', $userList); ?>
+		<?php echo $form->dropDownList($model, 'LEADER_ID', $leaderList); ?>
 		<?php echo $form->error($model, 'LEADER_ID');?>
 	</div>
 	
 	<div class="row">
 		<?php echo $form->labelEx($model, 'PRINTER_ID');?>
-		<?php echo $form->dropDownList($model, 'PRINTER_ID', $userList);?>
+		<?php echo $form->dropDownList($model, 'PRINTER_ID', $printerList);?>
 		<?php echo $form->error($model, 'PRINTER_ID');?>
 	</div>
 	

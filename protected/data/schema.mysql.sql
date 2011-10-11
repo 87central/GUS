@@ -452,10 +452,8 @@ CREATE TABLE `user` (
   `FIRST` varchar(45) DEFAULT NULL,
   `LAST` varchar(45) DEFAULT NULL,
   `PHONE` varchar(20) DEFAULT NULL,
-  `ROLE` int(11) DEFAULT NULL,
+  `ROLE` varchar(4) DEFAULT '0001',
   PRIMARY KEY (`ID`),
-  KEY `role_lookup` (`ROLE`),
-  CONSTRAINT `role_lookup` FOREIGN KEY (`ROLE`) REFERENCES `lookup` (`ID`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -465,7 +463,7 @@ CREATE TABLE `user` (
 
 LOCK TABLES `user` WRITE;
 /*!40000 ALTER TABLE `user` DISABLE KEYS */;
-INSERT INTO `user` VALUES (1,'michael.d.naughton@gmail.com','520d8e35c37a612df36313efec568dcc5b657c4e','Mike','Naughton','5157082546',15);
+INSERT INTO `user` VALUES (1,'michael.d.naughton@gmail.com','520d8e35c37a612df36313efec568dcc5b657c4e','Mike','Naughton','5157082546','1000');
 /*!40000 ALTER TABLE `user` ENABLE KEYS */;
 UNLOCK TABLES;
 

@@ -1,3 +1,4 @@
+<?php Yii::app()->clientScript->registerCssFile($this->styleDirectory . 'user_form.css');?>
 <div class="form">
 
 <?php $form=$this->beginWidget('CActiveForm', array(
@@ -39,15 +40,19 @@
 		<?php echo $form->error($model,'PHONE'); ?>
 	</div>
 
-	<div class="row">
-		<?php echo $form->labelEx($model,'ROLE', array(
-			'label'=>'Administrator?',
-		)); ?>
-		<?php echo $form->checkBox($model, 'ROLE', array(
-			'value'=>USER::ADMIN_ROLE,
-			'uncheckValue'=>USER::DEFAULT_ROLE,
-		));?>
-		<?php echo $form->error($model,'ROLE'); ?>
+	<div class="row roles">		
+		<?php echo $form->checkBox($model, 'isAdmin');?>
+		<?php echo $form->labelEx($model,'isAdmin'); ?>
+	</div>
+	<div class="row roles">
+		<?php echo $form->checkBox($model, 'isLead');?>
+		<?php echo $form->labelEx($model,'isLead'); ?>
+	</div>
+	<div class="row roles">
+		<?php echo $form->checkBox($model, 'isPrinter');?>
+		<?php echo $form->labelEx($model,'isPrinter'); ?>
+		
+		<?php echo $form->hiddenField($model, 'isCustomer');?>
 	</div>
 
 	<div class="row buttons">

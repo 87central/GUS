@@ -131,7 +131,8 @@ class JobController extends Controller
 		$model=new Job;
 		$customer = new Customer;
 		$existingCustomers = Customer::model()->findAll();
-		$existingUsers = User::model()->findAllByAttributes(array('ROLE'=>User::DEFAULT_ROLE)); //should be finding those that fit in printer and leader roles
+		$leaders = User::listUsersWithRole(User::LEAD_ROLE);
+		$printers = User::listUsersWithRole(User::DEFAULT_ROLE);
 		$styles = Lookup::model()->findAllByAttributes(array('TYPE'=>'Style'));
 		$sizes = Lookup::model()->findAllByAttributes(array('TYPE'=>'Size'));
 		$colors = Lookup::model()->findAllByAttributes(array('TYPE'=>'Color'));
@@ -180,7 +181,8 @@ class JobController extends Controller
 			'customerList'=>$existingCustomers,
 			'newCustomer'=>$customer,
 			'print'=>$print,
-			'users'=>$existingUsers,
+			'leaders'=>$leaders,
+			'printers'=>$printers,
 			'styles'=>$styles,
 			'colors'=>$colors,
 			'sizes'=>$sizes,
@@ -198,7 +200,8 @@ class JobController extends Controller
 		$customer = $model->CUSTOMER;
 		$print = $model->printJob;
 		$existingCustomers = Customer::model()->findAll();
-		$existingUsers = User::model()->findAllByAttributes(array('ROLE'=>User::DEFAULT_ROLE)); //should be finding those that fit in printer and leader roles
+		$leaders = User::listUsersWithRole(User::LEAD_ROLE);
+		$printers = User::listUsersWithRole(User::DEFAULT_ROLE);
 		$styles = Lookup::model()->findAllByAttributes(array('TYPE'=>'Style'));
 		$sizes = Lookup::model()->findAllByAttributes(array('TYPE'=>'Size'));
 		$colors = Lookup::model()->findAllByAttributes(array('TYPE'=>'Color'));
@@ -245,7 +248,8 @@ class JobController extends Controller
 			'customerList'=>$existingCustomers,
 			'newCustomer'=>$customer,
 			'print'=>$print,
-			'users'=>$existingUsers,
+			'leaders'=>$leaders,
+			'printers'=>$printers,
 			'styles'=>$styles,
 			'colors'=>$colors,
 			'sizes'=>$sizes,

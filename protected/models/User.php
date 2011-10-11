@@ -26,6 +26,7 @@ class User extends CActiveRecord
 	const CUSTOMER_ROLE = 14;
 	const DEFAULT_ROLE = 13;
 	const ADMIN_ROLE = 15;
+	const LEAD_ROLE = 16;
 	
 	/**
 	 * Returns the static model of the specified AR class.
@@ -55,6 +56,7 @@ class User extends CActiveRecord
 			array('ROLE', 'numerical', 'integerOnly'=>true),
 			array('EMAIL, PASSWORD, FIRST, LAST', 'length', 'max'=>45),
 			array('PHONE', 'length', 'max'=>20),
+			array('isAdmin, isLead, isCustomer, isPrinter', 'safe'),
 			// The following rule is used by search().
 			// Please remove those attributes that should not be searched.
 			array('ID, EMAIL, PASSWORD, FIRST, LAST, PHONE, ROLE', 'safe', 'on'=>'search'),
@@ -91,6 +93,9 @@ class User extends CActiveRecord
 			'LAST' => 'Last',
 			'PHONE' => 'Phone',
 			'ROLE' => 'Role',
+			'isAdmin'=> 'Administrator?',
+			'isLead'=>'Project Lead?',
+			'isPrinter'=>'Printer?',
 		);
 	}
 
@@ -123,7 +128,17 @@ class User extends CActiveRecord
 	 * the constants defined in this class.
 	 */
 	public static function listUsersWithRole($role){
-		return User::model()->findAllByAttributes(array('ROLE'=>$role));
+		switch($role){
+			case User::CUSTOMER_ROLE : $index = 3;
+									   break; 
+			case User::DEFAULT_ROLE : $index = 4;
+									  break;
+			case User::ADMIN_ROLE : $index = 1;
+									break;
+			case User::LEAD_ROLE : $index = 2;
+								   break;
+		}
+		return User::model()->findAll('SUBSTR(`ROLE`, '.$index.', 1) = 1');
 	}
 	
 	protected function afterFind(){
@@ -160,5 +175,69 @@ class User extends CActiveRecord
 			}			
 		}
 		return true;
+	}
+	
+	public function getIsAdmin(){
+		return $this->ROLE[0] == '1';
+	}
+	
+	public function setIsAdmin($value){
+		Yii::trace('Setting is admin. Value is '.$value.' role is '.$this->ROLE, 'application.models.User');
+		if($value){
+			Yii::trace('IsAdmin true branch.', 'application.models.User');
+			$this->ROLE = substr_replace($this->ROLE, '1', 0, 1);
+		} else {
+			Yii::trace('IsAdmin false branch.', 'application.models.User');
+			$this->ROLE = substr_replace($this->ROLE, '0', 0, 1);
+		}
+		Yii::trace('Set is admin. Role is '.$this->ROLE, 'application.models.User');
+	}
+	
+	public function getIsCustomer(){
+		return $this->ROLE[2] == '1';
+	}
+	
+	public function setIsCustomer($value){
+		Yii::trace('Setting is customer. Value is '.$value.' role is '.$this->ROLE, 'application.models.User');
+		if($value){
+			Yii::trace('IsCustomer true branch.', 'application.models.User');
+			$this->ROLE = substr_replace($this->ROLE, '1', 2, 1);
+		} else {
+			Yii::trace('IsCustomer false branch.', 'application.models.User');
+			$this->ROLE = substr_replace($this->ROLE, '0', 2, 1);
+		}
+		Yii::trace('Set is customer. Role is '.$this->ROLE, 'application.models.User');
+	}
+	
+	public function getIsLead(){
+		return $this->ROLE[1] == '1';
+	}
+	
+	public function setIsLead($value){
+		Yii::trace('Setting is leader. Value is '.$value.' role is '.$this->ROLE, 'application.models.User');
+		if($value){
+			Yii::trace('IsLead true branch.', 'application.models.User');
+			$this->ROLE = substr_replace($this->ROLE, '1', 1, 1);
+		} else {
+			Yii::trace('IsLead false branch.', 'application.models.User');
+			$this->ROLE = substr_replace($this->ROLE, '0', 1, 1);
+		}
+		Yii::trace('Set is lead. Role is '.$this->ROLE, 'application.models.User');
+	}
+	
+	public function getIsPrinter(){
+		return $this->ROLE[3] == '1';
+	}
+	
+	public function setIsPrinter($value){
+		Yii::trace('Setting is printer. Value is '.$value.' role is '.$this->ROLE, 'application.models.User');
+		if($value){
+			Yii::trace('IsPrinter true branch.', 'application.models.User');
+			$this->ROLE = substr_replace($this->ROLE, '1', 3, 1);
+		} else {
+			Yii::trace('IsPrinter false branch.', 'application.models.User');
+			$this->ROLE = substr_replace($this->ROLE, '0', 3, 1);
+		}
+		Yii::trace('Set is printer. Role is '.$this->ROLE, 'application.models.User');
 	}
 }
