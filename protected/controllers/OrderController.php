@@ -169,6 +169,7 @@ class OrderController extends Controller
 		}
 		$arrivedProvider = new CArrayDataProvider($records, array(
 			'pagination'=>false,
+			'keyField'=>'ID',
 		));
 		
 		$this->render('index', array(
@@ -186,7 +187,7 @@ class OrderController extends Controller
 		} catch(Exception $e){
 			Yii::app()->user->setFlash('failure', $e->message);
 		}
-		$this->redirect(array('order/'.$view));
+		$this->redirect(array('order/'.$view, 'id'=>$id));
 	}
 	
 	public function actionPlace($id, $view){
