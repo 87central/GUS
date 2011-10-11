@@ -43,6 +43,8 @@ class Vendor extends CActiveRecord
 		return array(
 			array('PHONE', 'numerical', 'integerOnly'=>true),
 			array('NAME, EMAIL', 'length', 'max'=>45),
+			array('NAME, WEBSITE', 'length', 'max'=>200),
+			array('WEBSITE', 'url'),
 			// The following rule is used by search().
 			// Please remove those attributes that should not be searched.
 			array('ID, NAME, EMAIL, PHONE', 'safe', 'on'=>'search'),
@@ -71,6 +73,8 @@ class Vendor extends CActiveRecord
 			'NAME' => 'Name',
 			'EMAIL' => 'Email',
 			'PHONE' => 'Phone',
+			'WEBSITE'=>'Website',
+			'CONTACT_NAME'=>'Contact Name',
 		);
 	}
 

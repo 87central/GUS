@@ -104,7 +104,7 @@ class Product extends CActiveRecord
 			'STYLE' => 'Style',
 			'COLOR' => 'Color',
 			'SIZE' => 'Size',
-			'AVAILABLE' => 'Available',
+			'AVAILABLE' => 'Surplus Inventory',
 		);
 	}
 

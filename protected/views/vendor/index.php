@@ -11,7 +11,18 @@ $this->menu=array(
 
 <h1>Vendors</h1>
 
-<?php $this->widget('zii.widgets.CListView', array(
+<?php $this->widget('zii.widgets.grid.CGridView', array(
 	'dataProvider'=>$dataProvider,
-	'itemView'=>'_view',
-)); ?>
+	'columns'=>array(
+		'nameAbbreviation::ID',
+		array(
+			'class'=>'CLinkColumn',
+			'urlExpression'=>"array('vendor/update', 'id'=>\$data->ID)",
+			'labelExpression'=>"\$data->NAME",	
+			'header'=>'Name',		
+		),
+		'WEBSITE:url:Vendor Website',
+		'CONTACT_NAME',
+		'PHONE',
+	),
+));?>

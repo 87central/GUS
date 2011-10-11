@@ -124,7 +124,9 @@ class VendorController extends Controller
 	 */
 	public function actionIndex()
 	{
-		$dataProvider=new CActiveDataProvider('Vendor');
+		$dataProvider=new CActiveDataProvider('Vendor', array(
+			'pagination'=>false,
+		));
 		$this->render('index',array(
 			'dataProvider'=>$dataProvider,
 		));

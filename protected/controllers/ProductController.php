@@ -140,7 +140,12 @@ class ProductController extends Controller
 	 */
 	public function actionIndex()
 	{
-		$dataProvider=new CActiveDataProvider('Product');
+		$dataProvider=new CActiveDataProvider('Product', array(
+			'pagination'=>false,
+			'sort'=>array(
+				'defaultOrder'=>'STYLE, SIZE, COLOR',
+			),
+		));
 		$this->render('index',array(
 			'dataProvider'=>$dataProvider,
 		));

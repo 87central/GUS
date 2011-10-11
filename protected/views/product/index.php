@@ -11,7 +11,19 @@ $this->menu=array(
 
 <h1>Products</h1>
 
-<?php $this->widget('zii.widgets.CListView', array(
+<?php $this->widget('zii.widgets.grid.CGridView', array(
 	'dataProvider'=>$dataProvider,
-	'itemView'=>'_view',
-)); ?>
+	'formatter'=>new Formatter,
+	'columns'=>array(
+		array(
+			'class'=>'CLinkColumn',
+			'header'=>'ID',
+			'urlExpression'=>"array('product/update', 'id'=>\$data->ID)",
+			'labelExpression'=>"\$data->ID",
+		),
+		'STYLE:lookup',
+		'SIZE:lookup',
+		'COLOR:lookup',
+		'AVAILABLE',
+	),
+));?>

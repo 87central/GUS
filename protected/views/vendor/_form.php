@@ -20,11 +20,23 @@
 		<?php echo $form->textField($model,'EMAIL',array('size'=>45,'maxlength'=>45)); ?>
 		<?php echo $form->error($model,'EMAIL'); ?>
 	</div>
+	
+	<div class="row">
+		<?php echo $form->labelEx($model,'CONTACT_NAME'); ?>
+		<?php echo $form->textField($model,'CONTACT_NAME',array('size'=>45,'maxlength'=>200)); ?>
+		<?php echo $form->error($model,'CONTACT_NAME'); ?>
+	</div>
 
 	<div class="row">
 		<?php echo $form->labelEx($model,'PHONE'); ?>
 		<?php echo $form->textField($model,'PHONE'); ?>
 		<?php echo $form->error($model,'PHONE'); ?>
+	</div>
+	
+	<div class="row">
+		<?php echo $form->labelEx($model,'WEBSITE'); ?>
+		<?php echo $form->textField($model,'WEBSITE',array('size'=>45,'maxlength'=>200)); ?>
+		<?php echo $form->error($model,'WEBSITE'); ?>
 	</div>
 
 	<div class="row buttons">
