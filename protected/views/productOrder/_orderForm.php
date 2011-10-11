@@ -4,8 +4,7 @@
 		'name'=>$namePrefix . '[PRODUCT_ID]',
 	));?>
 	
-	<?php if($orderStatus == Order::CREATED || $orderStatus == Order::ORDERED
-			 || $orderStatus == null){?>
+	<?php if($orderStatus == Order::CREATED || $orderStatus == null){?>
 		<?php echo CHtml::activeLabelEx($model, 'QUANTITY_ORDERED');?>
 		<?php echo CHtml::activeTextField($model, 'QUANTITY_ORDERED', array(
 			'name'=>$namePrefix . '[QUANTITY_ORDERED]',
