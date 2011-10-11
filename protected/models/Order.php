@@ -334,11 +334,6 @@ class Order extends CActiveRecord
 		if($this->canCheckin){
 			$this->STATUS = Order::ARRIVED;
 			$this->arrived = DateConverter::toUserTime(time());
-			foreach($this->lines as $line){
-				$product = $line->PRODUCT;
-				$product->AVAILABLE += $line->QUANTITY_ORDERED;
-				$product->save();
-			}
 			$this->save();
 		} else {
 			throw new CException('Could not check in the order at this time.');

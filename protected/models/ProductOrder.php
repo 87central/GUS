@@ -17,6 +17,8 @@
  */
 class ProductOrder extends CActiveRecord
 {
+	private $_quantityArrived;
+	
 	/**
 	 * Returns the static model of the specified AR class.
 	 * @return ProductOrder the static model class
@@ -32,6 +34,52 @@ class ProductOrder extends CActiveRecord
 	public function tableName()
 	{
 		return 'product_order';
+	}
+	
+	protected function afterFind(){
+		parent::afterFind();
+		$this->_quantityArrived = $this->QUANTITY_ARRIVED;
+	}
+	
+	protected function beforeSave(){
+		if(parent::beforeSave()){
+			/*
+			 *If the order hasn't actually arrived, don't do anything with the quantities, but
+			 *if the order has indeed arrived, there are several cases.
+			 *
+			 * Either the user is adjusting the quantity arrived, in which case the value
+			 * in the private variable will not be null, or they are entering it for the
+			 * first time, in which case the private variable will be null.
+			 * 
+			 * Within the above cases, there are also two possibilities. It is possible
+			 * that there IS a value in the "new" quantity arrived field, or that there is
+			 * no value. In the case of no value, we assume that the quantity ordered is the
+			 * same as the quantity arrived. In the case that there is a value, we assume
+			 * that the quantity arrived is both more accurate than the quantity ordered
+			 * and the retrieved quantity arrived, and we set the availability of inventory
+			 * appropriately.
+			 */
+			if($this->ORDER->STATUS = Order::ARRIVED){
+				$product = $this->PRODUCT;
+				if($this->_quantityArrived === null){
+					if($this->QUANTITY_ARRIVED !== null){
+						$product->AVAILABLE  = $product->AVAILABLE - $this->QUANTITY_ORDERED + $this->QUANTITY_ARRIVED;	
+					} else {
+						$product->AVAILABLE += $this->QUANTITY_ORDERED;
+					}
+				} else {
+					if($this->QUANTITY_ARRIVED !== null){
+						$product->AVAILABLE = $product->AVAILABLE - $this->_quantityArrived + $this->QUANTITY_ARRIVED;
+					} else {
+						$product->AVAILABLE = $product->AVAILABLE - $this->_quantityArrived + $this->QUANTITY_ORDERED;
+					}
+				}	
+				$product->save();			
+			}
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 	/**
