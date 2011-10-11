@@ -479,6 +479,8 @@ CREATE TABLE `vendor` (
   `NAME` varchar(45) DEFAULT NULL,
   `EMAIL` varchar(45) DEFAULT NULL,
   `PHONE` int(13) DEFAULT NULL,
+  `WEBSITE` varchar(200) DEFAULT NULL,
+  `CONTACT_NAME` varchar(200) DEFAULT NULL,
   PRIMARY KEY (`ID`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
