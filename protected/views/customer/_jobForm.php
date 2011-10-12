@@ -6,27 +6,44 @@
 	
 	<div class="row">
 		<?php $customerSelections = CHtml::listData($customerList, 'ID', 'summary');?>
-		<?php echo 'Existing Customer: ';?>
-		<?php echo CHtml::activeDropDownList($newCustomer, 'ID', $customerSelections, array(
-			'onchange'=>"$.ajax({
-				url: '".CHtml::normalizeUrl(array('customer/retrieve'))."'," .
-				"type: 'POST'," .
-				"data: {
-					id: $(this).val(),
-				}," .
-				"success: function(data){
-					$('#".CHtml::getActiveId($newCustomer, 'FIRST')."').val(data.FIRST);" .
-					"$('#".CHtml::getActiveId($newCustomer, 'LAST')."').val(data.LAST);" .
-					"$('#".CHtml::getActiveId($newCustomer, 'EMAIL')."').val(data.EMAIL);" .
-					"$('#".CHtml::getActiveId($newCustomer, 'COMPANY')."').val(data.COMPANY);" .
-					"$('#".CHtml::getActiveId($newCustomer, 'PHONE')."').val(data.PHONE);
-				}," .
-				"error: function(){
-					$(this).val('');
-				}," .
-				"dataType: 'json',
-			})"
-		));?>
+		<?php echo 'Search Existing Customers: ';?>
+		<?php $ac = $this->beginWidget('zii.widgets.jui.CJuiAutoComplete', array(
+			'model'=>$newCustomer,
+			'attribute'=>'summary',
+			'sourceUrl'=>array('customer/search', 'response'=>'juijson'),
+			'options'=>array(),
+		));
+		
+		$ac->options['select'] = "js:function(event, ui){" .
+				"var value = ui.item.value;" .
+				"var label = ui.item.label;" .
+				"var id = '#".CHtml::getActiveId($newCustomer, 'ID')."';" .
+				"$(id).val(value);" .
+				"$('#".$ac->id."').val(label);" .
+				"\$.ajax({
+									url: '".CHtml::normalizeUrl(array('customer/retrieve'))."'," .
+									"type: 'POST'," .
+									"data: {
+										id: $(id).val(),
+									}," .
+									"success: function(data){
+										$('#".CHtml::getActiveId($newCustomer, 'FIRST')."').val(data.FIRST);" .
+										"$('#".CHtml::getActiveId($newCustomer, 'LAST')."').val(data.LAST);" .
+										"$('#".CHtml::getActiveId($newCustomer, 'EMAIL')."').val(data.EMAIL);" .
+										"$('#".CHtml::getActiveId($newCustomer, 'COMPANY')."').val(data.COMPANY);" .
+										"$('#".CHtml::getActiveId($newCustomer, 'PHONE')."').val(data.PHONE);
+									}," .
+									"error: function(){
+										$(id).val('');
+									}," .
+									"dataType: 'json',
+								});" .
+								"event.stopImmediatePropagation();" .
+								"return false;" .
+								"}";
+								
+		$this->endWidget();?>
+		<?php echo CHtml::activeHiddenField($newCustomer, 'ID')?>
 	</div>
 	
 	<div class="row">

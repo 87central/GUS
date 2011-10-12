@@ -125,11 +125,10 @@ class Customer extends CActiveRecord
 
 		$criteria=new CDbCriteria;
 
-		$criteria->compare('ID',$this->ID);
-		$criteria->compare('USER_ID',$this->USER_ID);
-		$criteria->compare('COMPANY',$this->COMPANY,true);
-		$criteria->compare('NOTES',$this->NOTES,true);
-		$criteria->compare('TERMS',$this->TERMS,true);
+		$criteria->compare('COMPANY',$this->COMPANY,true, 'OR');
+		$criteria->compare('FIRST',$this->FIRST,true, 'OR');
+		$criteria->compare('LAST',$this->LAST,true, 'OR');
+		$criteria->with = 'USER';
 
 		return new CActiveDataProvider(get_class($this), array(
 			'criteria'=>$criteria,

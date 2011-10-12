@@ -22,12 +22,12 @@ class CustomerController extends Controller
 	{
 		return array(
 			array('allow',
-				'actions'=>array('retrieve', 'create', 'update', 'index', 'view'),
+				'actions'=>array('retrieve', 'create', 'update', 'index', 'view', 'search'),
 				'users'=>array('@'),
 				'expression'=>"Yii::app()->user->getState('isDefaultRole');",
 			),
 			array('allow',
-				'actions'=>array('retrieve', 'create', 'update', 'index', 'view'),
+				'actions'=>array('retrieve', 'create', 'update', 'index', 'view', 'search'),
 				'users'=>array('@'),
 				'expression'=>"Yii::app()->user->getState('isLead');",
 			),
@@ -157,6 +157,30 @@ class CustomerController extends Controller
 		$this->render('admin',array(
 			'model'=>$model,
 		));
+	}
+	
+	public function actionSearch($response='render'){
+		$term = $_GET['term'];
+		$model = new Customer('search');
+		$model->unsetAttributes();
+		$model->FIRST = $term;
+		$model->LAST = $term;
+		$model->COMPANY = $term;
+		$results = $model->search();
+		$juiResults = array();
+		foreach($results->data as $result){
+			//$juiResults[(string) $result->ID] = $result->summary;
+			$juiResults[] = array(
+				'label'=> $result->summary,
+				'value'=>$result->ID,
+				'id'=>$result->ID,
+			);
+		}
+		switch($response){
+			case 'json' : header('Content-Type: text/json'); echo CJSON::encode($results); break;
+			case 'juijson' : header('Content-Type: text/json'); echo CJSON::encode($juiResults); break; 
+			default: $this->render('index', array('dataProvider'=>$results)); break;
+		}
 	}
 
 	/**
