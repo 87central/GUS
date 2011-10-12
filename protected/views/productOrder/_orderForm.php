@@ -4,22 +4,23 @@
 		'name'=>$namePrefix . '[PRODUCT_ID]',
 	));?>
 	
-	<?php if($orderStatus == Order::CREATED || $orderStatus == null){?>
-		<?php echo CHtml::activeLabelEx($model, 'QUANTITY_ORDERED');?>
-		<?php echo CHtml::activeTextField($model, 'QUANTITY_ORDERED', array(
+	<?php if($orderStatus == null || $orderStatus == Order::CREATED || Yii::app()->user->getState('isAdmin')){
+		echo CHtml::activeLabelEx($model, 'QUANTITY_ORDERED');
+		echo CHtml::activeTextField($model, 'QUANTITY_ORDERED', array(
 			'name'=>$namePrefix . '[QUANTITY_ORDERED]',
-		));?>
-		<?php echo CHtml::error($model, 'QUANTITY_ORDERED');?>
-	<?php } else {?>
-		<?php echo CHtml::activeLabelEx($model, 'QUANTITY_ORDERED');?>
-		<?php echo $model->QUANTITY_ORDERED;?>
-		
-		<?php echo CHtml::activeLabelEx($model, 'QUANTITY_ARRIVED');?>
-		<?php echo CHtml::activeTextField($model, 'QUANTITY_ARRIVED', array(
+		));
+		echo CHtml::error($model, 'QUANTITY_ORDERED');
+	} else {
+		echo CHtml::activeLabelEx($model, 'QUANTITY_ORDERED');
+		echo $model->QUANTITY_ORDERED;
+	}
+	if($orderStatus != null && $orderStatus != Order::CREATED && !Yii::app()->user->getState('isAdmin')){
+		echo CHtml::activeLabelEx($model, 'QUANTITY_ARRIVED');
+		echo CHtml::activeTextField($model, 'QUANTITY_ARRIVED', array(
 			'name'=>$namePrefix . '[QUANTITY_ARRIVED]',
-		));?>
-		<?php echo CHtml::error($model, 'QUANTITY_ARRIVED');?>
-	<?php }?>
+		));
+		echo CHtml::error($model, 'QUANTITY_ARRIVED');
+	}?>
 	
 	<?php echo CHtml::activeLabelEx($model, 'COST');?>
 	<?php echo CHtml::activeTextField($model, 'COST', array(
