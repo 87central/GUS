@@ -348,7 +348,9 @@ DROP TABLE IF EXISTS `print`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `print` (
   `ID` int(11) NOT NULL AUTO_INCREMENT,
-  `PASS` int(11) DEFAULT NULL,
+  `FRONT_PASS` int(4) DEFAULT NULL,
+  `BACK_PASS` int(4) DEFAULT NULL,
+  `SLEEVE_PASS` int(4) DEFAULT NULL,
   `ART` varchar(200) DEFAULT NULL,
   `COST` decimal(5,2) DEFAULT NULL,
   `APPROVAL_DATE` datetime DEFAULT NULL,

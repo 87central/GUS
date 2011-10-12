@@ -141,6 +141,8 @@ class JobController extends Controller
 		$styles = Lookup::model()->findAllByAttributes(array('TYPE'=>'Style'));
 		$sizes = Lookup::model()->findAllByAttributes(array('TYPE'=>'Size'));
 		$colors = Lookup::model()->findAllByAttributes(array('TYPE'=>'Color'));
+		$passes = array(0, 1, 2, 3, 4, 5, 6); //as instructed by Ben, number of passes
+		//should be limited to a few numbers.
 		$print = new PrintJob;
 		
 
@@ -191,6 +193,7 @@ class JobController extends Controller
 			'styles'=>$styles,
 			'colors'=>$colors,
 			'sizes'=>$sizes,
+			'passes'=>$passes,
 		));
 	}
 
@@ -210,6 +213,8 @@ class JobController extends Controller
 		$styles = Lookup::model()->findAllByAttributes(array('TYPE'=>'Style'));
 		$sizes = Lookup::model()->findAllByAttributes(array('TYPE'=>'Size'));
 		$colors = Lookup::model()->findAllByAttributes(array('TYPE'=>'Color'));
+		$passes = array(0, 1, 2, 3, 4, 5, 6); //as instructed by Ben, number of passes
+		//should be limited to a few numbers.
 
 		// Uncomment the following line if AJAX validation is needed
 		// $this->performAjaxValidation($model);
@@ -259,6 +264,7 @@ class JobController extends Controller
 			'colors'=>$colors,
 			'sizes'=>$sizes,
 			'artLink'=>$artLink,
+			'passes'=>$passes,
 		));
 		
 	}

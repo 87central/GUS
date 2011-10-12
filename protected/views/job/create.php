@@ -22,4 +22,5 @@ $this->menu=array(
 	'colors'=>$colors,
 	'sizes'=>$sizes,
 	'print'=>$print,
+	'passes'=>$passes,
 )); ?>

@@ -42,7 +42,7 @@ class PrintJob extends CActiveRecord
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
 		return array(
-			array('PASS, APPROVAL_USER', 'numerical', 'integerOnly'=>true),
+			array('FRONT_PASS, BACK_PASS, SLEEVE_PASS, APPROVAL_USER', 'numerical', 'integerOnly'=>true),
 			array('ART', 'length', 'max'=>200),
 			array('APPROVAL_DATE', 'safe'),
 			array('COST', 'numerical'),
@@ -72,7 +72,9 @@ class PrintJob extends CActiveRecord
 	{
 		return array(
 			'ID' => 'ID',
-			'PASS' => 'Pass',
+			'FRONT_PASS' => 'Number of passes on front',
+			'BACK_PASS'=>'Number of passes on back',
+			'SLEEVE_PASS'=>'Number of passes on sleeve',
 			'ART' => 'Art',
 			'COST' => 'Cost',
 			'APPROVAL_DATE' => 'Approval Date',
@@ -116,5 +118,12 @@ class PrintJob extends CActiveRecord
 				$this->ART = $destination;
 			}			
 		}
+	}
+	
+	/**
+	 * Gets the total number of passes for this print overall.
+	 */
+	public function getPass(){
+		return $this->FRONT_PASS + $this->BACK_PASS + $this->SLEEVE_PASS;
 	}
 }
