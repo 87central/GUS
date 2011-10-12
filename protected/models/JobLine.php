@@ -54,7 +54,7 @@ class JobLine extends CActiveRecord
 		 * we need to adjust the inventory quantity appropriately if the quantity changes.
 		 * We also need to ensure that the product described does exist. If not, we will
 		 * create a placeholder stock item.*/
-		
+		$oldProduct = null;
 		if($this->_oldProductID !== null){
 			if($this->_oldProductID != $this->PRODUCT_ID){
 				$oldProduct = Product::model()->findByPk((int) $this->_oldProductID);
@@ -63,7 +63,7 @@ class JobLine extends CActiveRecord
 			}
 		}
 		
-		if($oldProduct && $this->isApproved){
+		if(isset($oldProduct) && $oldProduct && $this->isApproved){
 			$oldProduct->AVAILABLE += $this->_oldQuantity;
 		}
 		
@@ -83,7 +83,7 @@ class JobLine extends CActiveRecord
 				$newProduct->AVAILABLE = 0 - $this->QUANTITY;
 			}			
 		} else {
-			if($newProduct->ID == $this->product->ID){
+			if($newProduct->ID == $this->PRODUCT_ID){
 				$newProduct = $this->product;
 			}
 			if($this->isApproved){			

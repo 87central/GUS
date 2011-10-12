@@ -355,7 +355,7 @@ class Job extends CActiveRecord
 		foreach($this->jobLines as $line){
 			$lines += $line->total;
 		}
-		return $lines + $this->SET_UP_FEE + $this->printJob == null ? 0 : $this->printJob->COST;
+		return $lines + $this->SET_UP_FEE + ($this->printJob == null ? 0 : $this->printJob->COST);
 	}
 	
 	/**
