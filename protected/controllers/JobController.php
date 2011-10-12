@@ -252,7 +252,6 @@ class JobController extends Controller
 			$artLink = null;
 		}
 
-		echo $artLink;
 		$this->render('update',array(
 			'model'=>$model,
 			'customerList'=>$existingCustomers,
