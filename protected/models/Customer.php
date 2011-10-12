@@ -46,8 +46,11 @@ class Customer extends CActiveRecord
 	protected function beforeSave(){
 		if(parent::beforeSave()){
 			$saved = $this->userModel->save();
-			$this->USER_ID = $this->userModel->ID;
-			$this->userModel->ROLE = User::CUSTOMER_ROLE;
+			$this->USER_ID = $this->userModel->ID;			
+			$this->userModel->isCustomer = true;
+			$this->userModel->isPrinter = false;
+			$this->userModel->isAdmin = false;
+			$this->userModel->isLead = false;
 			return $saved;
 		} else {
 			return false;
