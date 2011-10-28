@@ -339,4 +339,24 @@ class Order extends CActiveRecord
 			throw new CException('Could not check in the order at this time.');
 		}
 	}
+	
+	/**
+	 * Gets a value indicating whether or not the order has been checked in.
+	 */
+	public function getIsCheckedIn(){
+		return $this->STATUS == Order::ARRIVED;
+	}
+	
+	/**
+	 * Gets a list of jobs associated with this order.
+	 */
+	public function getJobs(){
+		$jobs = array();
+		foreach($this->lines as $line){
+			foreach($this->jobLines as $jobLine){
+				$jobs[(string) $jobLine->job->ID] = $jobLine->job;
+			}
+		}
+		return $jobs;
+	}
 }

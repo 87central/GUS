@@ -61,17 +61,34 @@ class OrderController extends Controller
 	 * Creates a new model.
 	 * If creation is successful, the browser will be redirected to the 'view' page.
 	 */
-	public function actionCreate()
+	public function actionCreate($vendor=null)
 	{
+		if($vendor === null){
+			$this->redirect(array('order/create', 'vendor'=>Vendor::model()->find()->ID));
+		}
 		$model=new Order;
 		$vendors = Vendor::model()->findAll();
-		$products = Product::model()->findAll();
-		$neededProducts = array();
-		foreach($products as $product){
-			if($product->AVAILABLE < 0){
-				$neededProducts[] = $product;
+		$products = Product::model()->findAllByAttributes(array('VENDOR_ID'=>$vendor));
+		$neededProducts = array();		
+		$jobLines = JobLine::model()->findAllByAttributes(array('PRODUCT_ORDER_ID'=>null));
+		foreach($jobLines as $line){
+			$id = $line->product->ID;
+			if($line->product->VENDOR_ID == $vendor){
+				$neededProducts[$id]['ID'] = $id;
+				$neededProducts[$id]['PRODUCT'] = $line->product;
+				$neededProducts[$id]['LINES'][] = $line->ID;
 			}
 		}
+		
+		$newNeededProducts = array();
+		foreach($neededProducts as $key=>$needed){
+			$newNeededProducts[$key]['ID'] = $needed['ID'];
+			$newNeededProducts[$key]['PRODUCT'] = $needed['PRODUCT'];
+			$newNeededProducts[$key]['LINES'] = implode(',', $needed['LINES']);
+		}
+		
+		$neededProducts = $newNeededProducts;
+		
 		$neededProductsProvider = new CArrayDataProvider($neededProducts, array(
 			'keyField'=>'ID',
 		));
@@ -99,17 +116,35 @@ class OrderController extends Controller
 	 * If update is successful, the browser will be redirected to the 'view' page.
 	 * @param integer $id the ID of the model to be updated
 	 */
-	public function actionUpdate($id)
+	public function actionUpdate($id, $vendor=null)
 	{
+		if($vendor === null){
+			$this->redirect(array('order/update', 'id'=>$vendor, 'vendor'=>Vendor::model()->find()->ID));
+		}
+		
 		$model=$this->loadModel($id);
 		$vendors = Vendor::model()->findAll();
-		$products = Product::model()->findAll();
-		$neededProducts = array();
-		foreach($products as $product){
-			if($product->AVAILABLE < 0){
-				$neededProducts[] = $product;
+		$products = Product::model()->findAllByAttributes(array('VENDOR_ID'=>$vendor));
+		$neededProducts = array();		
+		$jobLines = JobLine::model()->findAllByAttributes(array('PRODUCT_ORDER_ID'=>null));
+		foreach($jobLines as $line){
+			$id = $line->product->ID;
+			if($line->product->VENDOR_ID == $vendor){
+				$neededProducts[$id]['ID'] = $id;
+				$neededProducts[$id]['PRODUCT'] = $line->product;
+				$neededProducts[$id]['LINES'][] = $line->ID;
 			}
 		}
+		
+		$newNeededProducts = array();
+		foreach($neededProducts as $key=>$needed){
+			$newNeededProducts[$key]['ID'] = $needed['ID'];
+			$newNeededProducts[$key]['PRODUCT'] = $needed['PRODUCT'];
+			$newNeededProducts[$key]['LINES'] = implode(',', $needed['LINES']);
+		}
+		
+		$neededProducts = $newNeededProducts;
+		
 		$neededProductsProvider = new CArrayDataProvider($neededProducts, array(
 			'keyField'=>'ID',
 		));
@@ -210,6 +245,7 @@ class OrderController extends Controller
 		$namePrefix = $_POST['namePrefix'];
 		$count = $_POST['count'];
 		$status = $_POST['status'];
+		$lines = $_POST['lines'];
 		$products = Product::model()->findAll();
 		$products = CHtml::listData($products, 'ID', 'summary');
 		$model = new ProductOrder;
@@ -224,6 +260,7 @@ class OrderController extends Controller
 			'namePrefix'=>$namePrefix . '[' . $count . ']',
 			'model'=>$model,
 			'orderStatus'=>$status,
+			'lines'=>$lines,
 		));
 	}
 	

@@ -1,3 +1,20 @@
+<?php
+function listJobs($model){
+	if(count($model->jobs) == 0){
+		return 'No Jobs';
+	}
+	ob_start();
+	
+	foreach($model->jobs as $job){
+		echo CHtml::link($job->NAME, array('job/update', 'id'=>$job->ID));
+		echo '<br/>';
+	}
+	$result = ob_get_contents();
+	ob_end_clean();
+	return $result;
+} 
+?>
+
 <?php $this->widget('zii.widgets.grid.CGridView', array(
 	'dataProvider'=>$createdProvider,
 	'columns'=>array(
@@ -8,6 +25,11 @@
 			'header'=>'New Orders',
 		),
 		'DATE::Creation Date',
+		array(
+			'header'=>'Jobs',
+			'value'=>"listJobs(\$data);",
+			'type'=>'raw',
+		),
 		array(
 			'class'=>'CLinkColumn',
 			'label'=>'Place Order',
@@ -26,6 +48,11 @@
 			'header'=>'Check In',
 		),
 		'placed::Date Ordered',
+		array(
+			'header'=>'Jobs',
+			'value'=>"listJobs(\$data);",
+			'type'=>'raw',
+		),
 		array(
 			'class'=>'CLinkColumn',
 			'label'=>'Check In',
@@ -50,6 +77,11 @@
 		),
 		'placed::Date Ordered',
 		'arrived::Date Received',
+		array(
+			'header'=>'Jobs',
+			'value'=>"listJobs(\$data);",
+			'type'=>'raw',
+		),
 		array(
 			'class'=>'CLinkColumn',
 			'label'=>'Short',

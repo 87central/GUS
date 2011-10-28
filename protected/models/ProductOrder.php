@@ -18,6 +18,7 @@
 class ProductOrder extends CActiveRecord
 {
 	private $_quantityArrived;
+	private $_jobLineQueue; //holds job line records to be saved while this doesn't have a PK.
 	
 	/**
 	 * Returns the static model of the specified AR class.
@@ -63,7 +64,7 @@ class ProductOrder extends CActiveRecord
 				$product = $this->PRODUCT;
 				if($this->_quantityArrived === null){
 					if($this->QUANTITY_ARRIVED !== null){
-						$product->AVAILABLE  = $product->AVAILABLE - $this->QUANTITY_ORDERED + $this->QUANTITY_ARRIVED;	
+						$product->AVAILABLE += $this->QUANTITY_ARRIVED;
 					} else {
 						$product->AVAILABLE += $this->QUANTITY_ORDERED;
 					}
@@ -81,6 +82,16 @@ class ProductOrder extends CActiveRecord
 			return false;
 		}
 	}
+	
+	public function afterSave(){
+		parent::afterSave();
+		if(isset($this->_jobLineQueue)){
+			foreach($this->_jobLineQueue as $line){
+				$line->PRODUCT_ORDER_ID = $this->ID;
+				$line->save();	
+			}
+		}
+	}
 
 	/**
 	 * @return array validation rules for model attributes.
@@ -92,7 +103,7 @@ class ProductOrder extends CActiveRecord
 		return array(
 			array('QUANTITY_ORDERED, QUANTITY_ARRIVED', 'numerical', 'integerOnly'=>true),
 			array('COST', 'numerical'),
-			array('ORDER_ID, PRODUCT_ID', 'safe'),
+			array('ORDER_ID, PRODUCT_ID, jobLineIDs', 'safe'),
 			// The following rule is used by search().
 			// Please remove those attributes that should not be searched.
 			array('ID, PRODUCT_ID, ORDER_ID, QUANTITY_ORDERED, QUANTITY_ARRIVED, COST', 'safe', 'on'=>'search'),
@@ -109,6 +120,7 @@ class ProductOrder extends CActiveRecord
 		return array(
 			'ORDER' => array(self::BELONGS_TO, 'Order', 'ORDER_ID'),
 			'PRODUCT' => array(self::BELONGS_TO, 'Product', 'PRODUCT_ID'),
+			'jobLines'=> array(self::HAS_MANY, 'JobLine', 'PRODUCT_ORDER_ID', 'order'=>'APPROVAL_DATE DESC'),
 		);
 	}
 
@@ -148,5 +160,84 @@ class ProductOrder extends CActiveRecord
 		return new CActiveDataProvider(get_class($this), array(
 			'criteria'=>$criteria,
 		));
+	}
+	
+	/**
+	 * Gets an array of IDs corresponding to the IDs of the job lines associated
+	 * with this ProductOrder.
+	 */
+	public function getJobLineIDs(){
+		$lineIDs = array();
+		foreach($this->jobLines as $line){
+			$lineIDs[] = $line->ID;
+		}
+		return $lineIDs;
+	}
+	
+	/**
+	 * Sets the list of IDs corresponding to the IDs of the job lines associated
+	 * with this ProductOrder. If the value is not an array, it is expected to 
+	 * be a comma-separated string of IDs.
+	 */
+	public function setJobLineIDs($value){
+		if(!is_array($value)){
+			$value = explode($value, ',');
+		}
+		$oldLines = $this->jobLines;
+		$criteria = new CDbCriteria;
+		$criteria->order = 'APPROVAL_DATE DESC';
+		$newLines = JobLine::model()->findAllByPk($value, $criteria);
+		
+		$retainedIDs = array();
+		foreach($oldLines as $line){
+			if(!in_array($line->ID, $value)){
+				$line->PRODUCT_ORDER_ID = null;
+				$line->save();
+			} else {
+				$retainedIDs[] = $line->ID;
+			}
+		}
+		
+		$this->_jobLineQueue = array();
+		foreach($newLines as $line){
+			if(!in_array($line->ID, $retainedIDs)){
+				$line->PRODUCT_ORDER_ID = $this->ID;
+				$line->save();
+			}
+			if($this->isNewRecord){
+				$this->_jobLineQueue[] = $line;
+			}
+		}
+	}
+	
+	/**
+	 * Gets a value indicating whether or not this order (or current stock) has (have) enough stock for
+	 * the given job line to be completed. The job line MUST be in the jobLines property
+	 * of this product order.
+	 * @return int The number of items that must be ordered to have enough for the given job line to be completed. 
+	 * The maximum quantity returned is the number of items needed for the line.
+	 * 
+	 * Note that this only applies when there is only one "open" order for a product at a time. Otherwise,
+	 * the unassigned product quantity will be mis-judged. 
+	 */
+	public function isShort($jobLine){
+		$quantity = $this->QUANTITY_ARRIVED === null ? $this->QUANTITY_ORDERED : $this->QUANTITY_ARRIVED;
+		$quantity = -1 * $quantity;
+		$reserveQuantity = $this->PRODUCT->AVAILABLE;
+		if($this->ORDER->STATUS == Order::ARRIVED){
+			$reserveQuantity -= $quantity; //since quantity is negative.
+		}
+		if($reserveQuantity > 0){
+			$quantity -= $reserveQuantity; //"add" the reserve quantity so that it is also taken into account
+		}
+		
+		$short = 0;
+		foreach($this->jobLines as $relJobLine){
+			$quantity += $relJobLine->QUANTITY;
+			if($quantity > 0 && $relJobLine->ID == $jobLine->ID){
+				$short = min($quantity, $jobLine->QUANTITY);
+			}
+		}
+		return $short;
 	}
 }

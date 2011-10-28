@@ -14,14 +14,15 @@ Yii::app()->clientScript->registerScript('add-line', "function addLine(sender, n
 		},
 	});
 }", CClientScript::POS_BEGIN);
-Yii::app()->clientScript->registerScript('add-line-with-product', "function addLineWithProduct(sender, namePrefix, status, product, checkbox, count){
+Yii::app()->clientScript->registerScript('add-line-with-product', "function addLineWithProduct(sender, namePrefix, status, product, checkbox, count, lines){
 	$.ajax({
 		url: '".CHtml::normalizeUrl(array('order/newLine', 'id'=>''))."' + product," .
 		"type: 'POST'," .
 		"data: {
 			namePrefix: namePrefix," .
 			"count: count," .
-			"status: status == null ? '' : status,
+			"status: (status == null ? '' : status)," .
+			"lines: lines,
 		}," .
 		"success: function(data){
 			$(sender).before(data);" .
@@ -65,6 +66,7 @@ Yii::app()->clientScript->registerScript('add-line-with-product', "function addL
 				'namePrefix'=>CHtml::activeName($model, 'lines') . '[0]',
 				'model'=>new ProductOrder,
 				'orderStatus'=>$model->STATUS,
+				'lines'=>null,
 			));
 		} else {
 			$index = 0;
@@ -74,6 +76,7 @@ Yii::app()->clientScript->registerScript('add-line-with-product', "function addL
 					'namePrefix'=>CHtml::activeName($model, 'lines') . '[' . $index . ']',
 					'model'=>$line,
 					'orderStatus'=>$model->STATUS,
+					'lines'=>implode($model->jobLineIDs, ','),
 				));
 				$index++;
 			}
@@ -106,12 +109,29 @@ Yii::app()->clientScript->registerScript('add-line-with-product', "function addL
 			'columns'=>array(
 				array(
 					'class'=>'CCheckBoxColumn',
-					'value'=>"\$data->ID",					
+					'value'=>"\$data['PRODUCT']->ID",					
 				),
-				'summary::Product Summary',
+				array(
+					'header'=>'Product Summary',
+					'value'=>"\$data['PRODUCT']->summary",
+				),
 				array(
 					'header'=>'Quantity Needed',
-					'value'=>"\$data->AVAILABLE * -1", //we will only be getting products with negative inventory
+					'value'=>"\$data['PRODUCT']->AVAILABLE * -1", //we will only be getting products with negative inventory
+				),
+				array(
+					'value'=>"CHtml::hiddenField('jobLines', \$data['LINES'])",
+					'type'=>'raw',
+					'htmlOptions'=>array(
+						'style'=>'display: none;',
+						'class'=>'jobLines',
+					),
+					'headerHtmlOptions'=>array(
+						'style'=>'display: none;',
+					),
+					'footerHtmlOptions'=>array(
+						'style'=>'display: none;',
+					),
 				),
 			),
 			'selectableRows'=>2,
@@ -120,7 +140,7 @@ Yii::app()->clientScript->registerScript('add-line-with-product', "function addL
 		
 		echo CHtml::button('Add Checked Products', array(
 			'onclick'=>"var count = $('.orderLine').size();$('.products tbody :checked').each(function(index){
-				addLineWithProduct($('#lines').children(':button').first()[0], '".CHtml::activeName($model, 'lines')."', ".($model->STATUS == null ? 'null' : $model->STATUS).", $(this).val(), this, count++);
+				addLineWithProduct($('#lines').children(':button').first()[0], '".CHtml::activeName($model, 'lines')."', ".($model->STATUS == null ? 'null' : $model->STATUS).", $(this).val(), this, count++, $(this).parent().parent().children('.jobLines').children(':hidden').val());
 			});"
 		));
 	?>

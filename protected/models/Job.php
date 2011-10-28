@@ -371,4 +371,28 @@ class Job extends CActiveRecord
 		}
 		return $base + $passes * $lines;
 	}
+	
+	/**
+	 * Gets a value indicating whether or not all orders associated with the 
+	 * job have been checked in.
+	 */
+	public function getIsCheckedIn(){
+		$checkedIn = count($this->jobLines) > 0;
+		foreach($this->jobLines as $line){
+			$checkedIn = $checkedIn && $line->isCheckedIn;
+		}
+		return $checkedIn;
+	}
+	
+	/**
+	 * Gets a list of orders associated with this job.
+	 */
+	public function getOrders(){
+		$orders = array();
+		foreach($this->jobLines as $jobLine){
+			$order = $jobLine->ORDER_LINE->ORDER;
+			$orders[(string) $order->ID] = $order;
+		}
+		return $orders;
+	}
 }

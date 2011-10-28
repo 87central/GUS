@@ -143,6 +143,7 @@ class JobLine extends CActiveRecord
 			'product' => array(self::BELONGS_TO, 'Product', 'PRODUCT_ID'),
 			'aPPROVALUSER' => array(self::BELONGS_TO, 'User', 'APPROVAL_USER'),
 			'job' => array(self::BELONGS_TO, 'Job', 'JOB_ID'),
+			'ORDER_LINE'=>array(self::BELONGS_TO, 'ProductOrder', 'PRODUCT_ORDER_ID'),
 		);
 	}
 
@@ -276,5 +277,13 @@ class JobLine extends CActiveRecord
 	 */
 	public function getIsApproved(){
 		return ($this->APPROVAL_USER != null);
+	}
+	
+	/**
+	 * Gets a value indicating whether or not the order associated with the productOrder
+	 * associated with this line has been checked in.
+	 */
+	public function getIsCheckedIn(){
+		return $this->orderLine->ORDER->isCheckedIn && !$this->orderLine->isShort($this);
 	}
 }

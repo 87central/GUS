@@ -35,6 +35,8 @@
 		'name'=>$namePrefix . '[ID]',
 		'class'=>'line_id',
 	));?>
+	
+	<?php echo CHtml::hiddenField($namePrefix.'[jobLineIDs]', $lines);?>
 </div>
 <?php Yii::app()->clientScript->registerScript('line-delete', "" .
 		"$('.line_remove').live('click', function(event){
