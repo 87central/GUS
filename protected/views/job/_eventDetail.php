@@ -1,3 +1,4 @@
+<?php $job = $item->assocObject;?>
 <?php $id = 'job_evt_'.$job->ID.$item->ID;?>
 <div id="<?php echo $id;?>">
 	<?php 
