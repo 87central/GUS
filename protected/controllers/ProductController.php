@@ -68,6 +68,7 @@ class ProductController extends Controller
 		$colorList = Lookup::listValues('Color');
 		$styleList = Lookup::listValues('Style');
 		$sizeList = Lookup::listValues('Size');
+		$vendorList = Vendor::model()->findAll();
 
 		// Uncomment the following line if AJAX validation is needed
 		// $this->performAjaxValidation($model);
@@ -85,6 +86,7 @@ class ProductController extends Controller
 			'colorList'=>$colorList,
 			'styleList'=>$styleList,
 			'sizeList'=>$sizeList,
+			'vendorList'=>$vendorList,
 		));
 	}
 
@@ -100,6 +102,7 @@ class ProductController extends Controller
 		$colorList = Lookup::listValues('Color');
 		$styleList = Lookup::listValues('Style');
 		$sizeList = Lookup::listValues('Size');
+		$vendorList = Vendor::model()->findAll();
 
 		// Uncomment the following line if AJAX validation is needed
 		// $this->performAjaxValidation($model);
@@ -117,6 +120,7 @@ class ProductController extends Controller
 			'colorList'=>$colorList,
 			'styleList'=>$styleList,
 			'sizeList'=>$sizeList,
+			'vendorList'=>$vendorList,
 		));
 	}
 

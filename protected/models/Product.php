@@ -69,6 +69,8 @@ class Product extends CActiveRecord
 		return array(
 			array('STATUS, STYLE, COLOR, SIZE, AVAILABLE', 'numerical', 'integerOnly'=>true),
 			array('COST', 'numerical'),
+			array('VENDOR_ID, VENDOR_ITEM_ID', 'required'),
+			array('VENDOR_ITEM_ID', 'length', 'max'=>50),
 			// The following rule is used by search().
 			// Please remove those attributes that should not be searched.
 			array('ID, COST, STATUS, STYLE, COLOR, SIZE, AVAILABLE', 'safe', 'on'=>'search'),
@@ -89,6 +91,7 @@ class Product extends CActiveRecord
 			'status' => array(self::BELONGS_TO, 'Lookup', 'STATUS'),
 			'style' => array(self::BELONGS_TO, 'Lookup', 'STYLE'),
 			'orders' => array(self::HAS_MANY, 'ProductOrder', 'PRODUCT_ID'),
+			'VENDOR'=> array(self::BELONGS_TO, 'Vendor', 'VENDOR_ID'),
 		);
 	}
 
@@ -105,6 +108,8 @@ class Product extends CActiveRecord
 			'COLOR' => 'Color',
 			'SIZE' => 'Size',
 			'AVAILABLE' => 'Surplus Inventory',
+			'VENDOR_ID' => 'Vendor',
+			'VENDOR_ITEM_ID' => 'Vendor Item ID',
 		);
 	}
 
@@ -138,5 +143,43 @@ class Product extends CActiveRecord
 	 */
 	public function getSummary(){
 		return $this->color->TEXT . ' ' . $this->style->TEXT . ', ' . $this->size->TEXT;
+	}
+	
+	/**
+	 * Gets a string representing the vendor information of this product.
+	 */
+	public function getVendorStyle(){
+		if(isset($this->VENDOR_ID) && isset($this->VENDOR_ITEM_ID)){
+			$summary = $this->VENDOR_ITEM_ID . ' - ' . $this->VENDOR->NAME; 
+		} else {
+			$summary = $this->ID . ' - ' . '8/7 Central';
+		}
+		return $summary;
+	}
+	
+	/**
+	 * Gets the colors that are available for the given vendor item ID.
+	 * @return array An array containing instances of Lookup with the allowed colors.
+	 */
+	public static function getAllowedColors($itemID){
+		$results = Product::model()->findAllByAttributes(array('VENDOR_ITEM_ID'=>$itemID));
+		$colors = array();
+		foreach($results as $product){
+			$colors[] = $product->color;
+		}
+		return $colors;
+	}
+	
+	/**
+	 * Gets the sizes that are available for the given vendor item ID.
+	 * @return array An array containing instances of Lookup with the allowed sizes.
+	 */
+	public static function getAllowedSizes($itemID){
+		$results = Product::model()->findAllByAttributes(array('VENDOR_ITEM_ID'=>$itemID));
+		$sizes = array();
+		foreach($results as $product){
+			$sizes[] = $product->size;
+		}
+		return $sizes;
 	}
 }

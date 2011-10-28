@@ -60,6 +60,7 @@ class Vendor extends CActiveRecord
 		// class name for the relations automatically generated below.
 		return array(
 			'orders' => array(self::HAS_MANY, 'Order', 'VENDOR_ID'),
+			'products' => array(self::HAS_MANY, 'Product', 'VENDOR_ID'),
 		);
 	}
 

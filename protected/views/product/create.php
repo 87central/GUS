@@ -18,4 +18,5 @@ $this->menu=array(
 	'colorList'=>$colorList,
 	'styleList'=>$styleList,
 	'sizeList'=>$sizeList,
+	'vendorList'=>$vendorList,
 )); ?>

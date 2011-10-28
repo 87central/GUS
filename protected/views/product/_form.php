@@ -8,6 +8,19 @@
 	<p class="note">Fields with <span class="required">*</span> are required.</p>
 
 	<?php echo $form->errorSummary($model); ?>
+	
+	<div class="row">
+		<?php echo $form->labelEx($model, 'VENDOR_ITEM_ID');?>
+		<?php echo $form->textField($model, 'VENDOR_ITEM_ID', array('size'=>30));?>
+		<?php echo $form->error($model, 'VENDOR_ITEM_ID');?>
+	</div>
+	
+	<div class="row">
+		<?php $vendors = CHtml::listData($vendorList, 'ID', 'NAME');?>
+		<?php echo $form->labelEx($model, 'VENDOR_ID');?>
+		<?php echo $form->dropDownList($model, 'VENDOR_ID', $vendors);?>
+		<?php echo $form->error($model, 'VENDOR_ID');?>
+	</div>
 
 	<div class="row">
 		<?php echo $form->labelEx($model,'COST'); ?>
