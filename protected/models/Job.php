@@ -93,7 +93,7 @@ class Job extends CActiveRecord
 			'RUSH' => 'Rush',
 			'SET_UP_FEE' => 'Set Up Fee',
 			'SCORE' => 'Score',
-			'QUOTE' => 'Quote',
+			'QUOTE' => 'Quoted',
 			'totalPasses' => 'Passes',
 			'formattedDueDate'=> 'Due Date',
 			'formattedPickUpDate' =>'Pickup Date',
