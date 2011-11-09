@@ -76,7 +76,7 @@ class PrintJob extends CActiveRecord
 			'BACK_PASS'=>'Number of passes on back',
 			'SLEEVE_PASS'=>'Number of passes on sleeve',
 			'ART' => 'Art',
-			'COST' => 'Cost',
+			'COST' => 'Art Charge',
 			'APPROVAL_DATE' => 'Approval Date',
 			'APPROVAL_USER' => 'Approval User',
 		);
