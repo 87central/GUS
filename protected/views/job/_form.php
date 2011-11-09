@@ -33,20 +33,6 @@ Yii::app()->clientScript->registerScript('add-job', "function addLine(sender, na
 	</div>
 	
 	<div class="row">
-		<?php echo $form->labelEx($model, 'formattedDueDate'); ?>
-		<?php $this->widget('zii.widgets.jui.CJuiDatePicker', array(
-			'name'=>'Job[formattedDueDate]',
-			'model'=>$model,
-			'attribute'=>'formattedDueDate',
-			'options'=>array(
-				'showAnim'=>'fold',
-				'dateFormat'=>'DD, MM d, yy',
-			),
-		));?>
-		<?php echo $form->error($model, 'formattedDueDate'); ?>
-	</div>
-	
-	<div class="row">
 		<?php echo $form->labelEx($model, 'formattedPickUpDate'); ?>
 		<?php $this->widget('zii.widgets.jui.CJuiDatePicker', array(
 			'name'=>'Job[formattedPickUpDate]',
@@ -187,21 +173,9 @@ Yii::app()->clientScript->registerScript('add-job', "function addLine(sender, na
 	</div>
 
 	<div class="row">
-		<?php echo $form->labelEx($model,'DESCRIPTION'); ?>
-		<?php echo $form->textArea($model,'DESCRIPTION',array('rows'=>6, 'cols'=>50)); ?>
-		<?php echo $form->error($model,'DESCRIPTION'); ?>
-	</div>
-
-	<div class="row">
 		<?php echo $form->labelEx($model,'NOTES'); ?>
 		<?php echo $form->textArea($model,'NOTES',array('rows'=>6, 'cols'=>50)); ?>
 		<?php echo $form->error($model,'NOTES'); ?>
-	</div>
-
-	<div class="row">
-		<?php echo $form->labelEx($model,'ISSUES'); ?>
-		<?php echo $form->textArea($model,'ISSUES',array('rows'=>6, 'cols'=>50)); ?>
-		<?php echo $form->error($model,'ISSUES'); ?>
 	</div>
 
 	<div class="row buttons">
