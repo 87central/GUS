@@ -182,4 +182,9 @@ class Product extends CActiveRecord
 		}
 		return $sizes;
 	}
+	
+	public static function getStyle($itemID){
+		$results = Product::model()->findByAttributes(array('VENDOR_ITEM_ID'=>$itemID));
+		return $results->style;
+	}
 }
