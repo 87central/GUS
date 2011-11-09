@@ -131,6 +131,7 @@ class Product extends CActiveRecord
 		$criteria->compare('COLOR',$this->COLOR);
 		$criteria->compare('SIZE',$this->SIZE);
 		$criteria->compare('AVAILABLE',$this->AVAILABLE);
+		$criteria->compare('VENDOR_ITEM_ID', $this->VENDOR_ITEM_ID, true);
 
 		return new CActiveDataProvider(get_class($this), array(
 			'criteria'=>$criteria,
