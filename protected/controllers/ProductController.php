@@ -22,7 +22,7 @@ class ProductController extends Controller
 	{
 		return array(
 			array('allow',
-				'actions'=>array('view', 'update', 'index'),
+				'actions'=>array('view', 'update', 'index', 'findProduct', 'allowedOptions'),
 				'users'=>array('@'),
 				'expression'=>"Yii::app()->user->getState('isDefaultRole');",
 			),
@@ -173,6 +173,37 @@ class ProductController extends Controller
 		$this->render('admin',array(
 			'model'=>$model,
 		));
+	}
+	
+	public function actionFindProduct($response='render'){
+		$term = $_GET['term'];
+		$model = new Product('search');
+		$model->unsetAttributes();
+		$model->VENDOR_ITEM_ID = $term;
+		$results = $model->search();
+		$juiResults = array();
+		foreach($results->data as $result){
+			$juiResults[] = array(
+				'label'=>$result->vendorStyle,
+				'value'=>$result->VENDOR_ITEM_ID,
+				'id'=>$result->VENDOR_ITEM_ID,
+			);
+		}
+		switch($response){
+			case 'json' : header('Content-Type: text/json'); echo CJSON::encode($results); break;
+			case 'juijson' : header('Content-Type: text/json'); echo CJSON::encode($juiResults); break;
+			default : $this->render('index', array('dataProvider'=>$results)); break;
+		}
+	}
+	
+	public function actionAllowedOptions($itemID){
+		//ajax only - return json of allowed colors and sizes
+		$results = array(
+			'colors'=>Product::getAllowedColors($itemID),
+			'sizes'=>Product::getAllowedSizes($itemID),
+			'style'=>Product::getStyle($itemID),
+		);
+		echo CJSON::encode($results);
 	}
 
 	/**
