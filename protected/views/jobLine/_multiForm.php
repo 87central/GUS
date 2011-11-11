@@ -5,36 +5,36 @@
 <div class="jobLines" id="<?php echo $div;?>">	
 	Style <?php $this->widget('zii.widgets.jui.CJuiAutoComplete', array(
 		'sourceUrl'=>array('product/findProduct', 'response'=>'juijson'),
+		'name'=>$namePrefix.'style',
 		'htmlOptions'=>array(
 			'class'=>'item-select',
 		),
 		'options'=>array(
 			'select'=>"js:function(event, ui){
-				\$.getJSON({
-					url: '".CHtml::normalizeUrl(array('product/allowedOptions'))."'," .
-					"success: function(data){
+				\$.getJSON(
+					'".CHtml::normalizeUrl(array('product/allowedOptions'))."'," .
+					"{
+						itemID: ui.item.id,
+					}," .
+					"function(data){
 						var colors = data.colors;" .
 						"var sizes = data.sizes;" .
 						"var style = data.style;" .
 						"\$('#".$div."').children('.jobLine').children('.line-style').val(style.ID);" .
 						"var colorOptions = $('<select></select>')" .
-						"	.attr('name', 'color-select')" .
-						"	.attr('id', '".CHtml::getIdByName($namePrefix.'colors')."')" .
-						"	.attr('class', 'color-select')" .
-						"	.attr('onchange', 'function(){\$(\\\'#".$div."\\\').children(\\\'.jobLine\\\').children(\\\'.line-color\\\').val(\$(\\\'#".CHtml::getIdByName($namePrefix.'colors')."\\\').val())}');" .
+							".attr('name', 'color-select')" .
+							".attr('id', '".CHtml::getIdByName($namePrefix.'colors')."')" .
+							".attr('class', 'color-select')" .
+							".attr('onchange', 'function(){\$(\'#".$div."\').children(\'.jobLine\').children(\'.line-color\').val(\$(\'#".CHtml::getIdByName($namePrefix.'colors')."\').val())}');" .
 						"for(var color in colors){
-							colorOptions.append($('<option></option>').val(color.ID).html(color.TEXT));
+							colorOptions.append($('<option></option>').val(colors[color].ID).html(colors[color].TEXT));
 						}" .
 						"\$('#".$div."').children('.color-select').replaceWith(colorOptions);" .
 						"\$('#".$div."').children('.jobLine').children('.score_part').attr('disabled', true).val(0);" .
 						"for(var size in sizes){
-							\$('#".$div."').children('.".$div."' + size.ID).children('.score_part').removeAttr('disabled');
+							\$('#".$div."').children('.".$div."' + sizes[size].ID).children('.score_part').removeAttr('disabled');
 						}
-					}" .
-					"data: {
-						itemID: ui.item.id,
-					}
-				});
+					});
 			}"
 		),
 	));?> 
@@ -44,13 +44,15 @@
 	<?php 
 	$approved = true;
 	$saved = true;
-	foreach($products as $product=>$line){
+	foreach($products as $dataLine){
+		$product = $dataLine['product'];
+		$line = $dataLine['line'];
 		$approved = $approved && $line->isApproved;
 		$saved = $saved && !$line->isNewRecord;
 		$linePrefix = $namePrefix . '['.$startIndex++.']';
 		$eachDiv = CHtml::getIdByName($linePrefix.'item');
 		?>
-		<div class="jobLine <?php $div.$product->SIZE;?>" id="<?php echo $eachDiv;?>">
+		<div class="jobLine <?php echo $div.$product->SIZE;?>" id="<?php echo $eachDiv;?>">
 			<?php /*vars for JS calculations*/?>
 			<?php $total = '#'.CHtml::getIdByName($linePrefix);?>
 			<?php $qty = '#'.CHtml::getIdByName($linePrefix . '[QUANTITY]');?>
