@@ -1,15 +1,49 @@
 <?php
 Yii::app()->clientScript->registerCoreScript('jquery'); 
 Yii::app()->clientScript->registerScript('add-job', "function addLine(sender, namePrefix){
-	$.ajax({
+	var count = $(sender).parent().children('.jobLines').children('.jobLine').children('.part').size();" .
+	"$.ajax({
 		url: '".CHtml::normalizeUrl(array('job/newLine'))."'," .
 		"type: 'POST'," .
 		"data: {
 			namePrefix: namePrefix," .
-			"count: $(sender).parent().children('.jobLine').size(),
+			"count: count,
 		}," .
 		"success: function(data){
-			$(sender).before(data);
+			$(sender).before(data);" .
+			"var div_id = \$(data).attr('id');" .
+			"\$('#' + div_id).children('.item-select').autocomplete({
+				'select': function(event, ui){
+					\$.getJSON(
+					'".CHtml::normalizeUrl(array('product/allowedOptions'))."'," .
+					"{
+						itemID: ui.item.id," .
+						"namePrefix: namePrefix," .
+						"count: count,
+					}," .
+					"function(data){
+						var colors = data.colors;" .
+						"var sizes = data.sizes;" .
+						"var style = data.style;" .
+						"\$('#' + div_id).children('.jobLine').children('.line-style').val(style.ID);" .
+						"var colorOptions = $('<select></select>')" .
+							"\n.attr('name', 'color-select')" .
+							".attr('class', 'color-select')" .
+							".change(function() {
+								\$('#' + div_id).children('.jobLine').children('.line-color').val(\$(colorOptions).val());" .
+							"});" .
+						"for(var color in colors){
+							colorOptions.append($('<option></option>').val(colors[color].ID).html(colors[color].TEXT));
+						}" .
+						"\$('#' + div_id).children('.color-select').replaceWith(colorOptions);" .
+						"\$('#' + div_id).children('.jobLine').children('.score_part').attr('disabled', true).val(0);" .
+						"for(var size in sizes){
+							\$('#' + div_id).children('.' + div_id + sizes[size].ID).children('.score_part').removeAttr('disabled');
+						}
+					});
+				}," .
+				"'source': '".CHtml::normalizeUrl(array('product/findProduct', 'response'=>'juijson'))."'
+			});
 		},
 	});
 }", CClientScript::POS_BEGIN);?>
@@ -89,29 +123,14 @@ Yii::app()->clientScript->registerScript('add-job', "function addLine(sender, na
 	
 	<div id="lines" class="row">
 		<?php
-		if($model->isNewRecord){
-			$this->renderPartial('//jobLine/_form', array(
-				'sizes'=>$sizeList,
-				'colors'=>$colorList,
-				'styles'=>$styleList,
-				'namePrefix'=>CHtml::activeName($model, 'jobLines') . '[0]',
-				'model'=>new JobLine,
-				'formatter'=>new Formatter,
+		$index = 0;
+		foreach($lineData as $lines){
+			$this->renderPartial('//jobLine/_multiForm', array(
+				'namePrefix'=>CHtml::activeName($model, 'jobLines'),
+				'startIndex'=>$index,
+				'products'=>$lines,
 			));
-		} else {
-			$index = 0;
-			foreach($model->jobLines as $line){
-				$view = !Yii::app()->user->getState('isAdmin') && $line->isApproved ? '//jobLine/_view' : '//jobLine/_form';
-				$this->renderPartial($view, array(
-					'sizes'=>$sizeList,
-					'colors'=>$colorList,
-					'styles'=>$styleList,
-					'namePrefix'=>CHtml::activeName($model, 'jobLines') . '[' . $index . ']',
-					'model'=>$line,
-					'formatter'=>new Formatter,
-				));
-				$index++;
-			}
+			$index += count($lines);
 		}?>
 		<?php echo CHtml::button('Add Garment', array(
 			'onclick'=>"addLine(this, '".CHtml::activeName($model, 'jobLines')."');",

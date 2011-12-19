@@ -62,15 +62,21 @@ class JobController extends Controller
 		$namePrefix = $_POST['namePrefix'];
 		$count = $_POST['count'];
 		
-		$styleList = $this->loadList('Style');
-		$sizeList = $this->loadList('Size');
-		$colorList = $this->loadList('Color');
-		$this->renderPartial('//jobLine/_form', array(
-			'styles'=>$styleList,
-			'sizes'=>$sizeList,
-			'colors'=>$colorList,
-			'namePrefix'=>$namePrefix . '[' . $count . ']',
-			'model'=>new JobLine,
+		$sizes = Lookup::listItems('Size');
+		$products = array();	
+		foreach($sizes as $size){
+			$product = new Product;
+			$product->SIZE = $size->ID;
+			$products[] = array(
+				'product'=>$product,
+				'line'=>new JobLine,
+			);	
+		}
+		
+		$this->renderPartial('//jobLine/_multiForm', array(
+			'namePrefix'=>$namePrefix,
+			'startIndex'=>$count,
+			'products'=>$products,
 		));
 	}
 	
@@ -145,6 +151,39 @@ class JobController extends Controller
 		//should be limited to a few numbers.
 		$print = new PrintJob;
 		
+		$lineData = array();
+		$products = array();	
+		foreach($sizes as $size){
+			$product = new Product;
+			$product->SIZE = $size->ID;
+			$products[] = array(
+				'product'=>$product,
+				'line'=>new JobLine,
+			);	
+		}
+				
+		$products['lines'] = $products;
+		$products['style'] = '';
+		$products['availableColors'] = array();
+		$products['currentColor'] = null;
+		$lineData[] = $products;
+		
+		/*
+		 * Now that I've totally forgotten the format, I think it's time to 
+		 * document what the format of the "lineData" array is. The parent array,
+		 * "lineData" is a list of lists. For each combination of style and color,
+		 * there is a list in "lineData". Each child list is composed of children 
+		 * with two elements: a "product" element of type Product which
+		 * has its "SIZE" property set to the corresponding size from the DB, and
+		 * a "line" element of type JobLine which represents the job line itself.
+		 * 
+		 * Every list in "lineData" should be grouped by color.
+		 * 
+		 * New change: each item of lineData is now a triplet of "lines", "style", "currentColor", and 
+		 * "availableColors". "lines" contains what was originally the item of lineData,
+		 * "style" contains text describing the selected vendor style, "availableColors"
+		 * contains the colors available for the selected vendor style (if any), already processed
+		 * with CHtml::listData, and "currentColor" contains the ID of the color for the group.*/
 
 		// Uncomment the following line if AJAX validation is needed
 		// $this->performAjaxValidation($model);
@@ -194,6 +233,7 @@ class JobController extends Controller
 			'colors'=>$colors,
 			'sizes'=>$sizes,
 			'passes'=>$passes,
+			'lineData'=>$lineData,
 		));
 	}
 
@@ -215,6 +255,45 @@ class JobController extends Controller
 		$colors = Lookup::model()->findAllByAttributes(array('TYPE'=>'Color'));
 		$passes = array(0, 1, 2, 3, 4, 5, 6); //as instructed by Ben, number of passes
 		//should be limited to a few numbers.
+		
+		$lineData = array();
+		$products = array();
+		$groupedLines = array();
+		foreach($model->jobLines as $line){
+			$groupedLines[(string) $line->product->STYLE][(string) $line->product->COLOR][(string) $line->product->SIZE] = $line;
+		}
+		
+		foreach($groupedLines as $style=>$styleGroup){
+			foreach($styleGroup as $color=>$colorGroup){
+				foreach($sizes as $size){ //iterating through sizes because we want ALL of them
+					if(isset($colorGroup[(string) $size->ID])){
+						$line = $colorGroup[(string) $size->ID];						
+						$products[] = array(
+							'product'=>$line->product,
+							'line'=>$line,
+						);
+						$latestProduct = $line->product;
+					} else {
+						$product = new Product;
+						$product->SIZE = $size->ID;
+						$product->STYLE = $style;
+						$product->COLOR = $color;
+						$products[] = array(
+							'product'=>$product,
+							'line'=>new JobLine,
+						);
+					}
+				}
+				if(count($products) > 0){
+					$products['lines'] = $products;
+					$products['style'] = $latestProduct->vendorStyle; //we'll always have a latestProduct, otherwise we wouldn't enter this loop
+					$products['availableColors'] = CHtml::listData(Product::getAllowedColors($latestProduct->VENDOR_ITEM_ID), 'ID', 'TEXT');
+					$products['currentColor'] = $color;
+					$lineData[] = $products;
+					$products = array();
+				}
+			}
+		}
 
 		// Uncomment the following line if AJAX validation is needed
 		// $this->performAjaxValidation($model);
@@ -264,6 +343,7 @@ class JobController extends Controller
 			'sizes'=>$sizes,
 			'artLink'=>$artLink,
 			'passes'=>$passes,
+			'lineData'=>$lineData,
 		));
 		
 	}

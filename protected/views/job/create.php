@@ -23,4 +23,5 @@ $this->menu=array(
 	'sizes'=>$sizes,
 	'print'=>$print,
 	'passes'=>$passes,
+	'lineData'=>$lineData,
 )); ?>

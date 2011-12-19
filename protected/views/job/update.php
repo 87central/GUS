@@ -27,4 +27,5 @@ $this->menu=array(
 	'print'=>$print,
 	'artLink'=>$artLink,
 	'passes'=>$passes,
+	'lineData'=>$lineData,
 )); ?>

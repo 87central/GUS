@@ -185,7 +185,7 @@ class ProductController extends Controller
 		foreach($results->data as $result){
 			$juiResults[] = array(
 				'label'=>$result->vendorStyle,
-				'value'=>$result->VENDOR_ITEM_ID,
+				'value'=>$result->vendorStyle,
 				'id'=>$result->VENDOR_ITEM_ID,
 			);
 		}
@@ -196,12 +196,13 @@ class ProductController extends Controller
 		}
 	}
 	
-	public function actionAllowedOptions($itemID){
+	public function actionAllowedOptions($itemID, $namePrefix, $count){
 		//ajax only - return json of allowed colors and sizes
 		$results = array(
 			'colors'=>Product::getAllowedColors($itemID),
 			'sizes'=>Product::getAllowedSizes($itemID),
 			'style'=>Product::getStyle($itemID),
+			'colors-name'=>CHtml::getIdByName($namePrefix . "[$count]" . 'colors'),
 		);
 		echo CJSON::encode($results);
 	}
