@@ -21,11 +21,14 @@
 			'value'=>$products['style'],
 		),
 		'options'=>array(
-			'select'=>"js:function(event, ui){
+			'select'=>"js:function(event, ui){" .
+				"var count = $('.jobLines').children('.jobLine').children('.part').size();
 				\$.getJSON(
 					'".CHtml::normalizeUrl(array('product/allowedOptions'))."'," .
 					"{
-						itemID: ui.item.id,
+						itemID: ui.item.id," .
+						"namePrefix: '".$namePrefix."'," .
+						"count: count,
 					}," .
 					"function(data){
 						var colors = data.colors;" .
