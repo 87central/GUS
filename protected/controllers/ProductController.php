@@ -181,6 +181,15 @@ class ProductController extends Controller
 		$model->unsetAttributes();
 		$model->VENDOR_ITEM_ID = $term;
 		$results = $model->search();
+		$prefiltered = array();
+		//we first want to filter out any duplicate records
+		foreach($results->data as $result){
+			$prefiltered[(string) $result->VENDOR_ITEM_ID] = $result;
+		}
+		$results = new CArrayDataProvider($prefiltered, array(
+			'keyField'=>'ID',
+		));
+		//then we can continue with what we were doing
 		$juiResults = array();
 		foreach($results->data as $result){
 			$juiResults[] = array(
