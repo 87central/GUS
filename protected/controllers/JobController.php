@@ -23,12 +23,12 @@ class JobController extends Controller
 	{
 		return array(
 			array('allow',
-				'actions'=>array('create', 'update', 'deleteLine', 'approveLine', 'newLine', 'view', 'list', 'index'),
+				'actions'=>array('create', 'update', 'deleteLine', 'approveLine', 'newLine', 'view', 'list', 'index', 'garmentCost'),
 				'users'=>array('@'),
 				'expression'=>"Yii::app()->user->getState('isDefaultRole');",
 			),
 			array('allow',
-				'actions'=>array('create', 'update', 'deleteLine', 'approveLine', 'newLine', 'view', 'list', 'index'),
+				'actions'=>array('create', 'update', 'deleteLine', 'approveLine', 'newLine', 'view', 'list', 'index', 'garmentCost'),
 				'users'=>array('@'),
 				'expression'=>"Yii::app()->user->getState('isLead');",
 			),
@@ -131,6 +131,11 @@ class JobController extends Controller
 				throw new CException('Could not delete the job line.');
 			}
 		}
+	}
+	
+	public function actionGarmentCost($garments, $front, $back, $sleeve){
+		$result = array('result'=>CostCalculator::calculateTotal($garments, $front, $back, $sleeve, 0));
+		echo CJSON::encode($result);
 	}
 
 	/**

@@ -46,7 +46,23 @@ Yii::app()->clientScript->registerScript('add-job', "function addLine(sender, na
 			});
 		},
 	});
-}", CClientScript::POS_BEGIN);?>
+}", CClientScript::POS_BEGIN);
+
+Yii::app()->clientScript->registerScript('calculate-total', "" .
+		"function calculateTotal(garments, front, back, sleeve, dest){
+			var result = 0;" .
+			"$.getJSON('".CHtml::normalizeUrl(array('job/garmentCost'))."'," .
+			"{
+				garments: garments," .
+				"front: front," .
+				"back: back," .
+				"sleeve: sleeve,
+			}," .
+			"function(data){
+				\$(dest).val(data.result).change();
+			});
+		}", 
+CClientScript::POS_BEGIN);?>
 
 <div class="form">
 
@@ -154,14 +170,34 @@ Yii::app()->clientScript->registerScript('add-job', "function addLine(sender, na
 	<div class="row">
 		<?php echo CHtml::label('Auto Quote Total', 'auto_total');?>
 		<?php echo CHtml::textField('auto_total', $model->total, array('readonly'=>'readonly', 'id'=>'auto_total'));?>
-		<?php Yii::app()->clientScript->registerScript('auto-totaler', "" .
+		<?php echo CHtml::label('Auto Quote Total Per Garment', 'auto_total_each');?>
+		<?php echo CHtml::textField('auto_total_each', $model->garmentPrice, array('readonly'=>'readonly', 'id'=>'auto_total_each'))?>
+		<?php echo CHtml::hiddenField('garment_total', 0, array('id'=>'garment_total', 'class'=>'part'));?>
+		<?php Yii::app()->clientScript->registerScript('auto-garment-totaler', "" .
+				"$('.item_qty, .sleeve_pass, .front_pass, .back_pass').live('change keyup', function(){
+					var qty = 0;" .
+					"$('.item_qty').each(function(index){
+						qty += (1 * $(this).val());
+					});" .
+					"calculateTotal(qty, $('.front_pass').val(), $('.back_pass').val(), $('.sleeve_pass').val(), $('#garment_total'));
+				})", 
+		CClientScript::POS_END);
+		
+		Yii::app()->clientScript->registerScript('auto-totaler', "" .
 				"$('.part').live('change keyup', function(){
 					var total = 0;" .
 					"$('.part').each(function(index){
 						total += (1 * $(this).val());
 					});" .
-					"$('#auto_total').val(total);
-				})", 
+					"$('#auto_total').val(total);" .
+					"" .
+					"var qty = 0;" .
+					"$('.item_qty').each(function(index){
+						qty += (1 * $(this).val());
+					});" .
+					"$('#auto_total_each').val((qty == 0) ? 0 : total / qty);" .
+					"$('#garment_qty').val(qty).change();
+				});", 
 		CClientScript::POS_END);?>
 	</div>
 	
@@ -184,10 +220,35 @@ Yii::app()->clientScript->registerScript('add-job', "function addLine(sender, na
 				});", 
 		CClientScript::POS_END);?>
 	</div>
+	
+	<div class="row">
+		<?php $garmentCount = $model->garmentCount;?>
+		<?php echo CHtml::label('Garment Count', 'garment_qty');?>
+		<?php echo CHtml::textField('garment_qty', $garmentCount, array(
+			'id'=>'garment_qty',
+			'readonly'=>'readonly',
+			'onchange'=>"js:\$('#".CHtml::getActiveId($model, 'QUOTE')."').val($(this).val() * $('#item_total').val());",
+			'onkeyup'=>"js:\$('#".CHtml::getActiveId($model, 'QUOTE')."').val($(this).val() * $('#item_total').val());"
+		));?>
+	</div>
+	
+	<div class="row">
+		<?php echo CHtml::label('Total Per Garment', 'item_total');?>
+		<?php echo CHtml::textField('item_total', ($garmentCount == 0) ? 0 : $model->QUOTE / $garmentCount, array(
+			'id'=>'item_total',
+			'onchange'=>"\$('#".CHtml::getActiveId($model, 'QUOTE')."').val($(this).val() * $('#garment_qty').val());",
+			'onkeyup'=>"\$('#".CHtml::getActiveId($model, 'QUOTE')."').val($(this).val() * $('#garment_qty').val());"
+		));?>
+	</div>
 
 	<div class="row">
 		<?php echo $form->labelEx($model,'QUOTE'); ?>
-		<?php echo $form->textField($model,'QUOTE',array('size'=>7,'maxlength'=>7)); ?>
+		<?php echo $form->textField($model,'QUOTE',array(
+			'size'=>7,
+			'maxlength'=>7,
+			'onchange'=>"\$('#item_total').val($(this).val() / $('#garment_qty').val());",
+			'onkeyup'=>"\$('#item_total').val($(this).val() / $('#garment_qty').val());"
+		)); ?>
 		<?php echo $form->error($model,'QUOTE'); ?>
 	</div>
 

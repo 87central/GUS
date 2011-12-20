@@ -87,7 +87,7 @@
 			<?php echo CHtml::activeTextField($line, 'QUANTITY', array(
 				'name'=>$linePrefix . '[QUANTITY]',
 				'onkeyup'=>"$('".$total."').val((1 * $('".$qty."').val()) * $('".$price."').val()).change();",
-				'class'=>'score_part',
+				'class'=>'score_part item_qty',
 				'size'=>5,
 				'disabled'=>($product->ID == null), //only disable if the product doesn't seem to exist.
 			));?>

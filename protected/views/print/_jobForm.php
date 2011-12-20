@@ -6,19 +6,19 @@
 	
 	<div class="row passes">
 		<?php echo CHtml::activeLabelEx($model,'FRONT_PASS'); ?>
-		<?php echo CHtml::activeDropDownList($model,'FRONT_PASS', $passes, array('class'=>'pass_part')); ?>
+		<?php echo CHtml::activeDropDownList($model,'FRONT_PASS', $passes, array('class'=>'pass_part front_pass')); ?>
 		<?php echo CHtml::error($model,'FRONT_PASS'); ?>
 	</div>
 	
 	<div class="row passes">
 		<?php echo CHtml::activeLabelEx($model,'BACK_PASS'); ?>
-		<?php echo CHtml::activeDropDownList($model,'BACK_PASS', $passes, array('class'=>'pass_part')); ?>
+		<?php echo CHtml::activeDropDownList($model,'BACK_PASS', $passes, array('class'=>'pass_part back_pass')); ?>
 		<?php echo CHtml::error($model,'BACK_PASS'); ?>
 	</div>
 	
 	<div class="row passes">
 		<?php echo CHtml::activeLabelEx($model,'SLEEVE_PASS'); ?>
-		<?php echo CHtml::activeDropDownList($model,'SLEEVE_PASS', $passes, array('class'=>'pass_part')); ?>
+		<?php echo CHtml::activeDropDownList($model,'SLEEVE_PASS', $passes, array('class'=>'pass_part sleeve_pass')); ?>
 		<?php echo CHtml::error($model,'SLEEVE_PASS'); ?>
 	</div>
 	

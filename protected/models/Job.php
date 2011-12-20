@@ -94,6 +94,8 @@ class Job extends CActiveRecord
 			'SET_UP_FEE' => 'Set Up Fee',
 			'SCORE' => 'Score',
 			'QUOTE' => 'Quoted',
+			'score' => 'Auto Score',
+			'quote' => 'Auto Quote Total',
 			'totalPasses' => 'Passes',
 			'formattedDueDate'=> 'Due Date',
 			'formattedPickUpDate' =>'Pickup Date',
@@ -351,11 +353,33 @@ class Job extends CActiveRecord
 	 * Gets the total cost (for the customer) of the job.
 	 */
 	public function getTotal(){
-		$lines = 0; //for total cost of all lines
-		foreach($this->jobLines as $line){
-			$lines += $line->total;
+		$front = 0;
+		$back = 0;
+		$sleeve = 0;
+		if($this->printJob){
+			$front = $this->printJob->FRONT_PASS;
+			$back = $this->printJob->BACK_PASS;
+			$sleeve = $this->printJob->SLEEVE_PASS;
 		}
-		return $lines + $this->SET_UP_FEE + ($this->printJob == null ? 0 : $this->printJob->COST);
+		
+		$garmentTotal = CostCalculator::calculateTotal($this->garmentCount, $front, $back, $sleeve, 0);
+		return $garmentTotal + $this->SET_UP_FEE + ($this->printJob == null ? 0 : $this->printJob->COST);
+	}
+	
+	/**
+	 * Gets the total auto-generated cost (for the customer) for each garment.
+	 */
+	public function getGarmentPrice(){
+		$garments = $this->garmentCount;
+		return ($garments == 0 ? 0 : $this->total / $garments);
+	}
+	
+	public function getGarmentCount(){
+		$garments = 0;
+		foreach($this->jobLines as $line){
+			$garments += $line->QUANTITY;
+		}
+		return $garments;
 	}
 	
 	/**
