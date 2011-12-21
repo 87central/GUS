@@ -25,6 +25,7 @@ Yii::app()->clientScript->registerScript('add-job', "function addLine(sender, na
 						var colors = data.colors;" .
 						"var sizes = data.sizes;" .
 						"var style = data.style;" .
+						"var cost = data.productCost;" .
 						"\$('#' + div_id).children('.jobLine').children('.line-style').val(style.ID);" .
 						"var colorOptions = $('<select></select>')" .
 							"\n.attr('name', 'color-select')" .
@@ -37,6 +38,7 @@ Yii::app()->clientScript->registerScript('add-job', "function addLine(sender, na
 						}" .
 						"\$('#' + div_id).children('.color-select').replaceWith(colorOptions);" .
 						"\$('#' + div_id).children('.jobLine').children('.score_part').attr('disabled', true).val(0);" .
+						"\$('#".$div."').children('.jobLine').children('.hidden_cost').val(cost);" .
 						"for(var size in sizes){
 							\$('#' + div_id).children('.' + div_id + sizes[size].ID).children('.score_part').removeAttr('disabled');
 						}

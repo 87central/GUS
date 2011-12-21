@@ -29,6 +29,7 @@
 						var colors = data.colors;" .
 						"var sizes = data.sizes;" .
 						"var style = data.style;" .
+						"var cost = data.productCost;" .
 						"\$('#".$div."').children('.jobLine').children('.line-style').val(style.ID);" .
 						"var colorOptions = $('<select></select>')" .
 							".attr('name', 'color-select')" .
@@ -40,6 +41,7 @@
 							colorOptions.append($('<option></option>').val(colors[color].ID).html(colors[color].TEXT));
 						}" .
 						"\$('#".$div."').children('.color-select').replaceWith(colorOptions);" .
+						"\$('#".$div."').children('.jobLine').children('.hidden_cost').val(cost);" .
 						"\$('#".$div."').children('.jobLine').children('.score_part').attr('disabled', true).val(0);" .
 						"for(var size in sizes){
 							\$('#".$div."').children('.".$div."' + sizes[size].ID).children('.score_part').removeAttr('disabled');
@@ -92,8 +94,10 @@
 				'name'=>$linePrefix . '[PRICE]',
 				'onchange'=>"$('".$total."').val((1 * $('".$qty."').val()) * $('".$price."').val()).change();",
 				'class'=>'hidden_cost',
-				'value'=>0, //temporary
+				'value'=>$product->COST, 
 			));?>
+			<?php /*the "PRICE" of a job line, then, is actually the cost to buy
+			the garment from the manufacturer.*/?>
 			
 			<?php echo CHtml::activeHiddenField($line, 'total', array(
 				'class'=>'part',
@@ -209,6 +213,7 @@ CClientScript::POS_END);?>
 								var colors = data.colors;" .
 								"var sizes = data.sizes;" .
 								"var style = data.style;" .
+								"var cost = data.productCost;" .
 								"\$('#' + div_id).children('.jobLine').children('.line-style').val(style.ID);" .
 								"var colorOptions = $('<select></select>')" .
 									"\n.attr('name', 'color-select')" .
@@ -221,6 +226,7 @@ CClientScript::POS_END);?>
 								}" .
 								"\$('#' + div_id).children('.color-select').replaceWith(colorOptions);" .
 								"\$('#' + div_id).children('.jobLine').children('.score_part').attr('disabled', true).val(0);" .
+								"\$('#".$div."').children('.jobLine').children('.hidden_cost').val(cost);" .
 								"for(var size in sizes){
 									\$('#' + div_id).children('.' + div_id + sizes[size].ID).children('.score_part').removeAttr('disabled');
 								}

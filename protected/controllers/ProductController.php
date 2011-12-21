@@ -212,6 +212,7 @@ class ProductController extends Controller
 			'sizes'=>Product::getAllowedSizes($itemID),
 			'style'=>Product::getStyle($itemID),
 			'colors-name'=>CHtml::getIdByName($namePrefix . "[$count]" . 'colors'),
+			'productCost'=>Product::getCost($itemID),
 		);
 		echo CJSON::encode($results);
 	}

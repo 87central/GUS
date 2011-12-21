@@ -15,11 +15,11 @@ class CostCalculator extends CComponent {
 	public static function calculateTotal($garments, $frontPasses, $backPasses, $sleevePasses, $surcharge){
 		$result = 0;
 		switch($frontPasses + $backPasses + $sleevePasses){
-			case 1 : $thresholds = array(7.50, 8.50, 10.50, 13, 16);
+			case 1 : $thresholds = array(3.50, 4.50, 6.50, 9, 12);
 					 break;
-			case 2 : $thresholds = array(8.20, 9.30, 11.50, 16, 18);
+			case 2 : $thresholds = array(4.20, 5.30, 7.50, 12, 14);
 					 break;
-			default : $thresholds = array(9.25, 11.30, 14, 18, 20);
+			default : $thresholds = array(5.25, 7.30, 10, 14, 16);
 					  break;
 		}
 		$cutoffs = array(200, 100, 50, 24, 12); //must be backwards, otherwise the last item would almost always be greater.

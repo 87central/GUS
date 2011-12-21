@@ -363,6 +363,7 @@ class Job extends CActiveRecord
 		}
 		
 		$garmentTotal = CostCalculator::calculateTotal($this->garmentCount, $front, $back, $sleeve, 0);
+		$garmentTotal += $this->garmentCost;
 		return $garmentTotal + $this->SET_UP_FEE + ($this->printJob == null ? 0 : $this->printJob->COST);
 	}
 	
@@ -370,7 +371,7 @@ class Job extends CActiveRecord
 	 * Gets the total auto-generated cost (for the customer) for each garment.
 	 */
 	public function getGarmentPrice(){
-		$garments = $this->garmentCount;
+		$garments = $this->garmentCount;		
 		return ($garments == 0 ? 0 : $this->total / $garments);
 	}
 	
@@ -378,6 +379,18 @@ class Job extends CActiveRecord
 		$garments = 0;
 		foreach($this->jobLines as $line){
 			$garments += $line->QUANTITY;
+		}
+		return $garments;
+	}
+	
+	/**
+	 * Gets the total auto-generated cost (for 8/7 central) for each garment. This
+	 * is in contrast to getGarmentPrice() which retrieves the cost <i>for the customer</i>.
+	 */
+	public function getGarmentCost(){
+		$garments = 0;
+		foreach($this->jobLines as $line){
+			$garments += $line->QUANTITY * $line->product->COST;
 		}
 		return $garments;
 	}

@@ -188,4 +188,13 @@ class Product extends CActiveRecord
 		$results = Product::model()->findByAttributes(array('VENDOR_ITEM_ID'=>$itemID));
 		return $results->style;
 	}
+	
+	/**
+	 * Gets the cost of the item, provided by the manufacturer.
+	 * @return float The cost of the item.
+	 */
+	public static function getCost($itemID){
+		$results = Product::model()->findByAttributes(array('VENDOR_ITEM_ID'=>$itemID));
+		return $results->COST;
+	}
 }
