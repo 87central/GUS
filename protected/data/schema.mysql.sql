@@ -1,3 +1,5 @@
+CREATE DATABASE  IF NOT EXISTS `gus` /*!40100 DEFAULT CHARACTER SET utf8 */;
+USE `gus`;
 -- MySQL dump 10.13  Distrib 5.5.9, for Win32 (x86)
 --
 -- Host: localhost    Database: gus
@@ -16,89 +18,170 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
--- Current Database: `gus`
+-- Table structure for table `customer`
 --
 
-CREATE DATABASE /*!32312 IF NOT EXISTS*/ `gus` /*!40100 DEFAULT CHARACTER SET utf8 */;
-
-USE `gus`;
-
---
--- Table structure for table `authassignment`
---
-
-DROP TABLE IF EXISTS `authassignment`;
+DROP TABLE IF EXISTS `customer`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `authassignment` (
-  `itemname` varchar(64) NOT NULL,
-  `userid` int(11) NOT NULL,
-  `bizrule` text,
-  `data` text,
-  PRIMARY KEY (`itemname`,`userid`),
-  CONSTRAINT `authassignment_ibfk_1` FOREIGN KEY (`itemname`) REFERENCES `authitem` (`name`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+CREATE TABLE `customer` (
+  `ID` int(11) NOT NULL AUTO_INCREMENT,
+  `USER_ID` int(11) NOT NULL,
+  `COMPANY` varchar(45) DEFAULT NULL,
+  `NOTES` text,
+  `TERMS` text,
+  PRIMARY KEY (`ID`),
+  KEY `customer_user` (`USER_ID`),
+  CONSTRAINT `customer_user` FOREIGN KEY (`USER_ID`) REFERENCES `user` (`ID`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `authassignment`
+-- Dumping data for table `customer`
 --
 
-LOCK TABLES `authassignment` WRITE;
-/*!40000 ALTER TABLE `authassignment` DISABLE KEYS */;
-/*!40000 ALTER TABLE `authassignment` ENABLE KEYS */;
+LOCK TABLES `customer` WRITE;
+/*!40000 ALTER TABLE `customer` DISABLE KEYS */;
+
+/*!40000 ALTER TABLE `customer` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
--- Table structure for table `authitem`
+-- Table structure for table `product`
 --
 
-DROP TABLE IF EXISTS `authitem`;
+DROP TABLE IF EXISTS `product`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `authitem` (
-  `name` varchar(64) NOT NULL,
-  `type` int(11) NOT NULL,
-  `description` text,
-  `bizrule` text,
-  `data` text,
-  PRIMARY KEY (`name`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+CREATE TABLE `product` (
+  `ID` int(11) NOT NULL AUTO_INCREMENT,
+  `COST` decimal(5,2) DEFAULT NULL,
+  `STATUS` int(11) DEFAULT NULL,
+  `STYLE` int(11) DEFAULT NULL,
+  `COLOR` int(11) DEFAULT NULL,
+  `SIZE` int(11) DEFAULT NULL,
+  `AVAILABLE` int(11) DEFAULT '0',
+  `VENDOR_ID` int(11) DEFAULT NULL,
+  `VENDOR_ITEM_ID` varchar(50) DEFAULT NULL,
+  PRIMARY KEY (`ID`),
+  KEY `product_status` (`STATUS`),
+  KEY `product_color` (`COLOR`),
+  KEY `product_style` (`STYLE`),
+  KEY `product_size` (`SIZE`),
+  KEY `product_vendor` (`VENDOR_ID`),
+  CONSTRAINT `product_color` FOREIGN KEY (`COLOR`) REFERENCES `lookup` (`ID`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `product_size` FOREIGN KEY (`SIZE`) REFERENCES `lookup` (`ID`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `product_status` FOREIGN KEY (`STATUS`) REFERENCES `lookup` (`ID`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `product_style` FOREIGN KEY (`STYLE`) REFERENCES `lookup` (`ID`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `product_vendor` FOREIGN KEY (`VENDOR_ID`) REFERENCES `vendor` (`ID`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB AUTO_INCREMENT=34 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `authitem`
+-- Dumping data for table `product`
 --
 
-LOCK TABLES `authitem` WRITE;
-/*!40000 ALTER TABLE `authitem` DISABLE KEYS */;
-/*!40000 ALTER TABLE `authitem` ENABLE KEYS */;
+LOCK TABLES `product` WRITE;
+/*!40000 ALTER TABLE `product` DISABLE KEYS */;
+
+/*!40000 ALTER TABLE `product` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
--- Table structure for table `authitemchild`
+-- Table structure for table `vendor`
 --
 
-DROP TABLE IF EXISTS `authitemchild`;
+DROP TABLE IF EXISTS `vendor`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `authitemchild` (
-  `parent` varchar(64) NOT NULL,
-  `child` varchar(64) NOT NULL,
-  PRIMARY KEY (`parent`,`child`),
-  KEY `child` (`child`),
-  CONSTRAINT `authitemchild_ibfk_1` FOREIGN KEY (`parent`) REFERENCES `authitem` (`name`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `authitemchild_ibfk_2` FOREIGN KEY (`child`) REFERENCES `authitem` (`name`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+CREATE TABLE `vendor` (
+  `ID` int(11) NOT NULL AUTO_INCREMENT,
+  `NAME` varchar(45) DEFAULT NULL,
+  `EMAIL` varchar(45) DEFAULT NULL,
+  `PHONE` int(13) DEFAULT NULL,
+  `WEBSITE` varchar(200) DEFAULT NULL,
+  `CONTACT_NAME` varchar(200) DEFAULT NULL,
+  PRIMARY KEY (`ID`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `authitemchild`
+-- Dumping data for table `vendor`
 --
 
-LOCK TABLES `authitemchild` WRITE;
-/*!40000 ALTER TABLE `authitemchild` DISABLE KEYS */;
-/*!40000 ALTER TABLE `authitemchild` ENABLE KEYS */;
+LOCK TABLES `vendor` WRITE;
+/*!40000 ALTER TABLE `vendor` DISABLE KEYS */;
+
+/*!40000 ALTER TABLE `vendor` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `product_order`
+--
+
+DROP TABLE IF EXISTS `product_order`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `product_order` (
+  `ID` int(11) NOT NULL AUTO_INCREMENT,
+  `PRODUCT_ID` int(11) DEFAULT NULL,
+  `ORDER_ID` int(11) DEFAULT NULL,
+  `QUANTITY_ORDERED` int(11) DEFAULT NULL,
+  `QUANTITY_ARRIVED` int(11) DEFAULT NULL,
+  `COST` decimal(5,2) DEFAULT NULL,
+  PRIMARY KEY (`ID`),
+  KEY `line_product` (`PRODUCT_ID`),
+  KEY `line_order` (`ORDER_ID`),
+  CONSTRAINT `line_order` FOREIGN KEY (`ORDER_ID`) REFERENCES `order` (`ID`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `line_product` FOREIGN KEY (`PRODUCT_ID`) REFERENCES `product` (`ID`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `product_order`
+--
+
+LOCK TABLES `product_order` WRITE;
+/*!40000 ALTER TABLE `product_order` DISABLE KEYS */;
+
+/*!40000 ALTER TABLE `product_order` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `event_log`
+--
+
+DROP TABLE IF EXISTS `event_log`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `event_log` (
+  `ID` int(11) NOT NULL AUTO_INCREMENT,
+  `OBJECT_ID` int(11) NOT NULL,
+  `EVENT_ID` int(11) NOT NULL,
+  `DATE` datetime DEFAULT NULL,
+  `TIMESTAMP` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `USER_ID` int(11) DEFAULT NULL,
+  `USER_ASSIGNED` int(11) DEFAULT NULL,
+  `COMMENTS` text,
+  `OBJECT_TYPE` varchar(100) NOT NULL,
+  PRIMARY KEY (`ID`),
+  KEY `log_event` (`EVENT_ID`),
+  KEY `log_user` (`USER_ID`),
+  KEY `log_assigned_user` (`USER_ASSIGNED`),
+  CONSTRAINT `log_assigned_user` FOREIGN KEY (`USER_ASSIGNED`) REFERENCES `user` (`ID`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `log_event` FOREIGN KEY (`EVENT_ID`) REFERENCES `lookup` (`ID`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `log_user` FOREIGN KEY (`USER_ID`) REFERENCES `user` (`ID`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB AUTO_INCREMENT=33 DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `event_log`
+--
+
+LOCK TABLES `event_log` WRITE;
+/*!40000 ALTER TABLE `event_log` DISABLE KEYS */;
+
+/*!40000 ALTER TABLE `event_log` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -132,72 +215,6 @@ LOCK TABLES `credit_card` WRITE;
 UNLOCK TABLES;
 
 --
--- Table structure for table `customer`
---
-
-DROP TABLE IF EXISTS `customer`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `customer` (
-  `ID` int(11) NOT NULL AUTO_INCREMENT,
-  `USER_ID` int(11) NOT NULL,
-  `COMPANY` varchar(45) DEFAULT NULL,
-  `NOTES` text,
-  `TERMS` text,
-  PRIMARY KEY (`ID`),
-  KEY `customer_user` (`USER_ID`),
-  CONSTRAINT `customer_user` FOREIGN KEY (`USER_ID`) REFERENCES `user` (`ID`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `customer`
---
-
-LOCK TABLES `customer` WRITE;
-/*!40000 ALTER TABLE `customer` DISABLE KEYS */;
-
-/*!40000 ALTER TABLE `customer` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `event_log`
---
-
-DROP TABLE IF EXISTS `event_log`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `event_log` (
-  `ID` int(11) NOT NULL AUTO_INCREMENT,
-  `OBJECT_ID` int(11) NOT NULL,
-  `EVENT_ID` int(11) NOT NULL,
-  `DATE` datetime DEFAULT NULL,
-  `TIMESTAMP` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
-  `USER_ID` int(11) DEFAULT NULL,
-  `USER_ASSIGNED` int(11) DEFAULT NULL,
-  `COMMENTS` text,
-  `OBJECT_TYPE` varchar(100) NOT NULL,
-  PRIMARY KEY (`ID`),
-  KEY `log_event` (`EVENT_ID`),
-  KEY `log_user` (`USER_ID`),
-  KEY `log_assigned_user` (`USER_ASSIGNED`),
-  CONSTRAINT `log_assigned_user` FOREIGN KEY (`USER_ASSIGNED`) REFERENCES `user` (`ID`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `log_event` FOREIGN KEY (`EVENT_ID`) REFERENCES `lookup` (`ID`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `log_user` FOREIGN KEY (`USER_ID`) REFERENCES `user` (`ID`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `event_log`
---
-
-LOCK TABLES `event_log` WRITE;
-/*!40000 ALTER TABLE `event_log` DISABLE KEYS */;
-
-/*!40000 ALTER TABLE `event_log` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Table structure for table `job`
 --
 
@@ -225,12 +242,12 @@ CREATE TABLE `job` (
   KEY `job_printer` (`PRINTER_ID`),
   KEY `job_print` (`PRINT_ID`),
   KEY `job_status` (`STATUS`),
-  CONSTRAINT `job_status` FOREIGN KEY (`STATUS`) REFERENCES `lookup` (`ID`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `job_customer` FOREIGN KEY (`CUSTOMER_ID`) REFERENCES `customer` (`ID`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `job_leader` FOREIGN KEY (`LEADER_ID`) REFERENCES `user` (`ID`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `job_print` FOREIGN KEY (`PRINT_ID`) REFERENCES `print` (`ID`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `job_printer` FOREIGN KEY (`PRINTER_ID`) REFERENCES `user` (`ID`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+  CONSTRAINT `job_printer` FOREIGN KEY (`PRINTER_ID`) REFERENCES `user` (`ID`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `job_status` FOREIGN KEY (`STATUS`) REFERENCES `lookup` (`ID`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -241,42 +258,6 @@ LOCK TABLES `job` WRITE;
 /*!40000 ALTER TABLE `job` DISABLE KEYS */;
 
 /*!40000 ALTER TABLE `job` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `job_line`
---
-
-DROP TABLE IF EXISTS `job_line`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `job_line` (
-  `ID` int(11) NOT NULL AUTO_INCREMENT,
-  `JOB_ID` int(11) DEFAULT NULL,
-  `PRODUCT_ID` int(11) DEFAULT NULL,
-  `QUANTITY` int(11) DEFAULT NULL,
-  `PRICE` decimal(5,2) DEFAULT NULL,
-  `APPROVAL_DATE` datetime DEFAULT NULL,
-  `APPROVAL_USER` int(11) DEFAULT NULL,
-  PRIMARY KEY (`ID`),
-  KEY `line_job` (`JOB_ID`),
-  KEY `line_approver` (`APPROVAL_USER`),
-  KEY `line_product` (`PRODUCT_ID`),
-  KEY `line_product1` (`PRODUCT_ID`),
-  CONSTRAINT `line_approver` FOREIGN KEY (`APPROVAL_USER`) REFERENCES `user` (`ID`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `line_job` FOREIGN KEY (`JOB_ID`) REFERENCES `job` (`ID`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `line_product1` FOREIGN KEY (`PRODUCT_ID`) REFERENCES `product` (`ID`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `job_line`
---
-
-LOCK TABLES `job_line` WRITE;
-/*!40000 ALTER TABLE `job_line` DISABLE KEYS */;
-
-/*!40000 ALTER TABLE `job_line` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -295,7 +276,7 @@ CREATE TABLE `lookup` (
   `DELETED` tinyint(1) DEFAULT '0',
   PRIMARY KEY (`ID`),
   KEY `LOOKUP_TYPE` (`TYPE`)
-) ENGINE=InnoDB AUTO_INCREMENT=44 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=33 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -304,39 +285,62 @@ CREATE TABLE `lookup` (
 
 LOCK TABLES `lookup` WRITE;
 /*!40000 ALTER TABLE `lookup` DISABLE KEYS */;
-INSERT INTO `lookup` VALUES (10,'Due Date','CHtml::link($assoc->NAME, array(\'job/update\', \'id\'=>$assoc->ID)).\' for \'.CHtml::link($assoc->CUSTOMER->FIRST, array(\'customer/view\', \'id\'=>$assoc->CUSTOMER->ID)).\' is due on \'.$this->DATE',NULL,'Event',0),(11,'Print Date','CHtml::link($assoc->NAME, array(\'job/update\', \'id\'=>$assoc->ID)).\' for \'.CHtml::link($assoc->CUSTOMER->FIRST, array(\'customer/view\', \'id\'=>$assoc->CUSTOMER->ID)).\' is scheduled to be printed by \'.($this->assigned->ID == Yii::app()->user->id ? \'you\' : $this->assigned->FIRST).\' on \'.$this->DATE',NULL,'Event',0),(12,'Pickup Date','CHtml::link($assoc->NAME, array(\'job/update\', \'id\'=>$assoc->ID)).\' is scheduled to be picked up by \'.CHtml::link($assoc->CUSTOMER->FIRST, array(\'customer/view\', \'id\'=>$assoc->CUSTOMER->ID)).\' on \'.$this->DATE',NULL,'Event',0),(13,'Default',NULL,NULL,'Role',0),(14,'Customer',NULL,NULL,'Role',0),(15,'Admin',NULL,NULL,'Role',0),(16,'In Stock',NULL,NULL,'ProductStatus',0),(17,'On Order',NULL,NULL,'ProductStatus',0),(18,'Backordered',NULL,NULL,'ProductStatus',0),(19,'Out of Stock',NULL,NULL,'ProductStatus',0),(20,'Created',NULL,NULL,'OrderStatus',0),(21,'Ordered',NULL,NULL,'OrderStatus',0),(22,'Arrived',NULL,NULL,'OrderStatus',0),(23,'Order Created','(Yii::app()->user->id == $this->USER_ID ? \'You\' : $this->USER->FIRST).\' created an order, \'.CHtml::link($assoc->name, array(\'order/update\', \'id\'=>$assoc->ID)).\' on \'.$this->DATE',NULL,'Event',0),(24,'Order Placed','\'Your order, \'.CHtml::link($assoc->name, array(\'order/update\', \'id\'=>$assoc->ID)).\', was placed on \'.$this->DATE',NULL,'Event',0),(25,'Order Arrived','\'Your order, \'.CHtml::link($assoc->name, array(\'order/update\', \'id\'=>$assoc->ID)).\', arrived on \'.$this->DATE',NULL,'Event',0),(26,'Created',NULL,NULL,'JobStatus',0),(27,'Paid',NULL,NULL,'JobStatus',0),(28,'Scheduled',NULL,NULL,'JobStatus',0),(29,'Completed',NULL,NULL,'JobStatus',0),(30,'Canceled',NULL,NULL,'JobStatus',0),(31,'Invoice Sent',NULL,NULL,'JobStatus',0),(32,'Placeholder',NULL,NULL,'ProductStatus',0);
+INSERT INTO `lookup` VALUES 
+(10,'Due Date','CHtml::link($assoc->NAME, array(\'job/update\', \'id\'=>$assoc->ID)).\' for \'.CHtml::link($assoc->CUSTOMER->FIRST, array(\'customer/view\', \'id\'=>$assoc->CUSTOMER->ID)).\' is due on \'.$this->DATE',NULL,'Event',0),
+(11,'Print Date','CHtml::link($assoc->NAME, array(\'job/update\', \'id\'=>$assoc->ID)).\' for \'.CHtml::link($assoc->CUSTOMER->FIRST, array(\'customer/view\', \'id\'=>$assoc->CUSTOMER->ID)).\' is scheduled to be printed by \'.($this->assigned->ID == Yii::app()->user->id ? \'you\' : $this->assigned->FIRST).\' on \'.$this->DATE',NULL,'Event',0),
+(12,'Pickup Date','CHtml::link($assoc->NAME, array(\'job/update\', \'id\'=>$assoc->ID)).\' is scheduled to be picked up by \'.CHtml::link($assoc->CUSTOMER->FIRST, array(\'customer/view\', \'id\'=>$assoc->CUSTOMER->ID)).\' on \'.$this->DATE',NULL,'Event',0),
+(13,'Default',NULL,NULL,'Role',0),
+(14,'Customer',NULL,NULL,'Role',0),
+(15,'Admin',NULL,NULL,'Role',0),
+(16,'In Stock',NULL,NULL,'ProductStatus',0),
+(17,'On Order',NULL,NULL,'ProductStatus',0),
+(18,'Backordered',NULL,NULL,'ProductStatus',0),
+(19,'Out of Stock',NULL,NULL,'ProductStatus',0),
+(20,'Created',NULL,NULL,'OrderStatus',0),
+(21,'Ordered',NULL,NULL,'OrderStatus',0),
+(22,'Arrived',NULL,NULL,'OrderStatus',0),
+(23,'Order Created','(Yii::app()->user->id == $this->USER_ID ? \'You\' : $this->USER->FIRST).\' created an order, \'.CHtml::link($assoc->name, array(\'order/update\', \'id\'=>$assoc->ID)).\' on \'.$this->DATE',NULL,'Event',0),
+(24,'Order Placed','\'Your order, \'.CHtml::link($assoc->name, array(\'order/update\', \'id\'=>$assoc->ID)).\', was placed on \'.$this->DATE',NULL,'Event',0),
+(25,'Order Arrived','\'Your order, \'.CHtml::link($assoc->name, array(\'order/update\', \'id\'=>$assoc->ID)).\', arrived on \'.$this->DATE',NULL,'Event',0),
+(26,'Created',NULL,NULL,'JobStatus',0),
+(27,'Paid',NULL,NULL,'JobStatus',0),
+(28,'Scheduled',NULL,NULL,'JobStatus',0),
+(29,'Completed',NULL,NULL,'JobStatus',0),
+(30,'Canceled',NULL,NULL,'JobStatus',0),
+(31,'Invoice Sent',NULL,NULL,'JobStatus',0),
+(32,'Placeholder',NULL,NULL,'ProductStatus',0);
 /*!40000 ALTER TABLE `lookup` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
--- Table structure for table `order`
+-- Table structure for table `user`
 --
 
-DROP TABLE IF EXISTS `order`;
+DROP TABLE IF EXISTS `user`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `order` (
+CREATE TABLE `user` (
   `ID` int(11) NOT NULL AUTO_INCREMENT,
-  `EXTERNAL_ID` varchar(60) DEFAULT NULL,
-  `VENDOR_ID` int(11) DEFAULT NULL,
-  `DATE` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
-  `STATUS` int(11) DEFAULT NULL,
+  `EMAIL` varchar(45) DEFAULT NULL,
+  `PASSWORD` varchar(45) DEFAULT NULL,
+  `FIRST` varchar(45) DEFAULT NULL,
+  `LAST` varchar(45) DEFAULT NULL,
+  `PHONE` varchar(20) DEFAULT NULL,
+  `ROLE` varchar(4) DEFAULT '0001' COMMENT 'bit field. first bit indicates administrator, second indicates lead, third indicates customer, fourth indicates default.',
   PRIMARY KEY (`ID`),
-  KEY `order_vendor` (`VENDOR_ID`),
-  KEY `order_status` (`STATUS`),
-  CONSTRAINT `order_status` FOREIGN KEY (`STATUS`) REFERENCES `lookup` (`ID`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `order_vendor` FOREIGN KEY (`VENDOR_ID`) REFERENCES `vendor` (`ID`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+  KEY `role_lookup` (`ROLE`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `order`
+-- Dumping data for table `user`
 --
 
-LOCK TABLES `order` WRITE;
-/*!40000 ALTER TABLE `order` DISABLE KEYS */;
-
-/*!40000 ALTER TABLE `order` ENABLE KEYS */;
+LOCK TABLES `user` WRITE;
+/*!40000 ALTER TABLE `user` DISABLE KEYS */;
+INSERT INTO `user` VALUES 
+(1,'michael.d.naughton@gmail.com','520d8e35c37a612df36313efec568dcc5b657c4e','Mike','Naughton','5157082546','1000');
+/*!40000 ALTER TABLE `user` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -358,7 +362,7 @@ CREATE TABLE `print` (
   PRIMARY KEY (`ID`),
   KEY `print_user` (`APPROVAL_USER`),
   CONSTRAINT `print_user` FOREIGN KEY (`APPROVAL_USER`) REFERENCES `user` (`ID`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=23 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -372,129 +376,73 @@ LOCK TABLES `print` WRITE;
 UNLOCK TABLES;
 
 --
--- Table structure for table `product`
+-- Table structure for table `job_line`
 --
 
-DROP TABLE IF EXISTS `product`;
+DROP TABLE IF EXISTS `job_line`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `product` (
+CREATE TABLE `job_line` (
   `ID` int(11) NOT NULL AUTO_INCREMENT,
-  `COST` decimal(5,2) DEFAULT NULL,
-  `STATUS` int(11) DEFAULT NULL,
-  `STYLE` int(11) DEFAULT NULL,
-  `COLOR` int(11) DEFAULT NULL,
-  `SIZE` int(11) DEFAULT NULL,
-  `AVAILABLE` int(11) DEFAULT '0',
-  PRIMARY KEY (`ID`),
-  KEY `product_status` (`STATUS`),
-  KEY `product_color` (`COLOR`),
-  KEY `product_style` (`STYLE`),
-  KEY `product_size` (`SIZE`),
-  CONSTRAINT `product_color` FOREIGN KEY (`COLOR`) REFERENCES `lookup` (`ID`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `product_size` FOREIGN KEY (`SIZE`) REFERENCES `lookup` (`ID`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `product_status` FOREIGN KEY (`STATUS`) REFERENCES `lookup` (`ID`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `product_style` FOREIGN KEY (`STYLE`) REFERENCES `lookup` (`ID`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `product`
---
-
-LOCK TABLES `product` WRITE;
-/*!40000 ALTER TABLE `product` DISABLE KEYS */;
-
-/*!40000 ALTER TABLE `product` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `product_order`
---
-
-DROP TABLE IF EXISTS `product_order`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `product_order` (
-  `ID` int(11) NOT NULL AUTO_INCREMENT,
+  `JOB_ID` int(11) DEFAULT NULL,
   `PRODUCT_ID` int(11) DEFAULT NULL,
-  `ORDER_ID` int(11) DEFAULT NULL,
-  `QUANTITY_ORDERED` int(11) DEFAULT NULL,
-  `QUANTITY_ARRIVED` int(11) DEFAULT NULL,
-  `COST` decimal(5,2) DEFAULT NULL,
+  `PRODUCT_ORDER_ID` int(11) DEFAULT NULL,
+  `QUANTITY` int(11) DEFAULT NULL,
+  `PRICE` decimal(5,2) DEFAULT NULL,
+  `APPROVAL_DATE` datetime DEFAULT NULL,
+  `APPROVAL_USER` int(11) DEFAULT NULL,
   PRIMARY KEY (`ID`),
+  KEY `line_job` (`JOB_ID`),
+  KEY `line_approver` (`APPROVAL_USER`),
   KEY `line_product` (`PRODUCT_ID`),
-  KEY `line_order` (`ORDER_ID`),
-  CONSTRAINT `line_order` FOREIGN KEY (`ORDER_ID`) REFERENCES `order` (`ID`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `line_product` FOREIGN KEY (`PRODUCT_ID`) REFERENCES `product` (`ID`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+  KEY `line_product1` (`PRODUCT_ID`),
+  KEY `line_product_order` (`PRODUCT_ORDER_ID`),
+  CONSTRAINT `line_approver` FOREIGN KEY (`APPROVAL_USER`) REFERENCES `user` (`ID`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `line_job` FOREIGN KEY (`JOB_ID`) REFERENCES `job` (`ID`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `line_product1` FOREIGN KEY (`PRODUCT_ID`) REFERENCES `product` (`ID`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `line_product_order` FOREIGN KEY (`PRODUCT_ORDER_ID`) REFERENCES `product_order` (`ID`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB AUTO_INCREMENT=27 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `product_order`
+-- Dumping data for table `job_line`
 --
 
-LOCK TABLES `product_order` WRITE;
-/*!40000 ALTER TABLE `product_order` DISABLE KEYS */;
+LOCK TABLES `job_line` WRITE;
+/*!40000 ALTER TABLE `job_line` DISABLE KEYS */;
 
-/*!40000 ALTER TABLE `product_order` ENABLE KEYS */;
+/*!40000 ALTER TABLE `job_line` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
--- Table structure for table `user`
+-- Table structure for table `order`
 --
 
-DROP TABLE IF EXISTS `user`;
+DROP TABLE IF EXISTS `order`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `user` (
+CREATE TABLE `order` (
   `ID` int(11) NOT NULL AUTO_INCREMENT,
-  `EMAIL` varchar(45) DEFAULT NULL,
-  `PASSWORD` varchar(45) DEFAULT NULL,
-  `FIRST` varchar(45) DEFAULT NULL,
-  `LAST` varchar(45) DEFAULT NULL,
-  `PHONE` varchar(20) DEFAULT NULL,
-  `ROLE` varchar(4) DEFAULT '0001',
+  `EXTERNAL_ID` varchar(60) DEFAULT NULL,
+  `VENDOR_ID` int(11) DEFAULT NULL,
+  `DATE` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `STATUS` int(11) DEFAULT NULL,
   PRIMARY KEY (`ID`),
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+  KEY `order_vendor` (`VENDOR_ID`),
+  KEY `order_status` (`STATUS`),
+  CONSTRAINT `order_status` FOREIGN KEY (`STATUS`) REFERENCES `lookup` (`ID`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `order_vendor` FOREIGN KEY (`VENDOR_ID`) REFERENCES `vendor` (`ID`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `user`
+-- Dumping data for table `order`
 --
 
-LOCK TABLES `user` WRITE;
-/*!40000 ALTER TABLE `user` DISABLE KEYS */;
-INSERT INTO `user` VALUES (1,'michael.d.naughton@gmail.com','520d8e35c37a612df36313efec568dcc5b657c4e','Mike','Naughton','5157082546','1000');
-/*!40000 ALTER TABLE `user` ENABLE KEYS */;
-UNLOCK TABLES;
+LOCK TABLES `order` WRITE;
+/*!40000 ALTER TABLE `order` DISABLE KEYS */;
 
---
--- Table structure for table `vendor`
---
-
-DROP TABLE IF EXISTS `vendor`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `vendor` (
-  `ID` int(11) NOT NULL AUTO_INCREMENT,
-  `NAME` varchar(45) DEFAULT NULL,
-  `EMAIL` varchar(45) DEFAULT NULL,
-  `PHONE` int(13) DEFAULT NULL,
-  `WEBSITE` varchar(200) DEFAULT NULL,
-  `CONTACT_NAME` varchar(200) DEFAULT NULL,
-  PRIMARY KEY (`ID`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `vendor`
---
-
-LOCK TABLES `vendor` WRITE;
-/*!40000 ALTER TABLE `vendor` DISABLE KEYS */;
-
-/*!40000 ALTER TABLE `vendor` ENABLE KEYS */;
+/*!40000 ALTER TABLE `order` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
@@ -506,4 +454,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2011-10-10 13:46:47
+-- Dump completed on 2011-12-20 19:25:51
