@@ -169,11 +169,12 @@ CClientScript::POS_BEGIN);?>
 		<?php echo $form->error($model,'SET_UP_FEE'); ?>
 	</div>
 	
-	<div class="row">
+	<div class="row">		
 		<?php echo CHtml::label('Auto Quote Total', 'auto_total');?>
 		<?php echo CHtml::textField('auto_total', $model->total, array('readonly'=>'readonly', 'id'=>'auto_total'));?>
 		<?php echo CHtml::label('Auto Quote Total Per Garment', 'auto_total_each');?>
 		<?php echo CHtml::textField('auto_total_each', $model->garmentPrice, array('readonly'=>'readonly', 'id'=>'auto_total_each'))?>
+		<p id="qty_warning" class="note" style="display: none;">The quote estimator only supports price quotation for up to two hundred (200) garments.</p>
 		<?php echo CHtml::hiddenField('garment_total', $model->garmentPrice * $model->garmentCount, array('id'=>'garment_total', 'class'=>'part'));?>
 		<?php Yii::app()->clientScript->registerScript('auto-garment-totaler', "" .
 				"$('.item_qty, .sleeve_pass, .front_pass, .back_pass').live('change keyup', function(){
@@ -181,6 +182,13 @@ CClientScript::POS_BEGIN);?>
 					"$('.item_qty').each(function(index){
 						qty += (1 * $(this).val());
 					});" .
+					"if(qty > 200){
+						$('#auto_total, #auto_total_each').val(0).attr('disabled', 'disabled');" .
+						"$('#qty_warning').show();
+					} else {
+						$('#auto_total, #auto_total_each').removeAttr('disabled');" .
+						"$('#qty_warning').hide();
+					}" .
 					"calculateTotal(qty, $('.front_pass').val(), $('.back_pass').val(), $('.sleeve_pass').val(), $('#garment_total'));
 				})", 
 		CClientScript::POS_END);
@@ -198,6 +206,13 @@ CClientScript::POS_BEGIN);?>
 						qty += (1 * $(this).val());
 					});" .
 					"$('#auto_total_each').val((qty == 0) ? 0 : total / qty);" .
+					"if(qty > 200){
+						$('#auto_total, #auto_total_each').val(0).attr('disabled', 'disabled');" .
+						"$('#qty_warning').show();
+					} else {
+						$('#auto_total, #auto_total_each').removeAttr('disabled');" .
+						"$('#qty_warning').hide();
+					}" .
 					"$('#garment_qty').val(qty).change();
 				});", 
 		CClientScript::POS_END);?>
