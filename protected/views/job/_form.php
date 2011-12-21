@@ -172,7 +172,7 @@ CClientScript::POS_BEGIN);?>
 		<?php echo CHtml::textField('auto_total', $model->total, array('readonly'=>'readonly', 'id'=>'auto_total'));?>
 		<?php echo CHtml::label('Auto Quote Total Per Garment', 'auto_total_each');?>
 		<?php echo CHtml::textField('auto_total_each', $model->garmentPrice, array('readonly'=>'readonly', 'id'=>'auto_total_each'))?>
-		<?php echo CHtml::hiddenField('garment_total', 0, array('id'=>'garment_total', 'class'=>'part'));?>
+		<?php echo CHtml::hiddenField('garment_total', $model->garmentPrice * $model->garmentCount, array('id'=>'garment_total', 'class'=>'part'));?>
 		<?php Yii::app()->clientScript->registerScript('auto-garment-totaler', "" .
 				"$('.item_qty, .sleeve_pass, .front_pass, .back_pass').live('change keyup', function(){
 					var qty = 0;" .

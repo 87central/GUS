@@ -73,6 +73,13 @@ class JobController extends Controller
 			);	
 		}
 		
+		$products['lines'] = $products;
+		$products['style'] = '';
+		$products['availableColors'] = array();
+		$products['currentColor'] = null;
+		$products['approved'] = false;
+		$products['saved'] = false;
+		
 		$this->renderPartial('//jobLine/_multiForm', array(
 			'namePrefix'=>$namePrefix,
 			'startIndex'=>$count,
@@ -81,47 +88,125 @@ class JobController extends Controller
 	}
 	
 	public function actionApproveLine(){
-		$model = JobLine::model()->findByPk((int) $_POST['id']);
 		$namePrefix = $_POST['namePrefix'];
-		if($model){
-			if($model->approve()){
-				$view = '//jobLine/_view';
-				$vars = array('namePrefix'=>$namePrefix, 'model'=>$model, 'formatter'=>new Formatter);
-				if(Yii::app()->user->getState('isAdmin') == true){
-					$view = '//jobLine/_form';
-					$vars['styles'] = $this->loadList('Style');
-					$vars['colors'] = $this->loadList('Color');
-					$vars['sizes'] = $this->loadList('Size');
-				}
-				$this->renderPartial($view, $vars);	
-			} else {
-				throw new CException('Could not approve the job line.');
-			}		
-		} else {
-			throw new CException('Could not approve the job line.');
+		$startIndex = $_POST['startIndex'];
+		$idList = $_POST['idList'];
+		$models = JobLine::model()->findAllByPk($idList);
+		$sizes = Lookup::model()->findAllByAttributes(array('TYPE'=>'Size'));
+		$products = array();
+		$groupedLines = array();
+		foreach($models as $model){			
+			if($model){
+				$model->approve();
+				$groupedLines[(string) $model->product->STYLE][(string) $model->product->COLOR][(string) $model->product->SIZE] = $model;
+			}
 		}
+		
+		foreach($groupedLines as $style=>$styleGroup){
+			foreach($styleGroup as $color=>$colorGroup){
+				$approved = false;
+				foreach($sizes as $size){ //iterating through sizes because we want ALL of them
+					if(isset($colorGroup[(string) $size->ID])){
+						$line = $colorGroup[(string) $size->ID];						
+						$products[] = array(
+							'product'=>$line->product,
+							'line'=>$line,
+						);
+						if($line->isApproved){
+							$approved = true;
+						}
+						$latestProduct = $line->product;
+					} else {
+						$product = new Product;
+						$product->SIZE = $size->ID;
+						$product->STYLE = $style;
+						$product->COLOR = $color;
+						$products[] = array(
+							'product'=>$product,
+							'line'=>new JobLine,
+						);
+					}
+				}
+				if(count($products) > 0){
+					$products['lines'] = $products;
+					$products['style'] = $latestProduct->vendorStyle; //we'll always have a latestProduct, otherwise we wouldn't enter this loop
+					$products['availableColors'] = CHtml::listData(Product::getAllowedColors($latestProduct->VENDOR_ITEM_ID), 'ID', 'TEXT');
+					$products['currentColor'] = $color;
+					$products['approved'] = $approved;
+					$products['saved'] = true; //we're guaranteed that some of the lines in this group are persistent
+				}
+			}
+		}
+		if($approved && !Yii::app()->user->getState('isAdmin')){
+			$view = '//jobLine/_multiView';
+		} else {
+			$view = '//jobLine/_multiForm';
+		}
+		
+		$this->renderPartial($view, array(
+			'namePrefix'=>$namePrefix,
+			'startIndex'=>$startIndex,
+			'products'=>$products,
+		));
 	}
 	
 	public function actionUnapproveLine(){
-		$model = JobLine::model()->findByPk((int) $_POST['id']);
 		$namePrefix = $_POST['namePrefix'];
-		if($model){
-			if($model->unapprove()){
-				$view = '//jobLine/_form';
-				$vars = array(
-					'namePrefix'=>$namePrefix, 
-					'model'=>$model,
-					'styles'=>$this->loadList('Style'),
-					'sizes'=>$this->loadList('Size'),
-					'colors'=>$this->loadList('Color'),
-				);
-				$this->renderPartial($view, $vars);	
-			} else {
-				throw new CException('Could not unapprove the job line.');
+		$startIndex = $_POST['startIndex'];
+		$idList = $_POST['idList'];
+		$models = JobLine::model()->findAllByPk($idList);
+		$sizes = Lookup::model()->findAllByAttributes(array('TYPE'=>'Size'));
+		$products = array();
+		$groupedLines = array();
+		foreach($models as $model){			
+			if($model){
+				$model->unapprove();
+				$groupedLines[(string) $model->product->STYLE][(string) $model->product->COLOR][(string) $model->product->SIZE] = $model;
 			}
-		} else {
-			throw new CException('Could not unapprove the job line.');
 		}
+		
+		foreach($groupedLines as $style=>$styleGroup){
+			foreach($styleGroup as $color=>$colorGroup){
+				$approved = false;
+				foreach($sizes as $size){ //iterating through sizes because we want ALL of them
+					if(isset($colorGroup[(string) $size->ID])){
+						$line = $colorGroup[(string) $size->ID];						
+						$products[] = array(
+							'product'=>$line->product,
+							'line'=>$line,
+						);
+						if($line->isApproved){
+							$approved = true;
+						}
+						$latestProduct = $line->product;
+					} else {
+						$product = new Product;
+						$product->SIZE = $size->ID;
+						$product->STYLE = $style;
+						$product->COLOR = $color;
+						$products[] = array(
+							'product'=>$product,
+							'line'=>new JobLine,
+						);
+					}
+				}
+				if(count($products) > 0){
+					$products['lines'] = $products;
+					$products['style'] = $latestProduct->vendorStyle; //we'll always have a latestProduct, otherwise we wouldn't enter this loop
+					$products['availableColors'] = CHtml::listData(Product::getAllowedColors($latestProduct->VENDOR_ITEM_ID), 'ID', 'TEXT');
+					$products['currentColor'] = $color;
+					$products['approved'] = $approved;
+					$products['saved'] = true; //we're guaranteed that some of the lines in this group are persistent
+				}
+			}
+		}
+		$view = '//jobLine/_multiForm';
+		
+		$this->renderPartial($view, array(
+			'namePrefix'=>$namePrefix,
+			'startIndex'=>$startIndex,
+			'products'=>$products,
+		));
 	}
 	
 	public function actionDeleteLine(){
@@ -171,6 +256,8 @@ class JobController extends Controller
 		$products['style'] = '';
 		$products['availableColors'] = array();
 		$products['currentColor'] = null;
+		$products['approved'] = false;
+		$products['saved'] = false;
 		$lineData[] = $products;
 		
 		/*
@@ -188,7 +275,8 @@ class JobController extends Controller
 		 * "availableColors". "lines" contains what was originally the item of lineData,
 		 * "style" contains text describing the selected vendor style, "availableColors"
 		 * contains the colors available for the selected vendor style (if any), already processed
-		 * with CHtml::listData, and "currentColor" contains the ID of the color for the group.*/
+		 * with CHtml::listData, and "currentColor" contains the ID of the color for the group.
+		 * "approved" is true if the set of lines has been approved, otherwise false.*/
 
 		// Uncomment the following line if AJAX validation is needed
 		// $this->performAjaxValidation($model);
@@ -270,6 +358,7 @@ class JobController extends Controller
 		
 		foreach($groupedLines as $style=>$styleGroup){
 			foreach($styleGroup as $color=>$colorGroup){
+				$approved = false;
 				foreach($sizes as $size){ //iterating through sizes because we want ALL of them
 					if(isset($colorGroup[(string) $size->ID])){
 						$line = $colorGroup[(string) $size->ID];						
@@ -277,6 +366,9 @@ class JobController extends Controller
 							'product'=>$line->product,
 							'line'=>$line,
 						);
+						if($line->isApproved){
+							$approved = true;
+						}
 						$latestProduct = $line->product;
 					} else {
 						$product = new Product;
@@ -294,6 +386,8 @@ class JobController extends Controller
 					$products['style'] = $latestProduct->vendorStyle; //we'll always have a latestProduct, otherwise we wouldn't enter this loop
 					$products['availableColors'] = CHtml::listData(Product::getAllowedColors($latestProduct->VENDOR_ITEM_ID), 'ID', 'TEXT');
 					$products['currentColor'] = $color;
+					$products['approved'] = $approved;
+					$products['saved'] = true; //we're guaranteed that some of the lines in this group are persistent
 					$lineData[] = $products;
 					$products = array();
 				}
