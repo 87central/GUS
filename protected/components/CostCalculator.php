@@ -24,7 +24,7 @@ class CostCalculator extends CComponent {
 		}
 		$cutoffs = array(200, 100, 50, 24, 12); //must be backwards, otherwise the last item would almost always be greater.
 		for($i = 0; $i < count($cutoffs); $i++){
-			if($garments < $cutoffs[$i]){
+			if($garments <= $cutoffs[$i]){
 				$result = $thresholds[$i];
 			}
 		}
