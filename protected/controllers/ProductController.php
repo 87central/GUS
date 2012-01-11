@@ -155,6 +155,24 @@ class ProductController extends Controller
 				'defaultOrder'=>'STYLE, SIZE, COLOR',
 			),
 		));
+		
+		$items = $dataProvider->data;
+		$newItems = array();
+		foreach($items as $item){
+			$newItems[$item->vendorStyle] = $item;
+			//$newItems[] = $item;
+		}
+		
+		$items = $newItems;
+		$newItems = array();
+		foreach($items as $item){
+			$newItems[] = $item;
+		}
+		
+		$dataProvider = new CArrayDataProvider($newItems, array(
+			'pagination'=>false,
+			'keyField'=>'ID',
+		));
 		$this->render('index',array(
 			'dataProvider'=>$dataProvider,
 		));

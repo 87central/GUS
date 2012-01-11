@@ -110,6 +110,7 @@ class Product extends CActiveRecord
 			'AVAILABLE' => 'Surplus Inventory',
 			'VENDOR_ID' => 'Vendor',
 			'VENDOR_ITEM_ID' => 'Vendor Item ID',
+			'vendorStyle' => 'Style',
 		);
 	}
 
