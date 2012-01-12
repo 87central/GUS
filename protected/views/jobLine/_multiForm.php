@@ -42,9 +42,9 @@
 						}" .
 						"\$('#".$div."').children('.color-select').replaceWith(colorOptions);" .
 						"\$('#".$div."').children('.jobLine').children('.hidden_cost').val(cost);" .
-						"\$('#".$div."').children('.jobLine').children('.score_part').attr('disabled', true).val(0);" .
+						"\$('#".$div."').children('.jobLine').addClass('hidden-size').children('.score_part').attr('disabled', true).val(0);" .
 						"for(var size in sizes){
-							\$('#".$div."').children('.".$div."' + sizes[size].ID).children('.score_part').removeAttr('disabled');
+							\$('#".$div."').children('.".$div."' + sizes[size].ID).removeClass('hidden-size').children('.score_part').removeAttr('disabled');
 						}
 					});
 			}"
@@ -75,7 +75,7 @@
 		$linePrefix = $namePrefix . '['.$startIndex++.']';
 		$eachDiv = CHtml::getIdByName($linePrefix.'item');
 		?>
-		<div class="jobLine <?php echo $div.$product->SIZE;?>" id="<?php echo $eachDiv;?>">
+		<div class="jobLine <?php echo ($product->ID == null) ? 'hidden-size' : '';?> <?php echo $div.$product->SIZE;?>" id="<?php echo $eachDiv;?>">
 			<?php /*vars for JS calculations*/?>
 			<?php $total = '#'.CHtml::getIdByName($lineHiddenPrefix . 'total');?>
 			<?php $qty = '#'.CHtml::getIdByName($linePrefix . '[QUANTITY]');?>
@@ -225,10 +225,10 @@ CClientScript::POS_END);?>
 									colorOptions.append($('<option></option>').val(colors[color].ID).html(colors[color].TEXT));
 								}" .
 								"\$('#' + div_id).children('.color-select').replaceWith(colorOptions);" .
-								"\$('#' + div_id).children('.jobLine').children('.score_part').attr('disabled', true).val(0);" .
+								"\$('#' + div_id).children('.jobLine').addClass('hidden-size').children('.score_part').attr('disabled', true).val(0);" .
 								"\$('#".$div."').children('.jobLine').children('.hidden_cost').val(cost);" .
 								"for(var size in sizes){
-									\$('#' + div_id).children('.' + div_id + sizes[size].ID).children('.score_part').removeAttr('disabled');
+									\$('#' + div_id).children('.' + div_id + sizes[size].ID).removeClass('hidden-size').children('.score_part').removeAttr('disabled');
 								}
 							});
 						}," .

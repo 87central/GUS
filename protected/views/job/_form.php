@@ -37,10 +37,10 @@ Yii::app()->clientScript->registerScript('add-job', "function addLine(sender, na
 							colorOptions.append($('<option></option>').val(colors[color].ID).html(colors[color].TEXT));
 						}" .
 						"\$('#' + div_id).children('.color-select').replaceWith(colorOptions);" .
-						"\$('#' + div_id).children('.jobLine').children('.score_part').attr('disabled', true).val(0);" .
+						"\$('#' + div_id).children('.jobLine').addClass('hidden-size').children('.score_part').attr('disabled', true).val(0);" .
 						"\$('#".$div."').children('.jobLine').children('.hidden_cost').val(cost);" .
 						"for(var size in sizes){
-							\$('#' + div_id).children('.' + div_id + sizes[size].ID).children('.score_part').removeAttr('disabled');
+							\$('#' + div_id).children('.' + div_id + sizes[size].ID).removeClass('hidden-size').children('.score_part').removeAttr('disabled');
 						}
 					});
 				}," .
