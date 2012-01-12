@@ -63,7 +63,7 @@ class ProductController extends Controller
 	 */
 	public function actionCreate()
 	{
-		$model=new Product;
+		$model=new ProductForm;
 		$statusList = Lookup::listValues('ProductStatus');
 		$colorList = Lookup::listValues('Color');
 		$styleList = Lookup::listValues('Style');
@@ -73,11 +73,15 @@ class ProductController extends Controller
 		// Uncomment the following line if AJAX validation is needed
 		// $this->performAjaxValidation($model);
 
-		if(isset($_POST['Product']))
+		if(isset($_POST['ProductForm']))
 		{
-			$model->attributes=$_POST['Product'];
-			if($model->save())
-				$this->redirect(array('view','id'=>$model->ID));
+			$model->attributes=$_POST['ProductForm'];
+			$save = true;
+			foreach($model->products as $product){
+				$save = $save && $product->save();
+			}
+			if($save)
+				$this->redirect(array('update','v'=>$model->VENDOR_ID, 'i'=>$model->VENDOR_ITEM_ID));
 		}
 
 		$this->render('create',array(
@@ -95,9 +99,11 @@ class ProductController extends Controller
 	 * If update is successful, the browser will be redirected to the 'view' page.
 	 * @param integer $id the ID of the model to be updated
 	 */
-	public function actionUpdate($id)
+	public function actionUpdate($v, $i)
 	{
-		$model=$this->loadModel($id);
+		$model = new ProductForm;
+		$model->VENDOR_ID = $v;
+		$model->VENDOR_ITEM_ID = $i; //make sure not to use this as a loop variable!
 		$statusList = Lookup::listValues('ProductStatus');
 		$colorList = Lookup::listValues('Color');
 		$styleList = Lookup::listValues('Style');
@@ -107,11 +113,15 @@ class ProductController extends Controller
 		// Uncomment the following line if AJAX validation is needed
 		// $this->performAjaxValidation($model);
 
-		if(isset($_POST['Product']))
+		if(isset($_POST['ProductForm']))
 		{
-			$model->attributes=$_POST['Product'];
-			if($model->save())
-				$this->redirect(array('view','id'=>$model->ID));
+			$model->attributes=$_POST['ProductForm'];
+			$save = true;
+			foreach($model->products as $product){
+				$save = $save && $product->save();
+			}
+			if($save)
+				$this->redirect(array('update','v'=>$model->VENDOR_ID, 'i'=>$model->VENDOR_ITEM_ID));
 		}
 
 		$this->render('update',array(

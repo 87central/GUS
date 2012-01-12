@@ -24,14 +24,8 @@
 
 	<div class="row">
 		<?php echo $form->labelEx($model,'COST'); ?>
-		<?php echo $form->textField($model,'COST',array('size'=>2,'maxlength'=>2)); ?>
+		<?php echo $form->textField($model,'COST',array('size'=>6,'maxlength'=>6)); ?>
 		<?php echo $form->error($model,'COST'); ?>
-	</div>
-
-	<div class="row">
-		<?php echo $form->labelEx($model,'STATUS'); ?>
-		<?php echo $form->dropDownList($model,'STATUS', $statusList); ?>
-		<?php echo $form->error($model,'STATUS'); ?>
 	</div>
 
 	<div class="row">
@@ -41,21 +35,17 @@
 	</div>
 
 	<div class="row">
-		<?php echo $form->labelEx($model,'COLOR'); ?>
-		<?php echo $form->dropDownList($model,'COLOR', $colorList); ?>
-		<?php echo $form->error($model,'COLOR'); ?>
+		<?php echo $form->labelEx($model,'COLORS'); ?>
+		<?php //echo $form->dropDownList($model,'COLOR', $colorList); ?>
+		<?php echo $form->checkBoxList($model, 'COLORS', $colorList);?>
+		<?php echo $form->error($model,'COLORS'); ?>
 	</div>
 
 	<div class="row">
-		<?php echo $form->labelEx($model,'SIZE'); ?>
-		<?php echo $form->dropDownList($model,'SIZE', $sizeList); ?>
-		<?php echo $form->error($model,'SIZE'); ?>
-	</div>
-
-	<div class="row">
-		<?php echo $form->labelEx($model,'AVAILABLE'); ?>
-		<?php echo $form->textField($model,'AVAILABLE'); ?>
-		<?php echo $form->error($model,'AVAILABLE'); ?>
+		<?php echo $form->labelEx($model,'SIZES'); ?>
+		<?php //echo $form->dropDownList($model,'SIZES', $sizeList); ?>
+		<?php echo $form->checkBoxList($model, 'SIZES', $sizeList);?>
+		<?php echo $form->error($model,'SIZES'); ?>
 	</div>
 
 	<div class="row buttons">

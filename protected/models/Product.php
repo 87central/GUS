@@ -29,6 +29,7 @@ class Product extends CActiveRecord
 	const NO_STOCK = 19; //no inventory, not ordered
 	const PLACEHOLDER = 32; //basically a temporary stock item, which,
 							//if ordered, becomes a permanent stock item.
+	const DELETED = 44; //69 in GUS prod
 	
 	/**
 	 * Returns the static model of the specified AR class.
@@ -133,6 +134,7 @@ class Product extends CActiveRecord
 		$criteria->compare('SIZE',$this->SIZE);
 		$criteria->compare('AVAILABLE',$this->AVAILABLE);
 		$criteria->compare('VENDOR_ITEM_ID', $this->VENDOR_ITEM_ID, true);
+		$criteria->compare('STATUS', Product::DELETED, false, '<>');
 
 		return new CActiveDataProvider(get_class($this), array(
 			'criteria'=>$criteria,
@@ -164,7 +166,7 @@ class Product extends CActiveRecord
 	 * @return array An array containing instances of Lookup with the allowed colors.
 	 */
 	public static function getAllowedColors($itemID){
-		$results = Product::model()->findAllByAttributes(array('VENDOR_ITEM_ID'=>$itemID));
+		$results = Product::model()->findAllByAttributes(array('VENDOR_ITEM_ID'=>$itemID), 'STATUS != '.Product::DELETED);
 		$colors = array();
 		foreach($results as $product){
 			$colors[] = $product->color;
@@ -177,7 +179,7 @@ class Product extends CActiveRecord
 	 * @return array An array containing instances of Lookup with the allowed sizes.
 	 */
 	public static function getAllowedSizes($itemID){
-		$results = Product::model()->findAllByAttributes(array('VENDOR_ITEM_ID'=>$itemID));
+		$results = Product::model()->findAllByAttributes(array('VENDOR_ITEM_ID'=>$itemID), 'STATUS <> '.Product::DELETED);
 		$sizes = array();
 		foreach($results as $product){
 			$sizes[] = $product->size;
@@ -186,7 +188,7 @@ class Product extends CActiveRecord
 	}
 	
 	public static function getStyle($itemID){
-		$results = Product::model()->findByAttributes(array('VENDOR_ITEM_ID'=>$itemID));
+		$results = Product::model()->findByAttributes(array('VENDOR_ITEM_ID'=>$itemID), 'STATUS <> '.Product::DELETED);
 		return $results->style;
 	}
 	
@@ -195,7 +197,12 @@ class Product extends CActiveRecord
 	 * @return float The cost of the item.
 	 */
 	public static function getCost($itemID){
-		$results = Product::model()->findByAttributes(array('VENDOR_ITEM_ID'=>$itemID));
+		$results = Product::model()->findByAttributes(array('VENDOR_ITEM_ID'=>$itemID), 'STATUS <> '.Product::DELETED);
 		return $results->COST;
+	}
+	
+	public function delete(){
+		$this->STATUS = Product::DELETED;
+		return $this->save();
 	}
 }
