@@ -43,7 +43,6 @@ function listColors($model){
 	}
 }?>
 
-<?php echo CJSON::encode($dataProvider->data);?>
 <?php $this->widget('zii.widgets.grid.CGridView', array(
 	'dataProvider'=>$dataProvider,
 	'formatter'=>new Formatter,
@@ -51,7 +50,7 @@ function listColors($model){
 		array(
 			'class'=>'CLinkColumn',
 			'header'=>'Item',
-			'urlExpression'=>"array('product/update', 'id'=>\$data->ID)",
+			'urlExpression'=>"array('product/update', 'v'=>\$data->VENDOR_ID, 'i'=>\$data->VENDOR_ITEM_ID)",
 			'labelExpression'=>"\$data->vendorStyle",
 		),
 		array(
