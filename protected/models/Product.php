@@ -169,7 +169,7 @@ class Product extends CActiveRecord
 		$results = Product::model()->findAllByAttributes(array('VENDOR_ITEM_ID'=>$itemID), 'STATUS != '.Product::DELETED);
 		$colors = array();
 		foreach($results as $product){
-			$colors[] = $product->color;
+			$colors[(string) $product->COLOR] = $product->color;
 		}
 		return $colors;
 	}
@@ -182,7 +182,7 @@ class Product extends CActiveRecord
 		$results = Product::model()->findAllByAttributes(array('VENDOR_ITEM_ID'=>$itemID), 'STATUS <> '.Product::DELETED);
 		$sizes = array();
 		foreach($results as $product){
-			$sizes[] = $product->size;
+			$sizes[(string) $product->SIZE] = $product->size;
 		}
 		return $sizes;
 	}
