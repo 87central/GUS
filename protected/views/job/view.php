@@ -13,20 +13,109 @@ $this->menu=array(
 );
 ?>
 
-<h1>View Job #<?php echo $model->ID; ?></h1>
+<h1><?php echo $model->NAME; ?></h1>
 
-<?php $this->widget('zii.widgets.CDetailView', array(
-	'data'=>$model,
-	'attributes'=>array(
-		'ID',
-		'CUSTOMER_ID',
-		'LEADER_ID',
-		'DESCRIPTION',
-		'NOTES',
-		'ISSUES',
-		'RUSH',
-		'SET_UP_FEE',
-		'SCORE',
-		'QUOTE',
-	),
-)); ?>
+<div id="content">
+	<div class="row">
+		<?php echo CHtml::activeLabelEx($model, 'formattedPickUpDate'); ?>
+		<?php echo CHtml::encode($model->formattedPickUpDate);?>
+	</div>
+	
+	<div class="separator"></div>
+	
+	<?php 
+		$this->renderPartial('//customer/_jobView', array(
+			'model'=>$customer,
+			'formatter'=>$formatter,
+		));
+	?>
+	
+	<div class="separator"></div>
+	
+	<div class="row">
+		<?php echo CHtml::activeLabelEx($model, 'LEADER_ID');?>
+		<?php echo CHtml::encode($model->LEADER->FIRST);?>
+	</div>
+	
+	<div class="row">
+		<?php echo CHtml::activeLabelEx($model, 'PRINTER_ID');?>
+		<?php echo CHtml::encode($model->PRINTER->FIRST);?>
+	</div>
+	
+	<div class="separator"></div>
+	<?php $this->renderPartial('//print/_jobView', array(
+		'model'=>$print,
+		'artLink'=>isset($artLink) ? $artLink : null,
+		'formatter'=>$formatter,
+	));?>
+	
+	<div class="separator"></div>
+	
+	<div id="lines" class="row">
+		<?php
+		$index = 0;
+		foreach($lineData as $lines){
+			$this->renderPartial('//jobLine/_multiView', array(
+				'namePrefix'=>CHtml::activeName($model, 'jobLines'),
+				'startIndex'=>$index,
+				'products'=>$lines,
+				'readonly'=>true,
+				'formatter'=>$formatter,
+			));
+			$index += count($lines);
+		}?>
+	</div>
+	
+	<div class="separator"></div>
+
+	<div class="row">
+		<?php echo CHtml::activeLabelEx($model,'RUSH'); ?>
+		<?php echo $model->RUSH ? 'Yes' : 'No';?>
+	</div>
+
+	<div class="row">
+		<?php echo CHtml::activeLabelEx($model,'SET_UP_FEE'); ?>
+		<?php echo CHtml::encode($formatter->formatCurrency($model->SET_UP_FEE));?>
+	</div>
+	
+	<div class="row">		
+		<?php echo CHtml::label('Auto Quote Total', 'auto_total');?>
+		<?php echo CHtml::encode($formatter->formatCurrency($model->total));?>
+		<?php echo CHtml::label('Auto Quote Total Per Garment', 'auto_total_each');?>	
+		<?php echo CHtml::encode($formatter->formatCurrency($model->garmentPrice));?>
+	</div>
+	
+	<div class="row">
+		<?php echo CHtml::activeLabelEx($model, 'SCORE');?>
+		<?php echo CHtml::encode($formatter->formatNumber($model->score));?>
+	</div>
+	
+	<div class="row">
+		<?php $garmentCount = $model->garmentCount;?>
+		<?php echo CHtml::label('Garment Count', 'garment_qty');?>
+		<?php echo CHtml::encode($formatter->formatNumber($garmentCount));?>
+	</div>
+	
+	<div class="row">
+		<?php echo CHtml::label('Total Per Garment', 'item_total');?>
+		<?php echo CHtml::encode($formatter->formatCurrency(($garmentCount == 0) ? 0 : $model->QUOTE / $garmentCount));?>
+	</div>
+
+	<div class="row">
+		<?php echo CHtml::activeLabelEx($model,'QUOTE'); ?>
+		<?php echo CHtml::encode($formatter->formatCurrency($model->QUOTE));?>		
+	</div>
+
+	<div class="row">
+		<?php echo CHtml::activeLabelEx($model,'NOTES'); ?>
+		<?php echo $formatter->formatNtext($model->NOTES);?>
+	</div>
+
+	<div class="row buttons">
+		<?php echo CHtml::button('Edit', array(
+			'onclick'=>"js:window.location.href='".CHtml::normalizeUrl(array('job/update', 'id'=>$model->ID))."';"
+		));?>
+	</div>
+
+
+</div><!-- content -->

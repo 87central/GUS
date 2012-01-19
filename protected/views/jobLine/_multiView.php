@@ -1,13 +1,14 @@
 <?php /*needs vars for namePrefix and startIndex (the index from which to start numbering lines)*/?>
 
 <?php $div = CHtml::getIdByName($namePrefix . $startIndex . 'item');?>
+<?php $readonly = isset($readonly) && $readonly;?>
 
 <div class="jobLines" id="<?php echo $div;?>">
 	Style <span class="item-select-approved"><?php echo $products['style'];?></span>
 	
 	Color <span class="color-select-approved"><?php $formatter = new Formatter; echo $formatter->formatLookup($products['currentColor']);?></span>
 	
-	<?php foreach($products['lines'] as $datLine){
+	<?php foreach($products['lines'] as $dataLine){
 		$product = $dataLine['product'];
 		$line = $dataLine['line'];
 		$lineHiddenPrefix = $namePrefix . $startIndex;
