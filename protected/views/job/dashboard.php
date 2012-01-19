@@ -17,7 +17,7 @@ $this->widget('zii.widgets.grid.CGridView', array(
 			'class'=>'CLinkColumn',
 			'header'=>'Open Jobs',
 			'labelExpression'=>"\$data->RUSH ? '<span class=\"warning\">RUSH</span>&nbsp;' : '' . \$data->NAME;",
-			'urlExpression'=>"CHtml::normalizeUrl(array('job/update', 'id'=>\$data->ID));",
+			'urlExpression'=>"CHtml::normalizeUrl(array('job/view', 'id'=>\$data->ID));",
 		),
 		array(
 			'header'=>'Status',
