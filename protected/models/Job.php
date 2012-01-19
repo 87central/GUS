@@ -72,6 +72,7 @@ class Job extends CActiveRecord
 		return array(
 			'CUSTOMER' => array(self::BELONGS_TO, 'Customer', 'CUSTOMER_ID'),
 			'LEADER' => array(self::BELONGS_TO, 'User', 'LEADER_ID'),
+			'PRINTER'=> array(self::BELONGS_TO, 'User', 'PRINTER_ID'),
 			'jobLines' => array(self::HAS_MANY, 'JobLine', 'JOB_ID'),			
 			'printJob' => array(self::BELONGS_TO, 'PrintJob', 'PRINT_ID'),
 			'events'=> array(self::HAS_MANY, 'EventLog', 'OBJECT_ID', 'condition'=>'OBJECT_TYPE = \'Job\'', 'index'=>'EVENT_ID'),
@@ -100,6 +101,8 @@ class Job extends CActiveRecord
 			'formattedDueDate'=> 'Due Date',
 			'formattedPickUpDate' =>'Pickup Date',
 			'NAME'=>'Name',
+			'PRINTER'=>'Printer',
+			'PRINTER_ID'=>'Printer',
 		);
 	}
 	
