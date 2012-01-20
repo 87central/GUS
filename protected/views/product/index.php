@@ -12,7 +12,7 @@ $this->menu=array(
 <h1>Products</h1>
 
 <?php function listSizes($model){
-	$sizes = Product::getAllowedSizes($model->VENDOR_ITEM_ID);
+	$sizes = Product::getAllowedSizes($model->style->TEXT);
 	if(count($sizes) == 0){
 		return 'None';
 	} else {
@@ -28,7 +28,7 @@ $this->menu=array(
 }
 
 function listColors($model){
-	$colors = Product::getAllowedColors($model->VENDOR_ITEM_ID);
+	$colors = Product::getAllowedColors($model->style->TEXT);
 	if(count($colors) == 0){
 		return 'None';
 	} else {
@@ -50,7 +50,7 @@ function listColors($model){
 		array(
 			'class'=>'CLinkColumn',
 			'header'=>'Item',
-			'urlExpression'=>"array('product/update', 'v'=>\$data->VENDOR_ID, 'i'=>\$data->VENDOR_ITEM_ID)",
+			'urlExpression'=>"array('product/update', 'v'=>\$data->VENDOR_ID, 'i'=>\$data->style->TEXT)",
 			'labelExpression'=>"\$data->vendorStyle",
 		),
 		array(

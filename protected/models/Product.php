@@ -153,8 +153,8 @@ class Product extends CActiveRecord
 	 * Gets a string representing the vendor information of this product.
 	 */
 	public function getVendorStyle(){
-		if(isset($this->VENDOR_ID) && isset($this->VENDOR_ITEM_ID)){
-			$summary = $this->VENDOR_ITEM_ID . ' - ' . $this->VENDOR->NAME; 
+		if(isset($this->VENDOR_ID) && isset($this->style)){
+			$summary = $this->style->TEXT . ' - ' . $this->VENDOR->NAME; 
 		} else {
 			$summary = $this->ID . ' - ' . '8/7 Central';
 		}
@@ -166,7 +166,8 @@ class Product extends CActiveRecord
 	 * @return array An array containing instances of Lookup with the allowed colors.
 	 */
 	public static function getAllowedColors($itemID){
-		$results = Product::model()->findAllByAttributes(array('VENDOR_ITEM_ID'=>$itemID), 'STATUS != '.Product::DELETED);
+		$style = Lookup::model()->findByAttributes(array('TEXT'=>$itemID));
+		$results = Product::model()->findAllByAttributes(array('STYLE'=>$style->ID), 'STATUS != '.Product::DELETED);
 		$colors = array();
 		foreach($results as $product){
 			$colors[(string) $product->COLOR] = $product->color;
@@ -179,7 +180,8 @@ class Product extends CActiveRecord
 	 * @return array An array containing instances of Lookup with the allowed sizes.
 	 */
 	public static function getAllowedSizes($itemID){
-		$results = Product::model()->findAllByAttributes(array('VENDOR_ITEM_ID'=>$itemID), 'STATUS <> '.Product::DELETED);
+		$style = Lookup::model()->findByAttributes(array('TEXT'=>$itemID));
+		$results = Product::model()->findAllByAttributes(array('STYLE'=>$style->ID), 'STATUS <> '.Product::DELETED);
 		$sizes = array();
 		foreach($results as $product){
 			$sizes[(string) $product->SIZE] = $product->size;
@@ -188,8 +190,8 @@ class Product extends CActiveRecord
 	}
 	
 	public static function getStyle($itemID){
-		$results = Product::model()->findByAttributes(array('VENDOR_ITEM_ID'=>$itemID), 'STATUS <> '.Product::DELETED);
-		return $results->style;
+		$style = Lookup::model()->findByAttributes(array('TEXT'=>$itemID));
+		return $style;
 	}
 	
 	/**
@@ -197,7 +199,8 @@ class Product extends CActiveRecord
 	 * @return float The cost of the item.
 	 */
 	public static function getCost($itemID){
-		$results = Product::model()->findByAttributes(array('VENDOR_ITEM_ID'=>$itemID), 'STATUS <> '.Product::DELETED);
+		$style = Lookup::model()->findByAttributes(array('TEXT'=>$itemID));
+		$results = Product::model()->findByAttributes(array('STYLE'=>$style->ID), 'STATUS <> '.Product::DELETED);
 		return $results->COST;
 	}
 	
