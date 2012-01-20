@@ -1,7 +1,29 @@
 <?php 
+Yii::app()->clientScript->registerCoreScript('jquery');
+
+//it doesn't make sense to me either, but the yii framework doesn't let me add extra variables
+//to expressions in the grid view. so this is what I have to do...
+class StatusProvider {
+	public static $statuses;
+	
+	public static function statusSelector($model){
+		return CHtml::activeDropDownList($model, 'STATUS', StatusProvider::$statuses, array(
+			'onchange'=>"js:$.ajax({
+				url: '".CHtml::normalizeUrl(array('job/status', 'id'=>$model->ID))."'," .
+				"data: {
+					status: $(this).val(),
+				}," .
+				"type: 'POST',
+			});"
+		));
+	}
+}
+
+StatusProvider::$statuses = $statuses;
+
 $this->widget('zii.widgets.grid.CGridView', array( 
 	'dataProvider'=>$dataProvider,
-	'formatter'=>new CFormatter,
+	'formatter'=>new Formatter,
 	'columns'=>array(
 		array(
 			'name'=>'pickUpDate',
@@ -16,7 +38,8 @@ $this->widget('zii.widgets.grid.CGridView', array(
 		),
 		array(
 			'header'=>'Status',
-			'value'=>'',
+			'type'=>'raw',
+			'value'=>"StatusProvider::statusSelector(\$data)",
 		),
 		array(
 			'header'=>'Print',

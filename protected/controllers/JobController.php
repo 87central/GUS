@@ -23,12 +23,12 @@ class JobController extends Controller
 	{
 		return array(
 			array('allow',
-				'actions'=>array('create', 'update', 'deleteLine', 'approveLine', 'newLine', 'view', 'list', 'index', 'garmentCost'),
+				'actions'=>array('status', 'create', 'update', 'deleteLine', 'approveLine', 'newLine', 'view', 'list', 'index', 'garmentCost'),
 				'users'=>array('@'),
 				'expression'=>"Yii::app()->user->getState('isDefaultRole');",
 			),
 			array('allow',
-				'actions'=>array('create', 'update', 'deleteLine', 'approveLine', 'newLine', 'view', 'list', 'index', 'garmentCost'),
+				'actions'=>array('status', 'create', 'update', 'deleteLine', 'approveLine', 'newLine', 'view', 'list', 'index', 'garmentCost'),
 				'users'=>array('@'),
 				'expression'=>"Yii::app()->user->getState('isLead');",
 			),
@@ -587,9 +587,19 @@ class JobController extends Controller
 		$dataProvider = new CActiveDataProvider('Job', array(
 			'pagination'=>false,
 		));
+		
+		$statuses = CHtml::listData(Lookup::listItems('JobStatus'), 'ID', 'TEXT');
+		
 		$this->render('list', array(
 			'dataProvider'=>$dataProvider,
+			'statuses'=>$statuses,
 		));
+	}
+	
+	public function actionStatus($id){
+		$model = $this->loadModel($id);
+		$model->STATUS = $_POST['status'];
+		$model->save();
 	}
 	
 	private function resultToCalendarData($result){

@@ -55,7 +55,7 @@ class Job extends CActiveRecord
 		// will receive user inputs.
 		return array(
 			array('RUSH, SCORE', 'numerical', 'integerOnly'=>true),
-			array('ID, NAME, DESCRIPTION, NOTES, ISSUES', 'safe'),
+			array('ID, NAME, DESCRIPTION, NOTES, ISSUES, STATUS', 'safe'),
 			// The following rule is used by search().
 			// Please remove those attributes that should not be searched.
 			array('ID, CUSTOMER_ID, LEADER_ID, NAME, DESCRIPTION, NOTES, ISSUES, RUSH, SET_UP_FEE, SCORE, QUOTE', 'safe', 'on'=>'search'),
@@ -76,6 +76,7 @@ class Job extends CActiveRecord
 			'jobLines' => array(self::HAS_MANY, 'JobLine', 'JOB_ID'),			
 			'printJob' => array(self::BELONGS_TO, 'PrintJob', 'PRINT_ID'),
 			'events'=> array(self::HAS_MANY, 'EventLog', 'OBJECT_ID', 'condition'=>'OBJECT_TYPE = \'Job\'', 'index'=>'EVENT_ID'),
+			'status'=>array(self::BELONGS_TO, 'Lookup', 'STATUS'),
 		);
 	}
 
