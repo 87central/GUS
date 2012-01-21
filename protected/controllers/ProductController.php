@@ -78,10 +78,14 @@ class ProductController extends Controller
 			$model->attributes=$_POST['ProductForm'];
 			$save = true;
 			foreach($model->products as $product){
-				$save = $save && $product->save();
+				if(!$product->save()){
+					$save = false;
+					$model->addErrors($product->errors);
+				}
 			}
-			if($save)
+			if($save){
 				$this->redirect(array('update','v'=>$model->VENDOR_ID, 'i'=>$model->VENDOR_ITEM_ID));
+			}
 		}
 
 		$this->render('create',array(
@@ -118,7 +122,10 @@ class ProductController extends Controller
 			$model->attributes=$_POST['ProductForm'];
 			$save = true;
 			foreach($model->products as $product){
-				$save = $save && $product->save();
+				if(!$product->save()){
+					$save = false;
+					$model->addErrors($product->errors);
+				}
 			}
 			if($save)
 				$this->redirect(array('update','v'=>$model->VENDOR_ID, 'i'=>$model->VENDOR_ITEM_ID));
