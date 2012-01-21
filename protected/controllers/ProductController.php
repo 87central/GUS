@@ -212,21 +212,14 @@ class ProductController extends Controller
 	
 	public function actionFindProduct($response='render'){
 		$term = $_GET['term'];
-		
-		$criteria = new CDbCriteria;
-		$criteria->addColumnCondition(array('TYPE'=>'Style'));
-		$criteria->compare('TEXT', $term, true);
-		$styles = Lookup::model()->findAll($criteria);
-		$styleIDs = array();
-		foreach($styles as $style){
-			$styleIDs[] = $style->ID;
-		}
-		$results = Product::model()->findAllByAttributes(array('STYLE'=>$styleIDs));
-		
+		$model = new Product('search');
+		$model->unsetAttributes();
+		$model->VENDOR_ITEM_ID = $term;
+		$results = $model->search();
 		$prefiltered = array();
 		//we first want to filter out any duplicate records
-		foreach($results as $result){
-			$prefiltered[(string) $result->style->TEXT] = $result;
+		foreach($results->data as $result){
+			$prefiltered[(string) $result->VENDOR_ITEM_ID] = $result;
 		}
 		$results = new CArrayDataProvider($prefiltered, array(
 			'keyField'=>'ID',
@@ -237,7 +230,7 @@ class ProductController extends Controller
 			$juiResults[] = array(
 				'label'=>$result->vendorStyle,
 				'value'=>$result->vendorStyle,
-				'id'=>$result->style->TEXT,
+				'id'=>$result->VENDOR_ITEM_ID,
 			);
 		}
 		switch($response){

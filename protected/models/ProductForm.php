@@ -201,8 +201,7 @@ class ProductForm extends CFormModel {
 	}
 	
 	public function updateProducts($itemID, $vendorID){
-		$style = Lookup::model()->findByAttributes(array('TEXT'=>$itemID));
-		$results = Product::model()->findAllByAttributes(array('STYLE'=>$$style->ID, 'VENDOR_ID'=>$vendorID));
+		$results = Product::model()->findAllByAttributes(array('VENDOR_ITEM_ID'=>$itemID, 'VENDOR_ID'=>$vendorID));
 		$newList = array();
 		foreach($results as $result){
 			$newList[(string)$result->STYLE . $result->COLOR . $result->SIZE] = $result;
