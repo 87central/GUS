@@ -7,7 +7,8 @@ $cs->registerScript('set-selector-data', "" .
 		"\$('#girls').data('max', 6).data('current', 0);" .
 		"\$('#infant').data('max', 5).data('current', 0);" .
 		"\$('#kids').data('max', 6).data('current', 0);" .
-		"\$('#youth').data('max', 5).data('current', 0);", 
+		"\$('#youth').data('max', 5).data('current', 0);" .
+		"\$('#all-colors').data('max', \$('.color-list .checkBoxList').children(':checkbox').size()).data('current', 0);", 
 CClientScript::POS_END);
 $cs->registerScript('set-checkbox-data', "" .
 		"\$('.size-list .checkBoxList').children('[value=\"34\"], [value=\"35\"], [value=\"36\"], [value=\"37\"], [value=\"38\"], [value=\"39\"], [value=\"40\"]').data('group-id', '#reg');" .
@@ -15,10 +16,11 @@ $cs->registerScript('set-checkbox-data', "" .
 		"\$('.size-list .checkBoxList').children('[value=\"75\"], [value=\"76\"], [value=\"77\"], [value=\"78\"], [value=\"79\"], [value=\"80\"]').data('group-id', '#girls');" .
 		"\$('.size-list .checkBoxList').children('[value=\"81\"], [value=\"82\"], [value=\"83\"], [value=\"84\"], [value=\"85\"]').data('group-id', '#infant');" .
 		"\$('.size-list .checkBoxList').children('[value=\"86\"], [value=\"87\"], [value=\"88\"], [value=\"89\"], [value=\"90\"], [value=\"91\"]').data('group-id', '#kids');" .
-		"\$('.size-list .checkBoxList').children('[value=\"96\"], [value=\"97\"], [value=\"98\"], [value=\"99\"], [value=\"100\"]').data('group-id', '#youth');", 
+		"\$('.size-list .checkBoxList').children('[value=\"96\"], [value=\"97\"], [value=\"98\"], [value=\"99\"], [value=\"100\"]').data('group-id', '#youth');" .
+		"\$('.color-list .checkBoxList').children(':checkbox').data('group-id', '#all-colors');", 
 CClientScript::POS_END);
 $cs->registerScript('initialize-selector-state', "" .
-		"\$('.size-list :checked').each(function(index){
+		"\$('.size-list :checked, .color-list :checked').each(function(index){
 			var target = \$(\$(this).data('group-id'));" .
 			"\$(target).data('current', \$(target).data('current') + 1);" .
 			"if(\$(target).data('current') == \$(target).data('max')){
@@ -29,7 +31,7 @@ $cs->registerScript('initialize-selector-state', "" .
 		});",
 CClientScript::POS_END);
 $cs->registerScript('update-selector-state', "" .
-		"\$('.size-list :checkbox').change(function(event){
+		"\$('.size-list :checkbox, .color-list :checkbox').change(function(event){
 			var increment = -1;" .
 			"if(\$(this).attr('checked') == 'checked'){
 				increment = 1;
@@ -119,6 +121,17 @@ CClientScript::POS_END);
 			$(target).addClass('selected').data('current', $(target).data('max'));
 		}
 	}
+	function selectAllColors(){
+		var checkboxes = $('.color-list .checkBoxList').children(':checkbox');
+		var target = $('#all-colors');
+		if($(target).hasClass('selected')){
+			$(checkboxes).removeAttr('checked');
+			$(target).removeClass('selected').data('current', 0);			
+		} else {
+			$(checkboxes).attr('checked', 'checked');
+			$(target).addClass('selected').data('current', $(target).data('max'));
+		}
+	}
 	
 </script>
 
@@ -163,9 +176,11 @@ CClientScript::POS_END);
 		<?php //echo $form->dropDownList($model,'COLOR', $colorList); ?>
 		<?php echo $form->checkBoxList($model, 'COLORS', $colorList);?>
 		<?php echo $form->error($model,'COLORS'); ?>
-	</div>
+	</div>	
 	<div class="clear"></div>
-	
+		<ul class="selectors">
+			<li id="all-colors"><a href="javascript:selectAllColors()">ALL COLORS</a></li>
+		</ul>
 	<div class="clear"></div>
 	<div class="row seperator size-list">
 		<?php echo $form->labelEx($model,'SIZES'); ?>
