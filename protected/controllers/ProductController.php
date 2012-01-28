@@ -171,6 +171,9 @@ class ProductController extends Controller
 			'sort'=>array(
 				'defaultOrder'=>'STYLE, SIZE, COLOR',
 			),
+			'criteria'=>array(
+				'condition'=>"STATUS <> '".Product::DELETED."'",
+			),
 		));
 		
 		$items = $dataProvider->data;
