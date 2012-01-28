@@ -129,6 +129,7 @@ CClientScript::POS_BEGIN);?>
 		'model'=> $print,
 		'job'=>$model,
 		'artLink'=>isset($artLink) ? $artLink : null,
+		'mockupLink'=>isset($mockupLink) ? $mockupLink : null,
 		'passes'=>$passes, 
 	));?>
 	<div class="separator"></div>

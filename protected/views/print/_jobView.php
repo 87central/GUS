@@ -18,6 +18,11 @@
 		<?php echo CHtml::activeLabelEx($model,'ART'); ?>
 		&nbsp;<?php echo ($artLink ? CHtml::link('Download Here', $artLink) : 'No Art Submitted');?>
 	</div>
+	
+	<div class="row">
+		<?php echo CHtml::activeLabelEx($model,'MOCK_UP'); ?>
+		&nbsp;<?php echo ($mockupLink ? CHtml::link('Download Here', $mockupLink) : 'No Mockup Submitted');?>
+	</div>
 
 	<div class="row">
 		<?php echo CHtml::activeLabelEx($model,'COST'); ?>

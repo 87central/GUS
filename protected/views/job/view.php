@@ -46,6 +46,7 @@ $this->menu=array(
 	<?php $this->renderPartial('//print/_jobView', array(
 		'model'=>$print,
 		'artLink'=>isset($artLink) ? $artLink : null,
+		'mockupLink'=>isset($mockupLink) ? $mockupLink : null,
 		'formatter'=>$formatter,
 	));?>
 	

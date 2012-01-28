@@ -30,6 +30,13 @@
 		&nbsp;<?php echo ($artLink ? CHtml::link('Download Here', $artLink) : '');?>
 		<?php echo CHtml::error($model,'ART'); ?>
 	</div>
+	
+	<div class="row">
+		<?php echo CHtml::activeLabelEx($model,'MOCK_UP'); ?>
+		<?php echo CHtml::activeFileField($model,'MOCK_UP', array('name'=>'PrintJob_MockUp', 'value'=>'')); ?>
+		&nbsp;<?php echo ($mockupLink ? CHtml::link('Download Here', $mockupLink) : '');?>
+		<?php echo CHtml::error($model,'MOCK_UP'); ?>
+	</div>
 
 	<div class="row">
 		<?php echo CHtml::activeLabelEx($model,'COST'); ?>

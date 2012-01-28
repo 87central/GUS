@@ -106,12 +106,19 @@ class JobController extends Controller
 			$artLink = null;
 		}
 		
+		if($print->MOCK_UP != null){
+			$mockupLink = CHtml::normalizeUrl(array('job/mockUp', 'id'=>$model->ID));			
+		} else {
+			$mockupLink = null;
+		}
+		
 		$this->render('view',array(
 			'model'=>$this->loadModel($id),
 			'customer'=>$model->CUSTOMER,
 			'print'=>$model->printJob,
 			'lineData'=>$lineData,
 			'artLink'=>$artLink,
+			'mockupLink'=>$mockupLink,
 			'formatter'=>new Formatter,
 		));
 	}
@@ -348,7 +355,9 @@ class JobController extends Controller
 			$saved = true;
 			if($saved){
 				$printFile = $_FILES['PrintJob_Art'];
+				$printMockUp = $_FILES['PrintJob_MockUp'];
 				$print->createArtFile($printFile);
+				$print->createMockUpFile($printMockUp);
 				$saved = $saved && $print->save();
 			} 
 			if($saved) {
@@ -464,7 +473,9 @@ class JobController extends Controller
 			$saved = true;
 			if($saved){
 				$printFile = $_FILES['PrintJob_Art'];
+				$printMockUp = $_FILES['PrintJob_MockUp'];
 				$print->createArtFile($printFile);
+				$print->createMockUpFile($printMockUp);
 				$saved = $saved && $print->save();
 			} 
 			if($saved) {
@@ -487,6 +498,12 @@ class JobController extends Controller
 		} else {
 			$artLink = null;
 		}
+		
+		if($print->MOCK_UP != null){
+			$mockupLink = CHtml::normalizeUrl(array('job/mockUp', 'id'=>$model->ID));
+		} else {
+			$mockupLink = null;
+		}
 
 		$this->render('update',array(
 			'model'=>$model,
@@ -499,6 +516,7 @@ class JobController extends Controller
 			'colors'=>$colors,
 			'sizes'=>$sizes,
 			'artLink'=>$artLink,
+			'mockupLink'=>$mockupLink,
 			'passes'=>$passes,
 			'lineData'=>$lineData,
 		));
@@ -512,6 +530,26 @@ class JobController extends Controller
 		$model = $this->loadModel($id);
 		if($model){
 			$file = $model->printJob->ART;
+			if($file){
+				$name = basename($file);
+				//code below obtained from http://iamcam.wordpress.com/2007/03/20/clean-file-names-using-php-preg_replace/
+				$replace="_";
+				$pattern="/([[:alnum:]_\.-]*)/";
+				$name=str_replace(str_split(preg_replace($pattern,$replace,$name)),$replace,$name);
+				//end snippet
+				
+				Yii::app()->request->sendFile($name, file_get_contents($file));
+			}
+		}
+	}
+	
+	/**
+	 * Let's the user download the mock up associated with a job.
+	 */
+	public function actionMockUp($id){
+		$model = $this->loadModel($id);
+		if($model){
+			$file = $model->printJob->MOCK_UP;
 			if($file){
 				$name = basename($file);
 				//code below obtained from http://iamcam.wordpress.com/2007/03/20/clean-file-names-using-php-preg_replace/

@@ -43,7 +43,7 @@ class PrintJob extends CActiveRecord
 		// will receive user inputs.
 		return array(
 			array('FRONT_PASS, BACK_PASS, SLEEVE_PASS, APPROVAL_USER', 'numerical', 'integerOnly'=>true),
-			array('ART', 'length', 'max'=>200),
+			array('ART, MOCK_UP', 'length', 'max'=>200),
 			array('APPROVAL_DATE', 'safe'),
 			array('COST', 'numerical'),
 			// The following rule is used by search().
@@ -76,6 +76,7 @@ class PrintJob extends CActiveRecord
 			'BACK_PASS'=>'Number of passes on back',
 			'SLEEVE_PASS'=>'Number of passes on sleeve',
 			'ART' => 'Art',
+			'MOCK_UP'=> 'Mock Up',
 			'COST' => 'Art Charge',
 			'APPROVAL_DATE' => 'Approval Date',
 			'APPROVAL_USER' => 'Approval User',
@@ -96,6 +97,7 @@ class PrintJob extends CActiveRecord
 		$criteria->compare('ID',$this->ID);
 		$criteria->compare('PASS',$this->PASS);
 		$criteria->compare('ART',$this->ART,true);
+		$criteria->compare('MOCK_UP', $this->MOCK_UP, true);
 		$criteria->compare('COST',$this->COST,true);
 		$criteria->compare('APPROVAL_DATE',$this->APPROVAL_DATE,true);
 		$criteria->compare('APPROVAL_USER',$this->APPROVAL_USER);
@@ -110,12 +112,32 @@ class PrintJob extends CActiveRecord
 	 * value given by $rawFile is properly stored in the file system.
 	 */
 	public function createArtFile($rawFile){
+		createAttributeFile($rawFile, 'ART');
+	}
+	
+	/**
+	 * Does the necessary file manipulation to ensure that the $_FILES
+	 * value given by $rawFile is properly stored in the file system.
+	 */
+	public function createMockUpFile($rawFile){
+		createAttributeFile($rawFile, 'MOCK_UP');
+	}
+	
+	/**
+	 * Does the necessary file manipulation to ensure that the $_FILES
+	 * value given by $rawFile is property stored in the file system.
+	 * @param object $rawFile The file to be saved.
+	 * @param string $attribute The attribute in which to place the final file path.
+	 */
+	protected function createAttributeFile($rawFile, $attribute){
 		if($rawFile){
-			$fileDir = dirname(__FILE__).DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'files'.DIRECTORY_SEPARATOR.get_class($this);
+			$fileDir = dirname(__FILE__).DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'files'.DIRECTORY_SEPARATOR.get_class($this).DIRECTORY_SEPARATOR.$attribute;
 			$destination = $fileDir.DIRECTORY_SEPARATOR.$rawFile['name'];
-			
+			if(!file_exists($fileDir)){
+				mkdir($fileDir, 0777, true);
+			}
 			if(move_uploaded_file($rawFile['tmp_name'], $destination)){
-				$this->ART = $destination;
+				$this->$attribute = $destination;
 			}			
 		}
 	}
