@@ -144,18 +144,27 @@ class ProductController extends Controller
 	/**
 	 * Deletes a particular model.
 	 * If deletion is successful, the browser will be redirected to the 'admin' page.
-	 * @param integer $id the ID of the model to be deleted
+	 * @param integer $v the vendor ID of the model to be deleted
+	 * @param string $i The vendor item ID of the model to be deleted.
 	 */
-	public function actionDelete($id)
+	public function actionDelete($v, $i)
 	{
 		if(Yii::app()->request->isPostRequest)
 		{
+			$bundle = new ProductForm;
+			$bundle->VENDOR_ID = $v;
+			$bundle->VENDOR_ITEM_ID = $i;
+			$success = true;
 			// we only allow deletion via POST request
-			$this->loadModel($id)->delete();
+			foreach($bundle->products as $product){
+				$success = $success && $product->delete();
+			}
 
 			// if AJAX request (triggered by deletion via admin grid view), we should not redirect the browser
-			if(!isset($_GET['ajax']))
-				$this->redirect(isset($_POST['returnUrl']) ? $_POST['returnUrl'] : array('admin'));
+			if(!isset($_GET['ajax'])){
+				Yii::app()->user->setFlash('success', 'The product was successfully deleted.');
+				$this->redirect(isset($_POST['returnUrl']) ? $_POST['returnUrl'] : array('index'));
+			}
 		}
 		else
 			throw new CHttpException(400,'Invalid request. Please do not repeat this request again.');

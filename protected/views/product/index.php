@@ -63,5 +63,15 @@ function listColors($model){
 			'type'=>'raw',
 			'value'=>"listColors(\$data)",
 		),
+		array(
+			'class'=>'CButtonColumn',
+			'viewButtonImageUrl'=>false,
+			'viewButtonLabel'=>'',
+			'viewButtonUrl'=>'',
+			'updateButtonImageUrl'=>false,
+			'updateButtonLabel'=>'',
+			'updateButtonUrl'=>'',
+			'deleteButtonUrl'=>"CHtml::normalizeUrl(array('product/delete', 'v'=>\$data->VENDOR_ID, 'i'=>\$data->VENDOR_ITEM_ID))",
+		),
 	),
 ));?>
