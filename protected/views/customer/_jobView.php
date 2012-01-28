@@ -11,7 +11,7 @@
 	
 	<div class="row">
 		<?php echo CHtml::activeLabelEx($model, 'EMAIL'); ?>
-		<?php echo CHtml::encode($formatter->formatEmail($model->EMAIL));?>
+		<?php echo $formatter->formatEmail($model->EMAIL);?>
 	</div>
 
 	<div class="row">
