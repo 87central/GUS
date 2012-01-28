@@ -29,7 +29,7 @@ class Product extends CActiveRecord
 	const NO_STOCK = 19; //no inventory, not ordered
 	const PLACEHOLDER = 32; //basically a temporary stock item, which,
 							//if ordered, becomes a permanent stock item.
-	const DELETED = 44; //69 in GUS prod
+	const DELETED = 69; //69 in GUS prod
 	
 	/**
 	 * Returns the static model of the specified AR class.
@@ -126,18 +126,21 @@ class Product extends CActiveRecord
 
 		$criteria=new CDbCriteria;
 
-		$criteria->compare('ID',$this->ID);
-		$criteria->compare('COST',$this->COST,true);
-		$criteria->compare('STATUS',$this->STATUS);
-		$criteria->compare('STYLE',$this->STYLE);
-		$criteria->compare('COLOR',$this->COLOR);
-		$criteria->compare('SIZE',$this->SIZE);
-		$criteria->compare('AVAILABLE',$this->AVAILABLE);
+		//$criteria->compare('ID',$this->ID);
+		//$criteria->compare('COST',$this->COST,true);
+		//$criteria->compare('STATUS',$this->STATUS);
+		//$criteria->compare('STYLE',$this->STYLE);
+		//$criteria->compare('COLOR',$this->COLOR);
+		//$criteria->compare('SIZE',$this->SIZE);
+		//$criteria->compare('AVAILABLE',$this->AVAILABLE);
 		$criteria->compare('VENDOR_ITEM_ID', $this->VENDOR_ITEM_ID, true);
-		$criteria->compare('STATUS', Product::DELETED, false, '<>');
+		$criteria->compare('STATUS', '<> '.Product::DELETED, false);
+		$criteria->limit = -1;
+		
 
 		return new CActiveDataProvider(get_class($this), array(
 			'criteria'=>$criteria,
+			'pagination'=>false,
 		));
 	}
 	
