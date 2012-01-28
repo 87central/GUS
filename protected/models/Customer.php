@@ -45,12 +45,13 @@ class Customer extends CActiveRecord
 	
 	protected function beforeSave(){
 		if(parent::beforeSave()){
-			$saved = $this->userModel->save();
-			$this->USER_ID = $this->userModel->ID;			
+			//these userModel modifications must go before the call to save.						
 			$this->userModel->isCustomer = true;
 			$this->userModel->isPrinter = false;
 			$this->userModel->isAdmin = false;
 			$this->userModel->isLead = false;
+			$saved = $this->userModel->save();
+			$this->USER_ID = $this->userModel->ID;
 			return $saved;
 		} else {
 			return false;
@@ -136,7 +137,12 @@ class Customer extends CActiveRecord
 	}
 	
 	public function getSummary(){
-		return $this->userModel->FIRST . ' ' . $this->userModel->LAST . ', ' . $this->COMPANY;
+		$summary = trim($this->userModel->FIRST . ' ' . $this->userModel->LAST);
+		if($summary != ''){
+			$summary .= ', ';
+		}
+		$summary .= trim($this->COMPANY);
+		return $summary;
 	}
 	
 	public function __get($name){
