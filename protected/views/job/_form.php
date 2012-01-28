@@ -26,7 +26,7 @@ Yii::app()->clientScript->registerScript('add-job', "function addLine(sender, na
 						"var sizes = data.sizes;" .
 						"var style = data.style;" .
 						"var cost = data.productCost;" .
-						"\$('#' + div_id).children('.jobLine').children('.line-style').val(style.ID);" .
+						"\$('#' + div_id).children('.jobLine').children('.line-style').val((style == null) ? null : style.ID);" .
 						"var colorOptions = $('<select></select>')" .
 							"\n.attr('name', 'color-select')" .
 							".attr('class', 'color-select')" .
@@ -36,9 +36,9 @@ Yii::app()->clientScript->registerScript('add-job', "function addLine(sender, na
 						"for(var color in colors){
 							colorOptions.append($('<option></option>').val(colors[color].ID).html(colors[color].TEXT));
 						}" .
-						"\$('#' + div_id).children('.color-select').replaceWith(colorOptions);" .
+						"\$('#' + div_id).children('.color-select').replaceWith(colorOptions);\n" .
 						"\$('#' + div_id).children('.jobLine').addClass('hidden-size').children('.score_part').attr('disabled', true).val(0);" .
-						"\$('#".$div."').children('.jobLine').children('.hidden_cost').val(cost);" .
+						"\$('#' + div_id).children('.jobLine').children('.hidden_cost').val(cost);" .
 						"for(var size in sizes){
 							\$('#' + div_id).children('.' + div_id + sizes[size].ID).removeClass('hidden-size').children('.score_part').removeAttr('disabled');
 						}
