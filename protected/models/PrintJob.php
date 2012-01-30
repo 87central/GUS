@@ -109,22 +109,6 @@ class PrintJob extends CActiveRecord
 	
 	/**
 	 * Does the necessary file manipulation to ensure that the $_FILES
-	 * value given by $rawFile is properly stored in the file system.
-	 */
-	public function createArtFile($rawFile){
-		createAttributeFile($rawFile, 'ART');
-	}
-	
-	/**
-	 * Does the necessary file manipulation to ensure that the $_FILES
-	 * value given by $rawFile is properly stored in the file system.
-	 */
-	public function createMockUpFile($rawFile){
-		createAttributeFile($rawFile, 'MOCK_UP');
-	}
-	
-	/**
-	 * Does the necessary file manipulation to ensure that the $_FILES
 	 * value given by $rawFile is property stored in the file system.
 	 * @param object $rawFile The file to be saved.
 	 * @param string $attribute The attribute in which to place the final file path.
@@ -140,6 +124,22 @@ class PrintJob extends CActiveRecord
 				$this->$attribute = $destination;
 			}			
 		}
+	}
+	
+	/**
+	 * Does the necessary file manipulation to ensure that the $_FILES
+	 * value given by $rawFile is properly stored in the file system.
+	 */
+	public function createArtFile($rawFile){
+		$this->createAttributeFile($rawFile, 'ART');
+	}
+	
+	/**
+	 * Does the necessary file manipulation to ensure that the $_FILES
+	 * value given by $rawFile is properly stored in the file system.
+	 */
+	public function createMockUpFile($rawFile){
+		$this->createAttributeFile($rawFile, 'MOCK_UP');
 	}
 	
 	/**
