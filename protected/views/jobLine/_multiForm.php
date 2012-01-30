@@ -30,7 +30,7 @@
 						"var sizes = data.sizes;" .
 						"var style = data.style;" .
 						"var cost = data.productCost;" .
-						"\$('#".$div."').children('.jobLine').children('.line-style').val(style.ID);" .
+						"\$('#".$div."').children('.jobLine').children('.line-style').val((style == null) ? null : style.ID);" .
 						"var colorOptions = $('<select></select>')" .
 							".attr('name', 'color-select')" .
 							".attr('class', 'color-select')" .
