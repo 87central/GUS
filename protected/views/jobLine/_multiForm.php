@@ -28,14 +28,16 @@
 					"function(data){
 						var colors = data.colors;" .
 						"var sizes = data.sizes;" .
-						"var style = data.style;" .
+						"var products = data.products;" .
 						"var cost = data.productCost;" .
-						"\$('#".$div."').children('.jobLine').children('.line-style').val((style == null) ? null : style.ID);" .
+						"\$('#".$div."').children('.jobLine').children('.line-product').val(null);" .
 						"var colorOptions = $('<select></select>')" .
 							".attr('name', 'color-select')" .
 							".attr('class', 'color-select')" .
-							".change(function() {
-								\$('#".$div."').children('.jobLine').children('.line-color').val(\$(colorOptions).val());" .
+							".change(function() {" .
+								"for(var size in sizes){
+									\$('#".$div."').children('.".$div."' + sizes[size].ID).children('.line-product').val(products[\$(colorOptions).val()][sizes[size].ID].ID);
+								}" .
 							"});" .
 						"for(var color in colors){
 							colorOptions.append($('<option></option>').val(colors[color].ID).html(colors[color].TEXT));
@@ -43,8 +45,16 @@
 						"\$('#".$div."').children('.color-select').replaceWith(colorOptions);" .
 						"\$('#".$div."').children('.jobLine').children('.hidden_cost').val(cost);" .
 						"\$('#".$div."').children('.jobLine').addClass('hidden-size').children('.score_part').attr('disabled', true).val(0);" .
-						"for(var size in sizes){
-							\$('#".$div."').children('.".$div."' + sizes[size].ID).removeClass('hidden-size').children('.score_part').removeAttr('disabled');
+						"for(var size in sizes){" .
+							"var firstColor = null;" .
+							"for(var color in colors){
+								firstColor = color;" .
+								"break;
+							}
+							\$('#".$div."').children('.".$div."' + sizes[size].ID)" .
+							".removeClass('hidden-size')" .
+							".children('.line-product').val(products[colors[firstColor].ID][sizes[size].ID].ID)" .
+							".parent().children('.score_part').removeAttr('disabled');
 						}
 					});
 			}"
@@ -110,20 +120,10 @@
 				'class'=>'line_id',
 			));?>
 			
-			<?php echo CHtml::activeHiddenField($line, 'color', array(
-				'name'=>$linePrefix . '[color]',
-				'class'=>'line-color',
-			));?>
-			
-			<?php echo CHtml::activeHiddenField($line, 'size', array(
-				'name'=>$linePrefix . '[size]',
-				'class'=>'line-size',
-				'value'=>$product->SIZE,				
-			));?>
-			
-			<?php echo CHtml::activeHiddenField($line, 'style', array(
-				'name'=>$linePrefix . '[style]',
-				'class'=>'line-style',
+			<?php echo CHtml::activeHiddenField($line, 'PRODUCT_ID', array(
+				'name'=>$linePrefix . '[PRODUCT_ID]',
+				'class'=>'line-product',
+				'value'=>$product->ID,
 			));?>
 			
 			<?php echo CHtml::hiddenField('linePrefix', $linePrefix, array(
@@ -212,23 +212,33 @@ CClientScript::POS_END);?>
 							"function(data){
 								var colors = data.colors;" .
 								"var sizes = data.sizes;" .
-								"var style = data.style;" .
+								"var products = data.products;" .
 								"var cost = data.productCost;" .
-								"\$('#' + div_id).children('.jobLine').children('.line-style').val(style.ID);" .
+								"\$('#' + div_id).children('.jobLine').children('.line-product').val(null);" .
 								"var colorOptions = $('<select></select>')" .
 									"\n.attr('name', 'color-select')" .
 									".attr('class', 'color-select')" .
-									".change(function() {
-										\$('#' + div_id).children('.jobLine').children('.line-color').val(\$(colorOptions).val());" .
+									".change(function() {" .
+										"for(var size in sizes){
+											\$('#' + div_id).children('.' + div_id + sizes[size].ID).children('.line-product').val(products[\$(colorOptions).val()][sizes[size].ID].ID);
+										}" .
 									"});" .
 								"for(var color in colors){
 									colorOptions.append($('<option></option>').val(colors[color].ID).html(colors[color].TEXT));
 								}" .
 								"\$('#' + div_id).children('.color-select').replaceWith(colorOptions);" .
 								"\$('#' + div_id).children('.jobLine').addClass('hidden-size').children('.score_part').attr('disabled', true).val(0);" .
-								"\$('#".$div."').children('.jobLine').children('.hidden_cost').val(cost);" .
-								"for(var size in sizes){
-									\$('#' + div_id).children('.' + div_id + sizes[size].ID).removeClass('hidden-size').children('.score_part').removeAttr('disabled');
+								"\$('#' + div_id).children('.jobLine').children('.hidden_cost').val(cost);" .
+								"for(var size in sizes){" .
+									"var firstColor = null;" .
+									"for(var color in colors){
+										firstColor = color;" .
+										"break;
+									}
+									\$('#' + div_id).children('.' + div_id + sizes[size].ID)" .
+									".removeClass('hidden-size')" .
+									".children('.line-product').val(products[colors[firstColor].ID][sizes[size].ID].ID)" .
+									".parent().children('.score_part').removeAttr('disabled');
 								}
 							});
 						}," .

@@ -257,7 +257,7 @@ class ProductController extends Controller
 		$results = array(
 			'colors'=>Product::getAllowedColors($itemID),
 			'sizes'=>Product::getAllowedSizes($itemID),
-			'style'=>Product::getStyle($itemID),
+			'products'=>Product::getProducts($itemID),
 			'colors-name'=>CHtml::getIdByName($namePrefix . "[$count]" . 'colors'),
 			'productCost'=>Product::getCost($itemID),
 		);

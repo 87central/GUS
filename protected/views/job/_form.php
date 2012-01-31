@@ -24,14 +24,16 @@ Yii::app()->clientScript->registerScript('add-job', "function addLine(sender, na
 					"function(data){
 						var colors = data.colors;" .
 						"var sizes = data.sizes;" .
-						"var style = data.style;" .
+						"var products = data.products;" .
 						"var cost = data.productCost;" .
-						"\$('#' + div_id).children('.jobLine').children('.line-style').val((style == null) ? null : style.ID);" .
+						"\$('#' + div_id).children('.jobLine').children('.line-product').val(null);" .
 						"var colorOptions = $('<select></select>')" .
 							"\n.attr('name', 'color-select')" .
 							".attr('class', 'color-select')" .
-							".change(function() {
-								\$('#' + div_id).children('.jobLine').children('.line-color').val(\$(colorOptions).val());" .
+							".change(function() {" .
+								"for(var size in sizes){
+									\$('#' + div_id).children('.' + div_id + sizes[size].ID).children('.line-product').val(products[\$(colorOptions).val()][sizes[size].ID].ID);
+								}" .
 							"});" .
 						"for(var color in colors){
 							colorOptions.append($('<option></option>').val(colors[color].ID).html(colors[color].TEXT));
@@ -39,8 +41,16 @@ Yii::app()->clientScript->registerScript('add-job', "function addLine(sender, na
 						"\$('#' + div_id).children('.color-select').replaceWith(colorOptions);\n" .
 						"\$('#' + div_id).children('.jobLine').addClass('hidden-size').children('.score_part').attr('disabled', true).val(0);" .
 						"\$('#' + div_id).children('.jobLine').children('.hidden_cost').val(cost);" .
-						"for(var size in sizes){
-							\$('#' + div_id).children('.' + div_id + sizes[size].ID).removeClass('hidden-size').children('.score_part').removeAttr('disabled');
+						"for(var size in sizes){" .
+							"var firstColor = null;" .
+							"for(var color in colors){
+								firstColor = color;" .
+								"break;
+							}
+							\$('#' + div_id).children('.' + div_id + sizes[size].ID)" .
+							".removeClass('hidden-size')" .
+							".children('.line-product').val(products[colors[firstColor].ID][sizes[size].ID].ID)" .
+							".parent().children('.score_part').removeAttr('disabled');
 						}
 					});
 				}," .

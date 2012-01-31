@@ -420,43 +420,45 @@ class JobController extends Controller
 		$products = array();
 		$groupedLines = array();
 		foreach($model->jobLines as $line){
-			$groupedLines[(string) $line->product->STYLE][(string) $line->product->COLOR][(string) $line->product->SIZE] = $line;
+			$groupedLines[(string) $line->product->vendorStyle][(string) $line->product->COLOR][(string) $line->product->SIZE] = $line;
 		}
 		
 		foreach($groupedLines as $style=>$styleGroup){
-			foreach($styleGroup as $color=>$colorGroup){
-				$approved = false;
-				foreach($sizes as $size){ //iterating through sizes because we want ALL of them
-					if(isset($colorGroup[(string) $size->ID])){
-						$line = $colorGroup[(string) $size->ID];						
-						$products[] = array(
-							'product'=>$line->product,
-							'line'=>$line,
-						);
-						if($line->isApproved){
-							$approved = true;
+			if($style){
+				foreach($styleGroup as $color=>$colorGroup){
+					$approved = false;
+					foreach($sizes as $size){ //iterating through sizes because we want ALL of them
+						if(isset($colorGroup[(string) $size->ID])){
+							$line = $colorGroup[(string) $size->ID];						
+							$products[] = array(
+								'product'=>$line->product,
+								'line'=>$line,
+							);
+							if($line->isApproved){
+								$approved = true;
+							}
+							$latestProduct = $line->product;
+						} else {
+							$product = new Product;
+							$product->SIZE = $size->ID;
+							$product->STYLE = $style;
+							$product->COLOR = $color;
+							$products[] = array(
+								'product'=>$product,
+								'line'=>new JobLine,
+							);
 						}
-						$latestProduct = $line->product;
-					} else {
-						$product = new Product;
-						$product->SIZE = $size->ID;
-						$product->STYLE = $style;
-						$product->COLOR = $color;
-						$products[] = array(
-							'product'=>$product,
-							'line'=>new JobLine,
-						);
 					}
-				}
-				if(count($products) > 0){
-					$products['lines'] = $products;
-					$products['style'] = $latestProduct->vendorStyle; //we'll always have a latestProduct, otherwise we wouldn't enter this loop
-					$products['availableColors'] = CHtml::listData(Product::getAllowedColors($latestProduct->VENDOR_ITEM_ID), 'ID', 'TEXT');
-					$products['currentColor'] = $color;
-					$products['approved'] = $approved;
-					$products['saved'] = true; //we're guaranteed that some of the lines in this group are persistent
-					$lineData[] = $products;
-					$products = array();
+					if(count($products) > 0){
+						$products['lines'] = $products;
+						$products['style'] = $latestProduct->vendorStyle; //we'll always have a latestProduct, otherwise we wouldn't enter this loop
+						$products['availableColors'] = CHtml::listData(Product::getAllowedColors($latestProduct->VENDOR_ITEM_ID), 'ID', 'TEXT');
+						$products['currentColor'] = $color;
+						$products['approved'] = $approved;
+						$products['saved'] = true; //we're guaranteed that some of the lines in this group are persistent
+						$lineData[] = $products;
+						$products = array();
+					}
 				}
 			}
 		}

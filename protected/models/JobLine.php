@@ -68,21 +68,10 @@ class JobLine extends CActiveRecord
 		}
 		
 		$newProduct = Product::model()->findByAttributes(array(
-			'COLOR'=>$this->_color,
-			'STYLE'=>$this->_style,
-			'SIZE'=>$this->_size,
+			'ID'=>$this->PRODUCT_ID,
 		));
 		
-		if($newProduct === null){
-			$newProduct = new Product;
-			$newProduct->COLOR = $this->_color;
-			$newProduct->STYLE = $this->_style;
-			$newProduct->SIZE = $this->_size;
-			$newProduct->STATUS = Product::PLACEHOLDER;
-			if($this->isApproved){
-				$newProduct->AVAILABLE = 0 - $this->QUANTITY;
-			}			
-		} else {
+		if($newProduct !== null){
 			if($newProduct->ID == $this->PRODUCT_ID){
 				$newProduct = $this->product;
 			}
@@ -90,7 +79,7 @@ class JobLine extends CActiveRecord
 				$newProduct->AVAILABLE -= $this->QUANTITY;
 			}
 		}		
-		if(parent::beforeSave() && $newProduct->save() && ($oldProduct == null || $oldProduct->save())){
+		if(parent::beforeSave() && ($newProduct == null || $newProduct->save()) && ($oldProduct == null || $oldProduct->save())){
 			$this->PRODUCT_ID = $newProduct->ID;
 			return true;
 		} else {

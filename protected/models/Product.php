@@ -204,6 +204,21 @@ class Product extends CActiveRecord
 		return $results->COST;
 	}
 	
+	/**
+	 * Gets the set of products associated with a given vendor item ID.
+	 * @param string $itemID The vendor item ID.
+	 * @return array An array mapping the set of valid color IDs to the set of valid sizeIDs to the set of products. E.g.
+	 * $result[colorID][sizeID] will be an instance of a Product.
+	 */
+	public static function getProducts($itemID){
+		$results = Product::model()->findAllByAttributes(array('VENDOR_ITEM_ID'=>$itemID), 'STATUS <> '.Product::DELETED);
+		$finalResults = array();
+		foreach($results as $product){
+			$finalResults[(string) $product->COLOR][(string) $product->SIZE] = $product;
+		}
+		return $finalResults;
+	}
+	
 	public function delete(){
 		$this->STATUS = Product::DELETED;
 		return $this->save();
