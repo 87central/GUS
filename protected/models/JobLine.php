@@ -112,9 +112,9 @@ class JobLine extends CActiveRecord
 		// will receive user inputs.
 		return array(
 			array('JOB_ID, PRODUCT_ID, QUANTITY, APPROVAL_USER', 'numerical', 'integerOnly'=>true),
-			array('APPROVAL_DATE', 'safe'),
+			array('APPROVAL_DATE, ID', 'safe'),
 			array('PRICE', 'numerical'),
-			array('color, size, style', 'numerical'),
+			array('color, size, style', 'numerical'),			
 			// The following rule is used by search().
 			// Please remove those attributes that should not be searched.
 			array('ID, JOB_ID, PRODUCT_ID, QUANTITY, PRICE, APPROVAL_DATE, APPROVAL_USER', 'safe', 'on'=>'search'),
