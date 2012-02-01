@@ -274,7 +274,9 @@ class Job extends CActiveRecord
 						$line = new JobLine;
 					}
 					$line->attributes = $jobLines[$i];
-					$newJobLines[] = $line;
+					if($line->PRODUCT_ID){ //can't have a line that isn't associated with a product
+						$newJobLines[] = $line;
+					}
 				}
 			}
 			$this->jobLines = $newJobLines;
