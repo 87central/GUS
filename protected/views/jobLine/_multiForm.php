@@ -9,7 +9,7 @@
 	?>
 	Style <?php $this->widget('zii.widgets.jui.CJuiAutoComplete', array(
 		'sourceUrl'=>array('product/findProduct', 'response'=>'juijson'),
-		'name'=>$namePrefix.$startIndex.'style',
+		'name'=>CHtml::getIdByName($namePrefix).$startIndex.'style',
 		'htmlOptions'=>array(
 			'class'=>'item-select',
 			'disabled'=>$approved,
