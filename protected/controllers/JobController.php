@@ -23,12 +23,12 @@ class JobController extends Controller
 	{
 		return array(
 			array('allow',
-				'actions'=>array('status', 'create', 'update', 'deleteLine', 'approveLine', 'newLine', 'view', 'list', 'index', 'garmentCost'),
+				'actions'=>array('status', 'create', 'update', 'deleteLine', 'approveLine', 'newLine', 'view', 'list', 'loadList', 'index', 'garmentCost'),
 				'users'=>array('@'),
 				'expression'=>"Yii::app()->user->getState('isDefaultRole');",
 			),
 			array('allow',
-				'actions'=>array('status', 'create', 'update', 'deleteLine', 'approveLine', 'newLine', 'view', 'list', 'index', 'garmentCost'),
+				'actions'=>array('status', 'create', 'update', 'deleteLine', 'approveLine', 'newLine', 'view', 'list', 'loadList', 'index', 'garmentCost'),
 				'users'=>array('@'),
 				'expression'=>"Yii::app()->user->getState('isLead');",
 			),
@@ -623,15 +623,54 @@ class JobController extends Controller
 		));
 	}
 	
-	public function actionList(){
-		$dataProvider = new CActiveDataProvider('Job', array(
+	/**
+	 * Loads the contents of a job listing tab.
+	 * @param string $list The type of list to load. Valid values are "current", "canceled", and "completed"
+	 */
+	public function actionLoadList($list){
+		switch($list){
+			case 'current' : $filter = array(Job::CREATED, JOB::SCHEDULED, Job::INVOICED); break;
+			case 'canceled' : $filter = Job::CANCELED; break;
+			case 'completed' : $filter = Job::COMPLETED; break;
+			default : $filter = null; break;
+		}
+		$jobs = Job::listJobsByStatus($filter);
+		$dataProvider = new CArrayDataProvider($jobs, array(
+			'keyField'=>'ID',
+			'pagination'=>false,
+		));
+		
+		$this->renderPartial('_listSection', array(
+			'dataProvider'=>$dataProvider,
+			'statuses'=> CHtml::listData(Lookup::listItems('JobStatus'), 'ID', 'TEXT'),
+		));
+	}
+	
+	public function actionList(){		
+		$currentJobs = Job::listJobsByStatus(array(Job::CREATED, JOB::SCHEDULED, Job::INVOICED));
+		$currentDataProvider = new CArrayDataProvider($currentJobs, array(
+			'keyField'=>'ID',
+			'pagination'=>false,
+		));
+		
+		$canceledJobs = Job::listJobsByStatus(Job::CANCELED);
+		$canceledDataProvider = new CArrayDataProvider($canceledJobs, array(
+			'keyField'=>'ID',
+			'pagination'=>false,
+		));
+		
+		$completedJobs = Job::listJobsByStatus(Job::COMPLETED);
+		$completedDataProvider = new CArrayDataProvider($completedJobs, array(
+			'keyField'=>'ID',
 			'pagination'=>false,
 		));
 		
 		$statuses = CHtml::listData(Lookup::listItems('JobStatus'), 'ID', 'TEXT');
 		
 		$this->render('list', array(
-			'dataProvider'=>$dataProvider,
+			'currentDataProvider'=>$currentDataProvider,
+			'canceledDataProvider'=>$canceledDataProvider,
+			'completedDataProvider'=>$completedDataProvider,
 			'statuses'=>$statuses,
 		));
 	}

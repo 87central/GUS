@@ -222,6 +222,15 @@ class Job extends CActiveRecord
 		));
 	}
 	
+	/**
+	 * Gets a list of jobs with the given status value.
+	 * @param mixed $status The status value, or array of status values, by which to filter.
+	 * @return array The set of jobs with the given status(es).
+	 */
+	public static function listJobsByStatus($status){
+		return Job::model()->findAllByAttributes(array('STATUS'=>$status));
+	}
+	
 	protected function getEventModel($eventID){
 		$events = array();
 		foreach($this->events as $event){

@@ -1,67 +1,51 @@
 <?php 
 Yii::app()->clientScript->registerCoreScript('jquery');
+Yii::app()->clientScript->registerCssFile($this->styleDirectory . 'job_list.css');
+?>
 
-//it doesn't make sense to me either, but the yii framework doesn't let me add extra variables
-//to expressions in the grid view. so this is what I have to do...
-class StatusProvider {
-	public static $statuses;
-	
-	public static function statusSelector($model){
-		return CHtml::activeDropDownList($model, 'STATUS', StatusProvider::$statuses, array(
-			'onchange'=>"js:$.ajax({
-				url: '".CHtml::normalizeUrl(array('job/status', 'id'=>$model->ID))."'," .
-				"data: {
-					status: $(this).val(),
-				}," .
-				"type: 'POST',
-			});"
-		));
-	}
+<script type="text/javascript">
+function statusChanged(completedStatus, canceledStatus, updateUrl, selector){
+	var status = $(selector).val(); 
+	$.ajax({
+		url: updateUrl,
+		data: {
+			status: status,
+		},
+		type: 'POST',
+		success: function(data){
+			var index = 0;	
+			switch(1 * status){
+				case canceledStatus : index = 2; break;
+				case completedStatus : index = 1; break;
+				default : index = 0; break;
+			}
+			var tabControl = $(selector).parentsUntil('.ui-tabs').parent();
+			var currentIndex = tabControl.tabs('option', 'selected');
+			$(tabControl).tabs('load', index);
+			$(tabControl).tabs('load', currentIndex);
+		}
+	});
 }
+</script>
 
-StatusProvider::$statuses = $statuses;
-
-$this->widget('zii.widgets.grid.CGridView', array( 
-	'dataProvider'=>$dataProvider,
-	'formatter'=>new Formatter,
-	'columns'=>array(
-		array(
-			'name'=>'pickUpDate',
-			'value'=>"date('l (n/j)', strtotime(\$data->pickUpDate));",
-			'header'=>'Pick-Up',
+<?php 
+$this->widget('zii.widgets.jui.CJuiTabs', array(
+	'tabs'=>array(
+		'Current Jobs'=>array('ajax'=>array('job/loadList', 'list'=>'current'),
+			'content'=>$this->renderPartial('_listSection', array(
+				'statuses'=>$statuses,
+				'dataProvider'=>$currentDataProvider,
+			), true),
 		),
-		array(
-			'class'=>'CLinkColumn',
-			'header'=>'Open Jobs',
-			'labelExpression'=>"\$data->RUSH ? '<span class=\"warning\">RUSH</span>&nbsp;' : '' . \$data->NAME;",
-			'urlExpression'=>"CHtml::normalizeUrl(array('job/view', 'id'=>\$data->ID));",
+		'Completed Jobs'=>array('ajax'=>array('job/loadList', 'list'=>'completed')),
+		'Canceled Jobs'=>array('ajax'=>array('job/loadList', 'list'=>'canceled')),
+	),
+	'options'=>array(
+		'ajaxOptions'=>array(
+			'cache'=>false,
 		),
-		array(
-			'header'=>'Status',
-			'type'=>'raw',
-			'value'=>"StatusProvider::statusSelector(\$data)",
-		),
-		array(
-			'header'=>'Print',
-			'name'=>'printDate',
-			'value'=>"date('l (n/j)', strtotime(\$data->printDate));",
-		),
-		array(
-			'header'=>'Due',
-			'name'=>'dueDate',
-			'value'=>"date('l (n/j)', strtotime(\$data->pickUpDate));"
-		),
-		'totalPasses',
-		array(
-			'header'=>'Art',
-			'value'=>"CHtml::image(Yii::app()->request->baseUrl . '/images/' . (\$data->hasArt ? 'checked.png' : 'unchecked.png'));",
-			'type'=>'raw',
-		),
-		array(
-			'header'=>'Sizes',
-			'value'=>"CHtml::image(Yii::app()->request->baseUrl . '/images/' . (\$data->hasSizes ? 'checked.png' : 'unchecked.png'));",
-			'type'=>'raw',
-		)
-	)
+	),
 ));
+
+
 ?>
