@@ -25,5 +25,15 @@ $this->menu=array(
 			'header'=>'Primary Role',
 			'value'=>"\$data->isAdmin ? 'Administrator' : \$data->isCustomer ? 'Customer' : \$data->isLead ? 'Project Lead' : 'Printer'",
 		),
+		array(
+			'class'=>'CButtonColumn',
+			'viewButtonImageUrl'=>false,
+			'viewButtonLabel'=>'',
+			'viewButtonUrl'=>'',
+			'updateButtonImageUrl'=>false,
+			'updateButtonLabel'=>'',
+			'updateButtonUrl'=>'',
+			'deleteButtonUrl'=>"CHtml::normalizeUrl(array('user/delete', 'id'=>\$data->ID))",
+		),
 	),
 ));?>
