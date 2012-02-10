@@ -62,7 +62,10 @@ class EventController extends Controller
 		$employees = User::listUsersWithRole(User::DEFAULT_ROLE);
 		$resultEmps = array();
 		foreach($employees as $emp){
-			$schedule = $this->findWeekSchedule($emp->ID);
+			$schedule = array();
+			for($i = 0; $i < 4; $i++){
+				$schedule[] = $this->findWeekSchedule($emp->ID, $i);
+			}
 			$resultEmps[$emp->FIRST] = $this->renderPartial('_employee', array(
 				'calendarData'=>$schedule,
 				'employee'=>$emp,
@@ -89,7 +92,10 @@ class EventController extends Controller
 			$model->DATE = $date;
 			if($model->save()){
 				$employee = User::model()->findByPk((int) $emp_id);
-				$schedule = $this->findWeekSchedule($employee->ID);
+				$schedule = array();
+				for($i = 0; $i < 4; $i++){
+					$schedule[] = $this->findWeekSchedule($employee->ID, $i);
+				}
 				$this->renderPartial('_employee', array(
 					'calendarData'=>$schedule,
 					'employee'=>$employee,
@@ -148,7 +154,7 @@ class EventController extends Controller
 		if(count($currentWeek) == 0){
 			$currentWeek[date('l')] = array(
 				'items'=>array(),
-				'date'=>time(),
+				'date'=>time() + $weekOffset * $secondsPerWeek,
 			);
 		}
 		return $currentWeek;

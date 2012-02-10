@@ -590,37 +590,56 @@ class JobController extends Controller
 	 */
 	public function actionIndex()
 	{
-		$lastSunday = strtotime('last sunday', time());
-		$secondsPerWeek = 24*60*60*7;
-		$nextSaturday = $lastSunday + $secondsPerWeek - 1;
-		$jobsThisWeek = EventLog::model()->findAllByAttributes(array(
-			'USER_ASSIGNED'=>Yii::app()->user->id,
-			'OBJECT_TYPE'=>'Job',				
-			'EVENT_ID'=>EventLog::JOB_PRINT,	
-		), '`DATE` BETWEEN FROM_UNIXTIME(' . $lastSunday . ') AND FROM_UNIXTIME(' . $nextSaturday . ')');
+		$calendarData = array();
+		for($i = 0; $i < 4; $i++){
+			$calendarData[] = $this->formatWeekSchedule(Yii::app()->user->id, $i);
+		}
 		$jobs = array();
+		$jobsThisWeek = $this->findWeekSchedule(Yii::app()->user->id);
 		foreach($jobsThisWeek as $event){
 			$jobs[] = $event->assocObject;
 		}
 		$dataProvider = new CArrayDataProvider($jobs, array(
 			'keyField'=>'ID',
-		));
-		
-		$lastSunday = $lastSunday + $secondsPerWeek;
-		$nextSaturday = $nextSaturday + $secondsPerWeek;
-		$jobsNextWeek = EventLog::model()->findAllByAttributes(array(
-			'USER_ASSIGNED'=>Yii::app()->user->id,
-			'OBJECT_TYPE'=>'Job',		
-			'EVENT_ID'=>EventLog::JOB_PRINT,
-		), '`DATE` BETWEEN FROM_UNIXTIME(' . $lastSunday . ') AND FROM_UNIXTIME(' . $nextSaturday . ')');
-		
-		$currentWeek = $this->resultToCalendarData($jobsThisWeek);
-		$nextWeek = $this->resultToCalendarData($jobsNextWeek);
+		));				
 		$this->render('dashboard',array(
 			'dataProvider'=>$dataProvider,
-			'currentData'=>$currentWeek,
-			'nextData'=>$nextWeek,
+			'calendarData'=>$calendarData,
 		));
+	}
+	
+	/**
+	 * Gets an employee's schedule, appropriate for a calendar widget. If there is nothing
+	 * on the schedule, the data returned will simply contain today's date.
+	 * @param string $employee_id The ID of the employee whose schedule should be retrieved.
+	 * @param int $weekOffset The number of weeks from the current week to find in the schedule.
+	 */
+	private function findWeekSchedule($employee_id, $weekOffset = 0){
+		$secondsPerWeek = 24*60*60*7;
+		$lastSunday = strtotime('last sunday', time());		
+		$nextSaturday = $lastSunday + $secondsPerWeek - 1;
+		$lastSunday += $weekOffset * $secondsPerWeek;
+		$nextSaturday += $weekOffset * $secondsPerWeek;
+		$jobsThisWeek = EventLog::model()->findAllByAttributes(array(
+			'USER_ASSIGNED'=>$employee_id,
+			'OBJECT_TYPE'=>'Job',		
+			'EVENT_ID'=>EventLog::JOB_PRINT,	
+		), '`DATE` BETWEEN FROM_UNIXTIME(' . $lastSunday . ') AND FROM_UNIXTIME(' . $nextSaturday . ')');
+		
+		return $jobsThisWeek;
+	}
+	
+	private function formatWeekSchedule($employee_id, $weekOffset = 0){
+		$currentWeek = $this->findWeekSchedule($employee_id, $weekOffset);
+		$secondsPerWeek = 24*60*60*7;
+		$currentWeek = $this->resultToCalendarData($currentWeek);
+		if(count($currentWeek) == 0){
+			$currentWeek[date('l')] = array(
+				'items'=>array(),
+				'date'=>time() + $weekOffset * $secondsPerWeek,
+			);
+		}
+		return $currentWeek;
 	}
 	
 	/**

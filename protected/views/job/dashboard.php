@@ -57,23 +57,14 @@ $this->widget('application.components.Menu', array(
 	'id'=>'job_menu',
 ));
 ?>
-<div id="current_cal" class="cal_container">
-<h6>Calendar - This Week</h6>
-<?php $this->widget('application.widgets.CalendarWidget', array(
-	'droppable'=>false,
-	'itemView'=>'//job/_eventDetail',
-	'headerView'=>'//job/_dayHeader',
-	'data'=>$currentData,	
-));?>
-</div>
-<br/>
-<br/>
-<div id="next_cal" class="cal_container">
-<h6>Next Week</h6>
-<?php $this->widget('application.widgets.CalendarWidget', array(
-	'droppable'=>false,
-	'itemView'=>'//job/_eventDetail',
-	'headerView'=>'//job/_dayHeader',
-	'data'=>$nextData,
-));?>
-</div>
+<h6>Calendar</h6>
+<?php for($i = 0; $i < 4; $i++){?>
+	<div id="cal<?php echo $i;?>" class="cal_container">
+		<?php $this->widget('application.widgets.CalendarWidget', array(
+			'droppable'=>false,
+			'itemView'=>'//job/_eventDetail',
+			'headerView'=>'//job/_dayHeader',
+			'data'=>$calendarData[$i],
+		));?>
+	</div>
+<?php }?>
