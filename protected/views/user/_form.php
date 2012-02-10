@@ -51,8 +51,10 @@
 	<div class="row roles">
 		<?php echo $form->checkBox($model, 'isPrinter');?>
 		<?php echo $form->labelEx($model,'isPrinter'); ?>
-		
-		<?php echo $form->hiddenField($model, 'isCustomer');?>
+	</div>
+	<div class="row roles">
+		<?php echo $form->checkBox($model, 'isCustomer');?>
+		<?php echo $form->labelEx($model, 'isCustomer');?>
 	</div>
 
 	<div class="row buttons">
