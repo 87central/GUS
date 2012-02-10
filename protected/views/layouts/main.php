@@ -79,12 +79,12 @@
 			<span class="greeting">Welcome <?php echo Yii::app()->user->name;?></span>&nbsp;
 			<span class="note"><?php echo date('l F j');?></span>
 			<br/>
-			<div class="messages">
+			<!--<div class="messages">
 				<?php foreach($this->messages as $message){?>
 					<strong><?php echo $message;?></strong>
 					<br/>
 				<?php }?>
-			</div>
+			</div>-->
 			<br/>
 		</div>
 	<?php }?>
