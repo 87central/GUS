@@ -25,6 +25,7 @@ class Job extends CActiveRecord
 	//job statuses 
 	const CREATED = 26; //the job has just been created, and perhaps a quote has been given
 	const INVOICED = 31; //a formal invoice has been sent.
+	const PAID = 27; //the invoice was received and the customer has paid for it.
 	const SCHEDULED = 28; //the job has been scheduled on the timeline.
 	const COMPLETED = 29; //the job has been completed.
 	const CANCELED = 30; //the job has been canceled.
