@@ -359,7 +359,9 @@ class Job extends CActiveRecord
 			$result = false;
 		} else {
 			foreach($this->jobLines as $line){
-				$result = $result && $line->isApproved;
+				if($line->PRODUCT_ID){ //we don't really care about lines without products in this case
+					$result = $result && $line->isApproved;
+				}
 			}
 		}
 		return $result; 
