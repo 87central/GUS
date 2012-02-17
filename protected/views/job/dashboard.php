@@ -1,7 +1,33 @@
 <?php
 $this->pageTitle = Yii::app()->user->name . ' - ' . 'Dashboard';
 Yii::app()->clientScript->registerCssFile(Yii::app()->request->baseUrl . '/css/job_dashboard.css');
+
+//it doesn't make sense to me either, but the yii framework doesn't let me add extra variables
+//to expressions in the grid view. so this is what I have to do...
+class StatusProvider {
+	public static $statuses;
+	
+	public static function statusSelector($model){
+		return CHtml::activeDropDownList($model, 'STATUS', StatusProvider::$statuses, array(
+			'onchange'=>"statusChanged(".Job::COMPLETED.", ".Job::CANCELED.", '".CHtml::normalizeUrl(array('job/status', 'id'=>$model->ID))."', this);"
+		));
+	}
+}
+
+StatusProvider::$statuses = $statuses;
 ?>
+<script type="text/javascript">
+	function statusChanged(completedStatus, canceledStatus, updateUrl, selector){
+		var status = $(selector).val(); 
+		$.ajax({
+			url: updateUrl,
+			data: {
+				status: status,
+			},
+			type: 'POST',
+		});
+	}
+</script>
 <!--table goes here-->
 <?php 
 $this->widget('zii.widgets.grid.CGridView', array( 
@@ -10,7 +36,7 @@ $this->widget('zii.widgets.grid.CGridView', array(
 	'columns'=>array(
 		array(
 			'name'=>'pickUpDate',
-			'value'=>"date('l', strtotime(\$data->pickUpDate));",
+			'value'=>"date('l (n/j)', strtotime(\$data->pickUpDate));",
 			'header'=>'Pick-Up',
 		),
 		array(
@@ -21,19 +47,20 @@ $this->widget('zii.widgets.grid.CGridView', array(
 		),
 		array(
 			'header'=>'Status',
-			'value'=>'',
+			'type'=>'raw',
+			'value'=>"StatusProvider::statusSelector(\$data)",
 		),
 		array(
 			'header'=>'Print',
 			'name'=>'printDate',
-			'value'=>"date('l', strtotime(\$data->printDate));",
+			'value'=>"date('l (n/j)', strtotime(\$data->printDate));",
 		),
 		array(
 			'header'=>'Due',
 			'name'=>'dueDate',
-			'value'=>"date('n/j', strtotime(\$data->dueDate));"
+			'value'=>"date('l (n/j)', strtotime(\$data->pickUpDate));"
 		),
-		'totalPasses',
+		'totalPasses::Passes',
 		array(
 			'header'=>'Art',
 			'value'=>"CHtml::image(Yii::app()->request->baseUrl . '/images/' . (\$data->hasArt ? 'checked.png' : 'unchecked.png'));",

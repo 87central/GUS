@@ -601,10 +601,14 @@ class JobController extends Controller
 		}
 		$dataProvider = new CArrayDataProvider($jobs, array(
 			'keyField'=>'ID',
-		));				
+		));			
+		
+		$statuses = CHtml::listData(Lookup::listItems('JobStatus'), 'ID', 'TEXT');
+			
 		$this->render('dashboard',array(
 			'dataProvider'=>$dataProvider,
 			'calendarData'=>$calendarData,
+			'statuses'=>$statuses,
 		));
 	}
 	
@@ -648,7 +652,7 @@ class JobController extends Controller
 	 */
 	public function actionLoadList($list){
 		switch($list){
-			case 'current' : $filter = array(Job::CREATED, JOB::SCHEDULED, Job::INVOICED); break;
+			case 'current' : $filter = array(Job::CREATED, JOB::SCHEDULED, Job::INVOICED, Job::PAID); break;
 			case 'canceled' : $filter = Job::CANCELED; break;
 			case 'completed' : $filter = Job::COMPLETED; break;
 			default : $filter = null; break;
@@ -666,7 +670,7 @@ class JobController extends Controller
 	}
 	
 	public function actionList(){		
-		$currentJobs = Job::listJobsByStatus(array(Job::CREATED, JOB::SCHEDULED, Job::INVOICED));
+		$currentJobs = Job::listJobsByStatus(array(Job::CREATED, JOB::SCHEDULED, Job::INVOICED, Job::PAID));
 		$currentDataProvider = new CArrayDataProvider($currentJobs, array(
 			'keyField'=>'ID',
 			'pagination'=>false,
