@@ -258,7 +258,14 @@ class JobLine extends CActiveRecord
 	 * Gets the total cost of the job line.
 	 */
 	public function getTotal(){
-		return $this->PRICE * $this->QUANTITY;
+		//right now, we just want to hack this for the extra large fee
+		$xlSizes = array(38, 39, 40, 51, 73, 74, 79, 80, 100);
+		if(array_search($this->size, $xlSizes) !== false){
+			$fee = 2;
+		} else {
+			$fee = 0;
+		}
+		return ($this->PRICE + $fee) * $this->QUANTITY;
 	}
 	
 	/**

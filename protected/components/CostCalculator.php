@@ -22,14 +22,24 @@ class CostCalculator extends CComponent {
 			default : $thresholds = array(5.25, 7.30, 10, 14, 16);
 					  break;
 		}
-		$cutoffs = array(200, 100, 50, 24, 12); //must be backwards, otherwise the last item would almost always be greater.
-		for($i = 0; $i < count($cutoffs); $i++){
-			if($garments <= $cutoffs[$i]){
-				$result = $thresholds[$i];
+		/*we have a cost for 11 or less and 12 or more, which are the same
+		 * but orders of 11 or less have a $30 screen fee added. then we have
+		 * a cost for 24 or more, 50 or more, 100 or more, and 200 or more.*/
+		$cutoffs = array(0, 24, 50, 100, 200); //must be backwards, otherwise the last item would almost always be greater.
+		$count = count($cutoffs);
+		for($i = 0; $i < $count; $i++){
+			if($garments >= $cutoffs[$i]){
+				$result = $thresholds[$count - $i - 1];
 			}
 		}
+		
 		$result += $surcharge;
 		$result *= $garments;
+		
+		if($garments < 12 && $garments != 0){
+			$result += 30;
+		}
+		
 		return $result;
 	}
 }
