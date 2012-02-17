@@ -39,6 +39,11 @@ class Controller extends CController
 	 */
 	public $pageOperations = array();
 	/**
+	 * @var array The array of products menu items and child items. Built assuming
+	 * the EMenu extension is used for the menus.
+	 */
+	public $products = array();	
+	/**
 	 * Indicates whether the current browser is a "mobile" browser instance.
 	 */
 	public function getIsMobile(){
@@ -60,10 +65,39 @@ class Controller extends CController
 				$cookies = Yii::app()->request->cookies;
 				$cookies['SUPPRESS_MOBILE'] = $this->createCookie('SUPPRESS_MOBILE', $this->actionParams['mobile']);
 			}
+			
+			//build the menu
+			if(Yii::app()->user->getState('isAdmin')){
+				$this->products = $this->buildProductsMenu(Product::model()->findAll('STATUS <> '.Product::DELETED));
+			}
 			return true;
 		} else {
 			return false;
 		}
+	}
+	
+	/**
+	 * Builds the menu of products given the array of products.
+	 * @param array $products The list of products to be accessible from the menu.
+	 */
+	protected function buildProductsMenu($products){
+		$protoMenu = array();
+		foreach($products as $product){
+			$protoMenu[$product->VENDOR->NAME][(string) $product->VENDOR_ITEM_ID] = array(
+				'url'=>array('/product/update', 'v'=>$product->VENDOR_ID, 'i'=>$product->VENDOR_ITEM_ID),
+				'label'=>$product->VENDOR_ITEM_ID,
+			);
+		}
+		
+		$menu = array();
+		foreach($protoMenu as $label=>$subMenu){
+			$items = array();
+			foreach($subMenu as $subMenuItem){
+				$items[] = $subMenuItem;
+			}
+			$menu[] = array('label'=>$label, 'items'=>$items);
+		}
+		return $menu;
 	}
 	
 	/**

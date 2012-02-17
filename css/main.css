@@ -77,18 +77,15 @@ body
 
 #mainmenu ul
 {
-	padding:6px 0px 5px 0px;
-	margin:0px;
+	
 }
 
 #mainmenu ul li
 {
 	display: block;
 	text-align: right;
-	margin-bottom: 6px;
-	margin-top: 6px;
 	border-bottom: 2px solid #C1C2C4;
-	padding-bottom: 6px;
+	
 }
 
 #mainmenu ul li.lastmenu {

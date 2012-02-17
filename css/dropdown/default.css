@@ -1,0 +1,110 @@
+@charset "UTF-8";
+
+/** 
+ * Default CSS Drop-Down Menu Theme
+ *
+ * @file		default.css
+ * @name		Default
+ * @version		0.1.1
+ * @type		transitional
+ * @browsers	Windows: IE5+, Opera7+, Firefox1+
+ *				Mac OS: Safari2+, Firefox2+
+ *
+ * @link		http://www.lwis.net/
+ * @copyright	2008 Live Web Institute
+ *
+ * Module Classes: *.dir {} *.on {} *.open {} li.hover {} li.first {} li.last {}
+ * Expected directory tag - li
+ *
+ */
+
+
+/*-------------------------------------------------/
+ * @section		Base Drop-Down Styling
+ * @structure	ul (unordered list)
+ *				ul li (list item)
+ *				ul li a (links)
+ *				/*\.class|(li|a):hover/
+ * @level sep	ul
+ */
+
+
+ul.dropdown {
+ font-weight: bold;
+ width: 124px;
+ float:inherit;
+ padding:6px 0px 5px 0px;
+}
+
+	ul.dropdown li {
+		padding-bottom: 6px;
+		margin-bottom: 6px;
+		margin-top: 6px;
+	}
+	/* -- level mark -- */
+
+	ul.dropdown ul {
+	 width: 124px;
+	 margin-top: 0px;
+	 background-color: #D1D2D4;
+	 padding-bottom: 0px;
+	 padding-top: 0px;
+	}
+
+		ul.dropdown ul li {
+		 font-weight: normal;
+		 /*margin-bottom: 0px;
+		 margin-top: 0px;
+		 padding-bottom: 0px;*/
+		margin-top: 0px;
+		margin-bottom: 0px;
+		padding-top: 6px;
+		}
+		
+		ul.dropdown ul li a, ul.dropdown ul li span {
+			padding-bottom: 5px;
+			padding-left: 8px;
+			padding-right: 8px;
+			padding-top: 5px;
+		}
+
+
+
+/*-------------------------------------------------/
+ * @section		Support Class `dir`
+ * @level sep	ul, .class
+ */
+
+
+/*ul.dropdown *.dir {
+ padding-right: 20px;
+ background-image: url(../../../../images/default/nav-arrow-down.png);
+ background-position: 100% 50%;
+ background-repeat: no-repeat;
+}*/
+
+
+/* -- Components override -- */
+
+/*ul.dropdown-horizontal ul *.dir {
+ padding-right: 15px;
+ background-image: url(../../../../images/default/nav-arrow-right.png);
+ background-position: 100% 50%;
+ background-repeat: no-repeat;
+}
+
+ul.dropdown-upward *.dir {
+ background-image: url(../../../../images/default/nav-arrow-top.png);
+}
+
+ul.dropdown-vertical *.dir,
+ul.dropdown-upward ul *.dir {
+ background-image: url(../../../../images/default/nav-arrow-right.png);
+}
+
+ul.dropdown-vertical-rtl *.dir {
+ padding-right: 10px;
+ padding-left: 15px;
+ background-image: url(../../../../images/default/nav-arrow-left.png);
+ background-position: 0 50%;
+}*/
