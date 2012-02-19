@@ -30,6 +30,8 @@ class Job extends CActiveRecord
 	const COMPLETED = 29; //the job has been completed.
 	const CANCELED = 30; //the job has been canceled.
 	
+	private $_additionalFees; //cache this value here.
+	
 	/**
 	 * Returns the static model of the specified AR class.
 	 * @return Job the static model class
@@ -56,7 +58,7 @@ class Job extends CActiveRecord
 		// will receive user inputs.
 		return array(
 			array('RUSH, SCORE', 'numerical', 'integerOnly'=>true),
-			array('ID, NAME, DESCRIPTION, NOTES, ISSUES, STATUS', 'safe'),
+			array('ID, NAME, DESCRIPTION, NOTES, ISSUES, STATUS, additionalFees', 'safe'),
 			// The following rule is used by search().
 			// Please remove those attributes that should not be searched.
 			array('ID, CUSTOMER_ID, LEADER_ID, NAME, DESCRIPTION, NOTES, ISSUES, RUSH, SET_UP_FEE, SCORE, QUOTE', 'safe', 'on'=>'search'),
@@ -335,7 +337,14 @@ class Job extends CActiveRecord
 				$line->save();
 			}
 		}
-		
+		if(isset($this->_additionalFees)){
+			$deleter = Yii::app()->db->createCommand();
+			$deleter->delete('job_fee', 'JOB_ID=:job_id', array(':job_id'=>$this->ID));
+			$inserter = Yii::app()->db->createCommand();
+			foreach($this->_additionalFees as $fee_id=>$value){
+				$inserter->insert('job_fee', array('FEE_ID'=>$fee_id, 'JOB_ID'=>$this->ID, 'VALUE'=>$value));
+			}
+		}
 	}
 	
 	public function getTotalPasses(){
@@ -447,5 +456,42 @@ class Job extends CActiveRecord
 			$orders[(string) $order->ID] = $order;
 		}
 		return $orders;
+	}
+	
+	/**
+	 * Gets the list of "additional" fees associated with a Job. These
+	 * are indexed by the fee ID (a Lookup key), and contain a "TEXT" and "VALUE" field.
+	 */
+	public function getAdditionalFees(){
+		if(!$this->_additionalFees){
+			$fees = Lookup::listItems('JobFeeType');
+			$result = array();
+			foreach($fees as $fee){
+				$result[(string) $fee->ID] = array(
+					'TEXT'=>$fee->TEXT,
+					'VALUE'=>0,
+				);
+			}
+			if(!$this->isNewRecord){
+				$command = Yii::app()->db->createCommand();
+				$command->select('FEE_ID, VALUE')
+					->from('job_fee')
+					->where(array('and', 'JOB_ID=:job_id', 'DELETED=0'), array(':job_id'=>$this->ID));
+				$existingFees = $command->queryAll();
+				foreach($existingFees as $additional){
+					$result[(string) $additional['FEE_ID']]['VALUE'] = $additional['VALUE']; 
+				}
+			}
+			$this->_additionalFees = $result;
+		}
+		return $this->_additionalFees;
+	}
+	
+	/**
+	 * Sets the list of additional fees. Fees should be indexed by Fee ID (a Lookup key), 
+	 * and simply need to contain a numeric value.
+	 */
+	public function setAdditionalFees($value){
+		$this->_additionalFees = $value;
 	}
 }

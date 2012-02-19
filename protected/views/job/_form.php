@@ -179,7 +179,19 @@ CClientScript::POS_BEGIN);?>
 		<?php echo $form->error($model,'SET_UP_FEE'); ?>
 	</div>
 	
-	<div class="row">		
+	<?php foreach($model->additionalFees as $key=>$fee){?>
+		<?php echo $form->labelEx($model, 'additionalFees['.$key.']', array(
+			'label'=>$fee['TEXT'],
+		));?>
+		<?php echo $form->textField($model, 'additionalFees['.$key.']', array(
+			'value'=>$fee['VALUE'],
+			'size'=>6,
+			'maxlength'=>6,
+			'class'=>'part',
+		));?>
+	<?php }?>
+	
+	<div class="row">	
 		<?php echo CHtml::label('Auto Quote Total', 'auto_total');?>
 		<?php echo CHtml::textField('auto_total', $model->total, array('readonly'=>'readonly', 'id'=>'auto_total'));?>
 		<?php echo CHtml::label('Auto Quote Total Per Garment', 'auto_total_each');?>
