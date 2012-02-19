@@ -1,3 +1,17 @@
+ALTER TABLE `gus`.`customer` DROP FOREIGN KEY `customer_user` ;
+
+ALTER TABLE `gus`.`customer` 
+
+  ADD CONSTRAINT `customer_user`
+
+  FOREIGN KEY (`USER_ID` )
+
+  REFERENCES `gus`.`user` (`ID` )
+
+  ON DELETE CASCADE
+
+  ON UPDATE NO ACTION;
+
 CREATE  TABLE `gus`.`print_art` (
 
   `ID` INT(11) NOT NULL AUTO_INCREMENT ,
