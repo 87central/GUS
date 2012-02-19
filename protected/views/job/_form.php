@@ -138,8 +138,7 @@ CClientScript::POS_BEGIN);?>
 	<?php $this->renderPartial('//print/_jobForm', array(
 		'model'=> $print,
 		'job'=>$model,
-		'artLink'=>isset($artLink) ? $artLink : null,
-		'mockupLink'=>isset($mockupLink) ? $mockupLink : null,
+		'fileTypes'=>$fileTypes,
 		'passes'=>$passes, 
 	));?>
 	<div class="separator"></div>

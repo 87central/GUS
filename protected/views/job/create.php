@@ -24,4 +24,5 @@ $this->menu=array(
 	'print'=>$print,
 	'passes'=>$passes,
 	'lineData'=>$lineData,
+	'fileTypes'=>$fileTypes,
 )); ?>

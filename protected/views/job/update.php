@@ -25,8 +25,7 @@ $this->menu=array(
 	'colors'=>$colors,
 	'sizes'=>$sizes,
 	'print'=>$print,
-	'artLink'=>$artLink,
-	'mockupLink'=>$mockupLink,
 	'passes'=>$passes,
 	'lineData'=>$lineData,
+	'fileTypes'=>$fileTypes,
 )); ?>

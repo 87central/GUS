@@ -23,12 +23,12 @@ class JobController extends Controller
 	{
 		return array(
 			array('allow',
-				'actions'=>array('status', 'create', 'update', 'deleteLine', 'approveLine', 'newLine', 'view', 'list', 'loadList', 'index', 'garmentCost'),
+				'actions'=>array('status', 'create', 'update', 'deleteLine', 'approveLine', 'newLine', 'view', 'list', 'loadList', 'index', 'garmentCost', 'addArt', 'deleteArt'),
 				'users'=>array('@'),
 				'expression'=>"Yii::app()->user->getState('isDefaultRole');",
 			),
 			array('allow',
-				'actions'=>array('status', 'create', 'update', 'deleteLine', 'approveLine', 'newLine', 'view', 'list', 'loadList', 'index', 'garmentCost'),
+				'actions'=>array('status', 'create', 'update', 'deleteLine', 'approveLine', 'newLine', 'view', 'list', 'loadList', 'index', 'garmentCost', 'addArt', 'deleteArt'),
 				'users'=>array('@'),
 				'expression'=>"Yii::app()->user->getState('isLead');",
 			),
@@ -349,15 +349,18 @@ class JobController extends Controller
 		if(isset($_POST['Job']))
 		{
 			$model->loadFromArray($_POST['Job']);
+			$customerWasNew = true;
+			if(isset($_POST['Customer']['ID'])){
+				$customer = Customer::model()->findByPk((int) $_POST['Customer']['ID']);
+				$customerWasNew = false;
+			}
+			unset($_POST['Customer']['summary']);
 			$customer->attributes = $_POST['Customer'];
-			$print->attributes = $_POST['PrintJob'];
+			$print->loadFromArray($_POST['PrintJob'], $_FILES['PrintJob']);
+			
 			
 			$saved = true;
 			if($saved){
-				$printFile = $_FILES['PrintJob_Art'];
-				$printMockUp = $_FILES['PrintJob_MockUp'];
-				$print->createArtFile($printFile);
-				$print->createMockUpFile($printMockUp);
 				$saved = $saved && $print->save();
 			} 
 			if($saved) {
@@ -376,7 +379,7 @@ class JobController extends Controller
 			} else {
 				//otherwise, delete everything
 				if(!$model->isNewRecord) {$model->delete();}
-				if(!$customer->isNewRecord) {$customer->delete();}
+				if(!$customer->isNewRecord && $customerWasNew) {$customer->delete();}
 				if(!$print->isNewRecord) {$print->delete();}				
 			}
 		}	
@@ -394,6 +397,7 @@ class JobController extends Controller
 			'sizes'=>$sizes,
 			'passes'=>$passes,
 			'lineData'=>$lineData,
+			'fileTypes'=>Lookup::listItems('ArtFileType'),
 		));
 	}
 
@@ -469,15 +473,15 @@ class JobController extends Controller
 		if(isset($_POST['Job']))
 		{
 			$model->loadFromArray($_POST['Job']);
+			if(isset($_POST['Customer']['ID'])){
+				$customer = Customer::model()->findByPk((int) $_POST['Customer']['ID']);
+			}
+			unset($_POST['Customer']['summary']);
 			$customer->attributes = $_POST['Customer'];
-			$print->attributes = $_POST['PrintJob'];
+			$print->loadFromArray($_POST['PrintJob'], $_FILES);
 			
 			$saved = true;
 			if($saved){
-				$printFile = $_FILES['PrintJob_Art'];
-				$printMockUp = $_FILES['PrintJob_MockUp'];
-				$print->createArtFile($printFile);
-				$print->createMockUpFile($printMockUp);
 				$saved = $saved && $print->save();
 			} 
 			if($saved) {
@@ -494,18 +498,6 @@ class JobController extends Controller
 				$this->redirect(array('update', 'id'=>$model->ID));
 			}
 		}
-		
-		if($print->ART != null){
-			$artLink = CHtml::normalizeUrl(array('job/art', 'id'=>$model->ID));
-		} else {
-			$artLink = null;
-		}
-		
-		if($print->MOCK_UP != null){
-			$mockupLink = CHtml::normalizeUrl(array('job/mockUp', 'id'=>$model->ID));
-		} else {
-			$mockupLink = null;
-		}
 
 		$this->render('update',array(
 			'model'=>$model,
@@ -517,10 +509,9 @@ class JobController extends Controller
 			'styles'=>$styles,
 			'colors'=>$colors,
 			'sizes'=>$sizes,
-			'artLink'=>$artLink,
-			'mockupLink'=>$mockupLink,
 			'passes'=>$passes,
 			'lineData'=>$lineData,
+			'fileTypes'=>Lookup::listItems('ArtFileType'),
 		));
 		
 	}
@@ -528,10 +519,10 @@ class JobController extends Controller
 	/**
 	 * Let's the user download the art associated with a job.
 	 */
-	public function actionArt($id){
-		$model = $this->loadModel($id);
+	public function actionArt($art_id){
+		$model = PrintArt::model()->findByPk((int) $art_id);
 		if($model){
-			$file = $model->printJob->ART;
+			$file = $model->FILE;
 			if($file){
 				$name = basename($file);
 				//code below obtained from http://iamcam.wordpress.com/2007/03/20/clean-file-names-using-php-preg_replace/
@@ -546,22 +537,33 @@ class JobController extends Controller
 	}
 	
 	/**
-	 * Let's the user download the mock up associated with a job.
+	 * Adds an art record. This will not create any files, but will simply return
+	 * a new form section to be used on the job entry form.
 	 */
-	public function actionMockUp($id){
-		$model = $this->loadModel($id);
-		if($model){
-			$file = $model->printJob->MOCK_UP;
-			if($file){
-				$name = basename($file);
-				//code below obtained from http://iamcam.wordpress.com/2007/03/20/clean-file-names-using-php-preg_replace/
-				$replace="_";
-				$pattern="/([[:alnum:]_\.-]*)/";
-				$name=str_replace(str_split(preg_replace($pattern,$replace,$name)),$replace,$name);
-				//end snippet
-				
-				Yii::app()->request->sendFile($name, file_get_contents($file));
+	public function actionAddArt($namePrefix, $fileCount, $fileType, $print_id = null){
+		$this->renderPartial('//print/_artForm', array(
+			'model'=>new PrintArt,
+			'print_id'=>$print_id,
+			'fileType'=>$fileType,
+			'namePrefix'=>$namePrefix . '['.++$fileCount.']',
+			'fileCount'=>$fileCount,
+			'artLink'=>null,
+		));
+	}
+	
+	/**
+	 * Deletes an art record. This will delete any associated file, as well as the
+	 * record in the database.
+	 * @param int $id The identifier of the art file record. 
+	 */
+	public function actionDeleteArt(){
+		if(Yii::app()->request->isPostRequest){
+			$model = PrintArt::model()->findByPk((int) $_POST['id']);
+			if($model){
+				$model->delete();
 			}
+		} else {
+			throw new CHttpException('403', 'Not authorized');
 		}
 	}
 

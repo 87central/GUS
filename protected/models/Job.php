@@ -345,9 +345,7 @@ class Job extends CActiveRecord
 	public function getHasArt(){
 		$result = false;
 		if($this->printJob !== null){
-			if($this->printJob->ART != null){
-				$result = true;
-			}
+			return $this->printJob->hasArt;
 		}
 		return $result;
 	}
