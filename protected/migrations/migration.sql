@@ -1,1 +1,1 @@
-INSERT INTO `gus`.`lookup` (`TEXT`, `TYPE`, `DELETED`) VALUES ('Shipping Fee', 'JobFeeType', 0);
+INSERT INTO `gus`.`lookup` (`TEXT`, `EXTENDED`, `TYPE`, `DELETED`) VALUES ('Tax Rate', '{\"part\":false, \"default\":6}', 'JobFeeType', 0);

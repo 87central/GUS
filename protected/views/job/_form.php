@@ -187,15 +187,26 @@ CClientScript::POS_BEGIN);?>
 			'value'=>$fee['VALUE'],
 			'size'=>6,
 			'maxlength'=>6,
-			'class'=>'part',
+			'class'=>($fee['CONSTRAINTS']['part'] !== false) ? 'part' : '',
 		));?>
 	<?php }?>
 	
-	<div class="row">	
-		<?php echo CHtml::label('Auto Quote Total', 'auto_total');?>
+	<div class="row auto_quote">
+		<h5>Auto Quote</h5>		
+		<?php echo CHtml::label('Sub Total', 'auto_total');?>
 		<?php echo CHtml::textField('auto_total', $model->total, array('readonly'=>'readonly', 'id'=>'auto_total'));?>
-		<?php echo CHtml::label('Auto Quote Total Per Garment', 'auto_total_each');?>
-		<?php echo CHtml::textField('auto_total_each', $model->garmentPrice, array('readonly'=>'readonly', 'id'=>'auto_total_each'))?>
+		<?php echo CHtml::label('Sub Total Per Garment', 'auto_total_each');?>
+		<?php echo CHtml::textField('auto_total_each', $model->garmentPrice, array('readonly'=>'readonly', 'id'=>'auto_total_each'));?>
+		<?php $taxRate = $model->additionalFees[Job::FEE_TAX_RATE]['VALUE'] / 100;
+		$taxRateField = CHtml::getIdByName('Job[additionalFees]['.Job::FEE_TAX_RATE.']');?>
+		<?php echo CHtml::label('Total Tax', 'auto_tax');?>
+		<?php echo CHtml::textField('auto_tax', $model->total * $taxRate, array('readonly'=>'readonly', 'id'=>'auto_tax'));?>
+		<?php echo CHtml::label('Total Tax Per Garment', 'auto_tax_each');?>
+		<?php echo CHtml::textField('auto_tax_each', $model->garmentPrice * $taxRate, array('readonly'=>'readonly', 'id'=>'auto_tax_each'));?>
+		<?php echo CHtml::label('Grand Total', 'auto_grand');?>
+		<?php echo CHtml::textField('auto_grand', $model->total * (1 + $taxRate), array('readonly'=>'readonly', 'id'=>'auto_grand'));?>
+		<?php echo CHtml::label('Grand Total Per Garment', 'auto_grand_each');?>
+		<?php echo CHtml::textField('auto_grand_each', $model->garmentPrice * (1 + $taxRate), array('readonly'=>'readonly', 'id'=>'auto_grand_each'));?>		
 		<p id="qty_warning" class="note" style="display: none;">The quote estimator only supports price quotation for up to two hundred (200) garments.</p>
 		<?php echo CHtml::hiddenField('garment_total', $model->garmentPrice * $model->garmentCount, array('id'=>'garment_total', 'class'=>'part'));?>
 		<?php Yii::app()->clientScript->registerScript('auto-garment-totaler', "" .
@@ -205,10 +216,10 @@ CClientScript::POS_BEGIN);?>
 						qty += (1 * $(this).val());
 					});" .
 					"if(qty > 200){
-						$('#auto_total, #auto_total_each').val(0).attr('disabled', 'disabled');" .
+						$('#auto_total, #auto_total_each, #auto_tax, #auto_tax_each, #auto_grand, #auto_grand_each').val(0).attr('disabled', 'disabled');" .
 						"$('#qty_warning').show();
 					} else {
-						$('#auto_total, #auto_total_each').removeAttr('disabled');" .
+						$('#auto_total, #auto_total_each, #auto_tax, #auto_tax_each, #auto_grand, #auto_grand_each').removeAttr('disabled');" .
 						"$('#qty_warning').hide();
 					}" .
 					"calculateTotal(qty, $('.front_pass').val(), $('.back_pass').val(), $('.sleeve_pass').val(), $('#garment_total'));
@@ -216,23 +227,30 @@ CClientScript::POS_BEGIN);?>
 		CClientScript::POS_END);
 		
 		Yii::app()->clientScript->registerScript('auto-totaler', "" .
-				"$('.part').live('change keyup', function(){
+				"$('.part, #$taxRateField').live('change keyup', function(){
 					var total = 0;" .
+					"var tax = (1 * $('#$taxRateField').val()) / 100;" .
+					"var totalEach = 0;" .
 					"$('.part').each(function(index){
 						total += (1 * $(this).val());
 					});" .
 					"$('#auto_total').val(total);" .
+					"$('#auto_tax').val(total * tax);" .
+					"$('#auto_grand').val(total * (1 + tax));" .
 					"" .
 					"var qty = 0;" .
 					"$('.item_qty').each(function(index){
 						qty += (1 * $(this).val());
 					});" .
-					"$('#auto_total_each').val((qty == 0) ? 0 : total / qty);" .
+					"totalEach = (qty == 0) ? 0 : total / qty;" .
+					"$('#auto_total_each').val(totalEach);" .
+					"$('#auto_tax_each').val(totalEach * tax);" .
+					"$('#auto_grand_each').val(totalEach * (1 + tax));" .
 					"if(qty > 200){
-						$('#auto_total, #auto_total_each').val(0).attr('disabled', 'disabled');" .
+						$('#auto_total, #auto_total_each, #auto_tax, #auto_tax_each, #auto_grand, #auto_grand_each').val(0).attr('disabled', 'disabled');" .
 						"$('#qty_warning').show();
 					} else {
-						$('#auto_total, #auto_total_each').removeAttr('disabled');" .
+						$('#auto_total, #auto_total_each, #auto_tax, #auto_tax_each, #auto_grand, #auto_grand_each').removeAttr('disabled');" .
 						"$('#qty_warning').hide();
 					}" .
 					"$('#garment_qty').val(qty).change();

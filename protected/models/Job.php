@@ -30,6 +30,8 @@ class Job extends CActiveRecord
 	const COMPLETED = 29; //the job has been completed.
 	const CANCELED = 30; //the job has been canceled.
 	
+	const FEE_TAX_RATE = 110; //identifies the tax rate field.
+	
 	private $_additionalFees; //cache this value here.
 	
 	/**
@@ -461,15 +463,19 @@ class Job extends CActiveRecord
 	/**
 	 * Gets the list of "additional" fees associated with a Job. These
 	 * are indexed by the fee ID (a Lookup key), and contain a "TEXT" and "VALUE" field.
+	 * There is also an additional "CONSTRAINTS" field which can be used to determine
+	 * how to interpret the field.
 	 */
 	public function getAdditionalFees(){
 		if(!$this->_additionalFees){
 			$fees = Lookup::listItems('JobFeeType');
 			$result = array();
 			foreach($fees as $fee){
+				$constraints = CJSON::decode($fee->EXTENDED);
 				$result[(string) $fee->ID] = array(
 					'TEXT'=>$fee->TEXT,
-					'VALUE'=>0,
+					'VALUE'=>isset($constraints['default']) ? $constraints['default'] : 0,
+					'CONSTRAINTS'=>$constraints,
 				);
 			}
 			if(!$this->isNewRecord){
