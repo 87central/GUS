@@ -79,11 +79,30 @@ $this->menu=array(
 		<?php echo CHtml::encode($formatter->formatCurrency($model->SET_UP_FEE));?>
 	</div>
 	
-	<div class="row">		
-		<?php echo CHtml::label('Auto Quote Total', 'auto_total');?>
+	<?php foreach($model->additionalFees as $key=>$fee){?>
+		<div class="row">
+			<?php echo $form->labelEx($model, 'additionalFees['.$key.']', array(
+				'label'=>$fee['TEXT'],
+			));?>
+			<?php echo CHtml::encode($fee['VALUE']);?>
+		</div>
+	<?php }?>
+	
+	<div class="row auto_quote">	
+		<h5>Auto Quote</h5>		
+		<?php echo CHtml::label('Sub Total', 'auto_total');?>
 		<?php echo CHtml::encode($formatter->formatCurrency($model->total));?>
-		<?php echo CHtml::label('Auto Quote Total Per Garment', 'auto_total_each');?>	
+		<?php echo CHtml::label('Sub Total Per Garment', 'auto_total_each');?>	
 		<?php echo CHtml::encode($formatter->formatCurrency($model->garmentPrice));?>
+		<?php $taxRate = $model->additionalFees[Job::FEE_TAX_RATE]['VALUE'] / 100;?>
+		<?php echo CHtml::label('Total Tax', 'auto_tax');?>		
+		<?php echo CHtml::encode($formatter->formatCurrency($model->total * $taxRate));?>
+		<?php echo CHtml::label('Total Tax Per Garment', 'auto_tax_each');?>
+		<?php echo CHtml::encode($formatter->formatCurrency($model->garmentPrice * $taxRate));?>
+		<?php echo CHtml::label('Grand Total', 'auto_grand');?>
+		<?php echo CHtml::encode($formatter->formatCurrency($model->total * (1 + $taxRate)));?>
+		<?php echo CHtml::label('Grand Total Per Garment', 'auto_grand_each');?>
+		<?php echo CHtml::encode($formatter->formatCurrency($model->garmentPrice * (1 + $taxRate)));?>
 	</div>
 	
 	<div class="row">
