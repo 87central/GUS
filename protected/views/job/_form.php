@@ -208,7 +208,7 @@ CClientScript::POS_BEGIN);?>
 		<?php echo CHtml::label('Grand Total Per Garment', 'auto_grand_each');?>
 		<?php echo CHtml::textField('auto_grand_each', $model->garmentPrice * (1 + $taxRate), array('readonly'=>'readonly', 'id'=>'auto_grand_each'));?>		
 		<p id="qty_warning" class="note" style="display: none;">The quote estimator only supports price quotation for up to two hundred (200) garments.</p>
-		<?php echo CHtml::hiddenField('garment_total', $model->garmentPrice * $model->garmentCount, array('id'=>'garment_total', 'class'=>'part'));?>
+		<?php echo CHtml::hiddenField('garment_total', $model->garmentTotal - $model->garmentCost, array('id'=>'garment_total', 'class'=>'part'));?>
 		<?php Yii::app()->clientScript->registerScript('auto-garment-totaler', "" .
 				"$('.item_qty, .sleeve_pass, .front_pass, .back_pass').live('change keyup', function(){
 					var qty = 0;" .
@@ -234,26 +234,25 @@ CClientScript::POS_BEGIN);?>
 					"$('.part').each(function(index){
 						total += (1 * $(this).val());
 					});" .
-					"$('#auto_total').val(total);" .
-					"$('#auto_tax').val(total * tax);" .
-					"$('#auto_grand').val(total * (1 + tax));" .
+					"$('#auto_total').val(parseFloat(total).toFixed(2));" .
+					"$('#auto_tax').val(parseFloat(total * tax).toFixed(2));" .
+					"$('#auto_grand').val(parseFloat(total * (1 + tax)).toFixed(2));" .
 					"" .
 					"var qty = 0;" .
 					"$('.item_qty').each(function(index){
 						qty += (1 * $(this).val());
 					});" .
 					"totalEach = (qty == 0) ? 0 : total / qty;" .
-					"$('#auto_total_each').val(totalEach);" .
-					"$('#auto_tax_each').val(totalEach * tax);" .
-					"$('#auto_grand_each').val(totalEach * (1 + tax));" .
+					"$('#auto_total_each').val(parseFloat(totalEach).toFixed(2));" .
+					"$('#auto_tax_each').val(parseFloat(totalEach * tax).toFixed(2));" .
+					"$('#auto_grand_each').val(parseFloat(totalEach * (1 + tax)).toFixed(2));" .
 					"if(qty > 200){
 						$('#auto_total, #auto_total_each, #auto_tax, #auto_tax_each, #auto_grand, #auto_grand_each').val(0).attr('disabled', 'disabled');" .
 						"$('#qty_warning').show();
 					} else {
 						$('#auto_total, #auto_total_each, #auto_tax, #auto_tax_each, #auto_grand, #auto_grand_each').removeAttr('disabled');" .
 						"$('#qty_warning').hide();
-					}" .
-					"$('#garment_qty').val(qty).change();
+					}
 				});", 
 		CClientScript::POS_END);?>
 	</div>

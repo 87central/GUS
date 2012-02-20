@@ -380,6 +380,22 @@ class Job extends CActiveRecord
 	 * Gets the total cost (for the customer) of the job.
 	 */
 	public function getTotal(){
+		$additionalFees = $this->additionalFees;
+		$totalFee = 0;
+		foreach($additionalFees as $fee){
+			if($fee['CONSTRAINTS']['part'] !== false){
+				$totalFee += $fee['VALUE'];
+			}
+		}		
+		
+		$garmentTotal = $this->garmentTotal;
+		return $garmentTotal + $totalFee + $this->SET_UP_FEE + ($this->printJob == null ? 0 : $this->printJob->COST);		
+	}
+	
+	/**
+	 * Gets the total cost to the customer directly attributable to garments.
+	 */
+	public function getGarmentTotal(){
 		$front = 0;
 		$back = 0;
 		$sleeve = 0;
@@ -391,7 +407,7 @@ class Job extends CActiveRecord
 		
 		$garmentTotal = CostCalculator::calculateTotal($this->garmentCount, $front, $back, $sleeve, 0);
 		$garmentTotal += $this->garmentCost;
-		return $garmentTotal + $this->SET_UP_FEE + ($this->printJob == null ? 0 : $this->printJob->COST);
+		return $garmentTotal;
 	}
 	
 	/**
@@ -417,7 +433,7 @@ class Job extends CActiveRecord
 	public function getGarmentCost(){
 		$garments = 0;
 		foreach($this->jobLines as $line){
-			$garments += $line->QUANTITY * $line->product->COST;
+			$garments += $line->total;
 		}
 		return $garments;
 	}
@@ -482,10 +498,12 @@ class Job extends CActiveRecord
 				$command = Yii::app()->db->createCommand();
 				$command->select('FEE_ID, VALUE')
 					->from('job_fee')
-					->where(array('and', 'JOB_ID=:job_id', 'DELETED=0'), array(':job_id'=>$this->ID));
+					->where('JOB_ID=:job_id', array(':job_id'=>$this->ID));
 				$existingFees = $command->queryAll();
 				foreach($existingFees as $additional){
-					$result[(string) $additional['FEE_ID']]['VALUE'] = $additional['VALUE']; 
+					if(isset($result[(string) $additional['FEE_ID']])){
+						$result[(string) $additional['FEE_ID']]['VALUE'] = $additional['VALUE'];
+					} 
 				}
 			}
 			$this->_additionalFees = $result;
