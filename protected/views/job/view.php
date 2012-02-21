@@ -81,7 +81,7 @@ $this->menu=array(
 	
 	<?php foreach($model->additionalFees as $key=>$fee){?>
 		<div class="row">
-			<?php echo $form->labelEx($model, 'additionalFees['.$key.']', array(
+			<?php echo CHtml::activeLabelEx($model, 'additionalFees['.$key.']', array(
 				'label'=>$fee['TEXT'],
 			));?>
 			<?php echo CHtml::encode($fee['VALUE']);?>
