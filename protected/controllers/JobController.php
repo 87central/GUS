@@ -350,9 +350,11 @@ class JobController extends Controller
 		{
 			$model->loadFromArray($_POST['Job']);
 			$customerWasNew = true;
-			if(isset($_POST['Customer']['ID'])){
+			if(isset($_POST['Customer']['ID']) && $_POST['Customer']['ID'] != null){
 				$customer = Customer::model()->findByPk((int) $_POST['Customer']['ID']);
 				$customerWasNew = false;
+			} else {
+				unset($_POST['Customer']['ID']);
 			}
 			unset($_POST['Customer']['summary']);
 			$customer->attributes = $_POST['Customer'];
@@ -475,6 +477,8 @@ class JobController extends Controller
 			$model->loadFromArray($_POST['Job']);
 			if(isset($_POST['Customer']['ID'])){
 				$customer = Customer::model()->findByPk((int) $_POST['Customer']['ID']);
+			} else {
+				unset($_POST['Customer']['ID']);
 			}
 			unset($_POST['Customer']['summary']);
 			$customer->attributes = $_POST['Customer'];
