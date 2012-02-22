@@ -130,6 +130,7 @@ class Customer extends CActiveRecord
 		$criteria->compare('FIRST',$this->FIRST,true, 'OR');
 		$criteria->compare('LAST',$this->LAST,true, 'OR');
 		$criteria->with = 'USER';
+		$criteria->compare('ROLE', "<> '0000'");
 
 		return new CActiveDataProvider(get_class($this), array(
 			'criteria'=>$criteria,
@@ -165,5 +166,10 @@ class Customer extends CActiveRecord
 				parent::__set($name, $value);
 			}
 		}
+	}
+	
+	public function delete(){
+		$this->ROLE = '0000';
+		return $this->save();
 	}
 }

@@ -240,4 +240,9 @@ class User extends CActiveRecord
 		}
 		Yii::trace('Set is printer. Role is '.$this->ROLE, 'application.models.User');
 	}
+	
+	public function delete(){
+		$this->ROLE = '0000';
+		return $this->save();
+	}
 }

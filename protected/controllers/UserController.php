@@ -131,6 +131,9 @@ class UserController extends Controller
 	{
 		$dataProvider=new CActiveDataProvider('User', array(
 			'pagination'=>false,
+			'criteria'=>array(
+				'condition'=>"ROLE <> '0000'",
+			),
 		));
 		$this->render('index',array(
 			'dataProvider'=>$dataProvider,
