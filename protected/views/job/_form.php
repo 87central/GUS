@@ -222,6 +222,7 @@ CClientScript::POS_BEGIN);?>
 						$('#auto_total, #auto_total_each, #auto_tax, #auto_tax_each, #auto_grand, #auto_grand_each').removeAttr('disabled');" .
 						"$('#qty_warning').hide();
 					}" .
+					"$('#garment_qty').val(qty).change();" .
 					"calculateTotal(qty, $('.front_pass').val(), $('.back_pass').val(), $('.sleeve_pass').val(), $('#garment_total'));
 				})", 
 		CClientScript::POS_END);
