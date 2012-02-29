@@ -181,8 +181,10 @@ class PrintJob extends CActiveRecord
 						foreach($keys as $key){
 							$file[$key] = $files['PrintJob'][$key]['files'][$i]['FILE'];
 						}
-						$line->FILE = $file;
-					}
+						if(!$file['error']){
+							$line->FILE = $file;
+						}
+					}					
 					$newArtFiles[] = $line;
 				}
 			}
