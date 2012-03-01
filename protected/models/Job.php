@@ -344,7 +344,11 @@ class Job extends CActiveRecord
 			$deleter->delete('job_fee', 'JOB_ID=:job_id', array(':job_id'=>$this->ID));
 			$inserter = Yii::app()->db->createCommand();
 			foreach($this->_additionalFees as $fee_id=>$value){
-				$inserter->insert('job_fee', array('FEE_ID'=>$fee_id, 'JOB_ID'=>$this->ID, 'VALUE'=>$value));
+				$realValue = $value;
+				if(is_array($realValue)){
+					$realValue = $realValue['VALUE'];
+				}
+				$inserter->insert('job_fee', array('FEE_ID'=>$fee_id, 'JOB_ID'=>$this->ID, 'VALUE'=>$realValue));
 			}
 		}
 	}
@@ -477,6 +481,26 @@ class Job extends CActiveRecord
 	}
 	
 	/**
+	 * Creates a list of "additional" fees associated with a job. These are indexed
+	 * by the fee ID (a Lookup key), and contain a "TEXT", "VALUE", and "CONSTRAINTS" field.
+	 * @param array $values A map from fee ID to value used to set the value of the associated fee from the default.
+	 * @return array The list.
+	 */
+	private function loadFees($values = false){
+		$fees = Lookup::listItems('JobFeeType');
+		$result = array();
+		foreach($fees as $fee){
+			$constraints = CJSON::decode($fee->EXTENDED);
+			$result[(string) $fee->ID] = array(
+				'TEXT'=>$fee->TEXT,
+				'VALUE'=>isset($constraints['default']) ? $constraints['default'] : ($values ? $values[(string) $fee->ID] : 0),
+				'CONSTRAINTS'=>$constraints,
+			);
+		}
+		return $result;	
+	}
+	
+	/**
 	 * Gets the list of "additional" fees associated with a Job. These
 	 * are indexed by the fee ID (a Lookup key), and contain a "TEXT" and "VALUE" field.
 	 * There is also an additional "CONSTRAINTS" field which can be used to determine
@@ -484,29 +508,20 @@ class Job extends CActiveRecord
 	 */
 	public function getAdditionalFees(){
 		if(!$this->_additionalFees){
-			$fees = Lookup::listItems('JobFeeType');
-			$result = array();
-			foreach($fees as $fee){
-				$constraints = CJSON::decode($fee->EXTENDED);
-				$result[(string) $fee->ID] = array(
-					'TEXT'=>$fee->TEXT,
-					'VALUE'=>isset($constraints['default']) ? $constraints['default'] : 0,
-					'CONSTRAINTS'=>$constraints,
-				);
-			}
 			if(!$this->isNewRecord){
 				$command = Yii::app()->db->createCommand();
 				$command->select('FEE_ID, VALUE')
 					->from('job_fee')
 					->where('JOB_ID=:job_id', array(':job_id'=>$this->ID));
 				$existingFees = $command->queryAll();
+				$values = array();
 				foreach($existingFees as $additional){
-					if(isset($result[(string) $additional['FEE_ID']])){
-						$result[(string) $additional['FEE_ID']]['VALUE'] = $additional['VALUE'];
-					} 
+					$values[(string) $additional['FEE_ID']] = $additional['VALUE'];
 				}
-			}
-			$this->_additionalFees = $result;
+				$this->_additionalFees = $this->loadFees($values);
+			} else {
+				$this->_additionalFees = $this->loadFees();	
+			}			
 		}
 		return $this->_additionalFees;
 	}
@@ -516,6 +531,6 @@ class Job extends CActiveRecord
 	 * and simply need to contain a numeric value.
 	 */
 	public function setAdditionalFees($value){
-		$this->_additionalFees = $value;
+		$this->_additionalFees = $this->loadFees($value);
 	}
 }
