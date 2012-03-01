@@ -13,15 +13,15 @@
 		<?php echo CHtml::activeLabelEx($model,'SLEEVE_PASS'); ?>
 		<?php echo CHtml::encode($model->SLEEVE_PASS);?>
 	</div>
-
-	<div class="row">
-		<?php echo CHtml::activeLabelEx($model,'ART'); ?>
-		&nbsp;<?php echo ($artLink ? CHtml::link('Download Here', $artLink) : 'No Art Submitted');?>
-	</div>
 	
-	<div class="row">
-		<?php echo CHtml::activeLabelEx($model,'MOCK_UP'); ?>
-		&nbsp;<?php echo ($mockupLink ? CHtml::link('Download Here', $mockupLink) : 'No Mockup Submitted');?>
+	<div class="row art">
+		<?php 
+		foreach($model->files as $art){?>
+			<?php $this->renderPartial('//print/_artView', array(
+				'model'=>$art,
+				'artLink'=>isset($art->FILE) && is_string($art->FILE) ? CHtml::normalizeUrl(array('job/art', 'art_id'=>$art->ID)) : null,
+			));?>
+		<?php }?>
 	</div>
 
 	<div class="row">
