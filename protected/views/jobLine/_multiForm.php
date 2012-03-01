@@ -70,12 +70,24 @@
 		'id'=>CHtml::getIdByName($namePrefix.$startIndex.'style-hidden'),
 	));?> 
 	
+	<?php $colorSelect = CHtml::getIdByName($namePrefix . $startIndex . 'colors');?> 	
 	Color <?php echo CHtml::dropDownList('colors', $products['currentColor'], $products['availableColors'], array(
-		'id'=>CHtml::getIdByName($namePrefix . 'colors'), 
+		'id'=>$colorSelect, 
 		'disabled'=>(count($products['availableColors']) == 0) || $approved, //only disable if there aren't any colors available. 
 		'class'=>'color-select',
-		'onchange'=>"\$('#".$div."').children('.jobLine').children('.line-color').val(\$(this).val());",
 	));?>
+	<?php Yii::app()->clientScript->registerScript('initial-color-data' . $startIndex, "" .
+			"$('#".$colorSelect."').data('products', ".$products['products'].").data('sizes', ".$products['sizes'].");", 
+	CClientScript::POS_END);?>
+	<?php Yii::app()->clientScript->registerScript('initial-color-select' . $startIndex, "" .
+			"$('#".$colorSelect."').change(function(){
+				var sizes = $(this).data('sizes');" .
+				"var products = $(this).data('products');" .
+				"for(var size in sizes){
+					\$('#".$div."').children('.".$div."' + sizes[size].ID).children('.line-product').val(products[\$(this).val()][sizes[size].ID].ID);
+				}
+			});",
+	CClientScript::POS_END);?>
 	
 	<?php
 	foreach($products['lines'] as $dataLine){

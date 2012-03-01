@@ -59,43 +59,45 @@ class JobController extends Controller
 		$products = array();
 		$groupedLines = array();
 		foreach($model->jobLines as $line){
-			$groupedLines[(string) $line->product->STYLE][(string) $line->product->COLOR][(string) $line->product->SIZE] = $line;
+			$groupedLines[(string) $line->product->vendorStyle][(string) $line->product->COLOR][(string) $line->product->SIZE] = $line;
 		}
 		
 		foreach($groupedLines as $style=>$styleGroup){
-			foreach($styleGroup as $color=>$colorGroup){
-				$approved = false;
-				foreach($sizes as $size){ //iterating through sizes because we want ALL of them
-					if(isset($colorGroup[(string) $size->ID])){
-						$line = $colorGroup[(string) $size->ID];						
-						$products[] = array(
-							'product'=>$line->product,
-							'line'=>$line,
-						);
-						if($line->isApproved){
-							$approved = true;
+			if($style){
+				foreach($styleGroup as $color=>$colorGroup){
+					$approved = false;
+					foreach($sizes as $size){ //iterating through sizes because we want ALL of them
+						if(isset($colorGroup[(string) $size->ID])){
+							$line = $colorGroup[(string) $size->ID];						
+							$products[] = array(
+								'product'=>$line->product,
+								'line'=>$line,
+							);
+							if($line->isApproved){
+								$approved = true;
+							}
+							$latestProduct = $line->product;
+						} else {
+							$product = new Product;
+							$product->SIZE = $size->ID;
+							$product->STYLE = $style;
+							$product->COLOR = $color;
+							$products[] = array(
+								'product'=>$product,
+								'line'=>new JobLine,
+							);
 						}
-						$latestProduct = $line->product;
-					} else {
-						$product = new Product;
-						$product->SIZE = $size->ID;
-						$product->STYLE = $style;
-						$product->COLOR = $color;
-						$products[] = array(
-							'product'=>$product,
-							'line'=>new JobLine,
-						);
 					}
-				}
-				if(count($products) > 0){
-					$products['lines'] = $products;
-					$products['style'] = $latestProduct->vendorStyle; //we'll always have a latestProduct, otherwise we wouldn't enter this loop
-					$products['availableColors'] = CHtml::listData(Product::getAllowedColors($latestProduct->VENDOR_ITEM_ID), 'ID', 'TEXT');
-					$products['currentColor'] = $color;
-					$products['approved'] = $approved;
-					$products['saved'] = true; //we're guaranteed that some of the lines in this group are persistent
-					$lineData[] = $products;
-					$products = array();
+					if(count($products) > 0){
+						$products['lines'] = $products;
+						$products['style'] = $latestProduct->vendorStyle; //we'll always have a latestProduct, otherwise we wouldn't enter this loop
+						$products['availableColors'] = CHtml::listData(Product::getAllowedColors($latestProduct->VENDOR_ITEM_ID), 'ID', 'TEXT');
+						$products['currentColor'] = $color;
+						$products['approved'] = $approved;
+						$products['saved'] = true; //we're guaranteed that some of the lines in this group are persistent
+						$lineData[] = $products;
+						$products = array();
+					}
 				}
 			}
 		}
@@ -323,6 +325,8 @@ class JobController extends Controller
 		$products['currentColor'] = null;
 		$products['approved'] = false;
 		$products['saved'] = false;
+		$products['products'] = array();
+		$products['sizes'] = array();
 		$lineData[] = $products;
 		
 		/*
@@ -341,7 +345,10 @@ class JobController extends Controller
 		 * "style" contains text describing the selected vendor style, "availableColors"
 		 * contains the colors available for the selected vendor style (if any), already processed
 		 * with CHtml::listData, and "currentColor" contains the ID of the color for the group.
-		 * "approved" is true if the set of lines has been approved, otherwise false.*/
+		 * "approved" is true if the set of lines has been approved, otherwise false.
+		 * 
+		 * Another new change: lineData will now contain a "sizes" and a "products" array, which will
+		 * be filled with json-encoded calls to Product::getProducts(<item ID>) and Product::getAllowedSizes(<item ID>)*/
 
 		// Uncomment the following line if AJAX validation is needed
 		// $this->performAjaxValidation($model);
@@ -459,6 +466,8 @@ class JobController extends Controller
 						$products['lines'] = $products;
 						$products['style'] = $latestProduct->vendorStyle; //we'll always have a latestProduct, otherwise we wouldn't enter this loop
 						$products['availableColors'] = CHtml::listData(Product::getAllowedColors($latestProduct->VENDOR_ITEM_ID), 'ID', 'TEXT');
+						$products['products'] = CJSON::encode(Product::getProducts($latestProduct->VENDOR_ITEM_ID));
+						$products['sizes'] = CJSON::encode(Product::getAllowedSizes($latestProduct->VENDOR_ITEM_ID));
 						$products['currentColor'] = $color;
 						$products['approved'] = $approved;
 						$products['saved'] = true; //we're guaranteed that some of the lines in this group are persistent
