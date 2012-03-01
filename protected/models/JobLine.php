@@ -72,13 +72,11 @@ class JobLine extends CActiveRecord
 		));
 		
 		if($newProduct !== null){
-			if($newProduct->ID == $this->PRODUCT_ID){
-				$newProduct = $this->product;
-			}
 			if($this->isApproved){			
 				$newProduct->AVAILABLE -= $this->QUANTITY;
 			}
-		}		
+		}	
+		
 		if(parent::beforeSave() && ($newProduct == null || $newProduct->save()) && ($oldProduct == null || $oldProduct->save())){
 			$this->PRODUCT_ID = $newProduct->ID;
 			return true;
