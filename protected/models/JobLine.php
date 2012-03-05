@@ -257,7 +257,8 @@ class JobLine extends CActiveRecord
 	 */
 	public function getTotal(){
 		//right now, we just want to hack this for the extra large fee
-		$xlSizes = array(38, 39, 40, 51, 73, 74, 79, 80, 100);
+		//$xlSizes = array(38, 39, 40, 51, 73, 74, 79, 80, 100);
+		$xlSizes = array(39, 40, 73, 74, 80);
 		if(array_search($this->size, $xlSizes) !== false){
 			$fee = 2;
 		} else {
