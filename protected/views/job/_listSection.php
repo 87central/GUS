@@ -19,7 +19,7 @@ $this->widget('zii.widgets.grid.CGridView', array(
 	'columns'=>array(
 		array(
 			'name'=>'pickUpDate',
-			'value'=>"date('l (n/j)', strtotime(\$data->pickUpDate));",
+			'value'=>"(strtotime(\$data->pickUpDate) <= 0) ? '(None)' : date('l (n/j)', strtotime(\$data->pickUpDate));",
 			'header'=>'Pick-Up',
 		),
 		array(
@@ -36,12 +36,12 @@ $this->widget('zii.widgets.grid.CGridView', array(
 		array(
 			'header'=>'Print',
 			'name'=>'printDate',
-			'value'=>"date('l (n/j)', strtotime(\$data->printDate));",
+			'value'=>"(strtotime(\$data->printDate) <= 0) ? '(None)' : date('l (n/j)', strtotime(\$data->printDate));",
 		),
 		array(
 			'header'=>'Due',
 			'name'=>'dueDate',
-			'value'=>"date('l (n/j)', strtotime(\$data->pickUpDate));"
+			'value'=>"(strtotime(\$data->pickUpDate) <= 0) ? '(None)' : date('l (n/j)', strtotime(\$data->pickUpDate));"
 		),
 		'totalPasses::Passes',
 		array(
