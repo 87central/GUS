@@ -117,7 +117,10 @@ class JobController extends Controller
 		));
 	}
 	
-	public function actionNewLine(){
+	/**
+	 * If parameter s is e, the multiEstimate should be returned, otherwise returned the multiForm
+	 */
+	public function actionNewLine($s='f'){
 		$namePrefix = $_POST['namePrefix'];
 		$count = $_POST['count'];
 		
@@ -132,14 +135,23 @@ class JobController extends Controller
 			);	
 		}
 		
+		if($s == 'e'){
+			$view = '//jobLine/_multiEstimate';
+		} else {
+			$view = '//jobLine/_multiForm';			
+		}
+		
+		
 		$products['lines'] = $products;
 		$products['style'] = '';
 		$products['availableColors'] = array();
 		$products['currentColor'] = null;
 		$products['approved'] = false;
 		$products['saved'] = false;
+		$products['products'] = array();
+		$products['sizes'] = array();
 		
-		$this->renderPartial('//jobLine/_multiForm', array(
+		$this->renderPartial($view, array(
 			'namePrefix'=>$namePrefix,
 			'startIndex'=>$count,
 			'products'=>$products,

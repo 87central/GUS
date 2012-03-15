@@ -3,7 +3,7 @@ Yii::app()->clientScript->registerCoreScript('jquery');
 Yii::app()->clientScript->registerScript('add-job', "function addLine(sender, namePrefix){
 	var count = $(sender).parent().children('.jobLines').children('.jobLine').children('.part').size();" .
 	"$.ajax({
-		url: '".CHtml::normalizeUrl(array('job/newLine'))."'," .
+		url: '".CHtml::normalizeUrl(array('job/newLine', 's'=>'e'))."'," .
 		"type: 'POST'," .
 		"data: {
 			namePrefix: namePrefix," .
