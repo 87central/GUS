@@ -22,6 +22,10 @@ class JobController extends Controller
 	public function accessRules()
 	{
 		return array(
+			array('allow', 
+				'actions'=>array('newLine', 'garmentCost', 'estimate'),
+				'users'=>array('*'),
+			),
 			array('allow',
 				'actions'=>array('status', 'create', 'update', 'deleteLine', 'approveLine', 'newLine', 'view', 'list', 'loadList', 'index', 'garmentCost', 'addArt', 'deleteArt', 'art'),
 				'users'=>array('@'),
@@ -288,6 +292,46 @@ class JobController extends Controller
 	public function actionGarmentCost($garments, $front, $back, $sleeve){
 		$result = array('result'=>CostCalculator::calculateTotal($garments, $front, $back, $sleeve, 0));
 		echo CJSON::encode($result);
+	}
+	
+	/**
+	 * Allows unauthenticated users to estimate the total cost of an order.
+	 * Essentially a copy of action create, but without any handling of persistence.
+	 * */
+	public function actionEstimate(){
+		$model=new Job;
+		$sizes = Lookup::model()->findAllByAttributes(array('TYPE'=>'Size'));
+		$passes = array(0, 1, 2, 3, 4, 5, 6); //as instructed by Ben, number of passes
+		//should be limited to a few numbers.
+		$print = new PrintJob;
+		
+		$lineData = array();
+		$products = array();	
+		foreach($sizes as $size){
+			$product = new Product;
+			$product->SIZE = $size->ID;
+			$products[] = array(
+				'product'=>$product,
+				'line'=>new JobLine,
+			);	
+		}
+				
+		$products['lines'] = $products;
+		$products['style'] = '';
+		$products['availableColors'] = array();
+		$products['currentColor'] = null;
+		$products['approved'] = false;
+		$products['saved'] = false;
+		$products['products'] = array();
+		$products['sizes'] = array();
+		$lineData[] = $products;
+		
+		$this->render('estimate',array(
+			'model'=>$model,
+			'print'=>$print,
+			'passes'=>$passes,
+			'lineData'=>$lineData,
+		));
 	}
 
 	/**

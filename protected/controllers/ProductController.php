@@ -22,6 +22,10 @@ class ProductController extends Controller
 	{
 		return array(
 			array('allow',
+				'actions'=>array('findProduct', 'allowedOptions'),
+				'users'=>array('*'),
+			),
+			array('allow',
 				'actions'=>array('view', 'update', 'index', 'findProduct', 'allowedOptions'),
 				'users'=>array('@'),
 				'expression'=>"Yii::app()->user->getState('isDefaultRole');",
