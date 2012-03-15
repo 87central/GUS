@@ -106,25 +106,13 @@ class JobController extends Controller
 			}
 		}
 		
-		if($print->ART != null){
-			$artLink = CHtml::normalizeUrl(array('job/art', 'id'=>$model->ID));
-		} else {
-			$artLink = null;
-		}
-		
-		if($print->MOCK_UP != null){
-			$mockupLink = CHtml::normalizeUrl(array('job/mockUp', 'id'=>$model->ID));			
-		} else {
-			$mockupLink = null;
-		}
-		
 		$this->render('view',array(
 			'model'=>$this->loadModel($id),
 			'customer'=>$model->CUSTOMER,
 			'print'=>$model->printJob,
 			'lineData'=>$lineData,
-			'artLink'=>$artLink,
-			'mockupLink'=>$mockupLink,
+			'artLink'=>null,
+			'mockupLink'=>null,
 			'formatter'=>new Formatter,
 		));
 	}
@@ -653,11 +641,7 @@ class JobController extends Controller
 		for($i = 0; $i < 4; $i++){
 			$calendarData[] = $this->formatWeekSchedule(Yii::app()->user->id, $i);
 		}
-		$jobs = array();
-		$jobsThisWeek = $this->findWeekSchedule(Yii::app()->user->id);
-		foreach($jobsThisWeek as $event){
-			$jobs[] = $event->assocObject;
-		}
+		$jobs = $this->findLedJobs(Yii::app()->user->id);
 		$dataProvider = new CArrayDataProvider($jobs, array(
 			'keyField'=>'ID',
 		));			
@@ -689,6 +673,34 @@ class JobController extends Controller
 			'EVENT_ID'=>EventLog::JOB_PRINT,	
 		), '`DATE` BETWEEN FROM_UNIXTIME(' . $lastSunday . ') AND FROM_UNIXTIME(' . $nextSaturday . ')');
 		
+		return $jobsThisWeek;
+	}
+	
+	/**
+	 * Gets the list of jobs for which the given user is listed as a leader. An entire week
+	 * of jobs is retrieved, with a week offset of zero meaning that the jobs for the current
+	 * week (sunday - saturday) should be retreived, an offset of one meaning the next week, and
+	 * so on.
+	 * @param string $employee_id The ID of the employee whose schedule should be retrieved.
+	 * @param int $weekOffset The number of weeks from the current week to find in the schedule.
+	 */
+	private function findLedJobs($employee_id, $weekOffset = 0){
+		$secondsPerWeek = 24*60*60*7;
+		$lastSunday = strtotime('last sunday', time());		
+		$nextSaturday = $lastSunday + $secondsPerWeek - 1;
+		$lastSunday += $weekOffset * $secondsPerWeek;
+		$nextSaturday += $weekOffset * $secondsPerWeek;
+		
+		$criteria = new CDbCriteria;
+		$criteria->join = 'INNER JOIN `event_log` ON `event_log`.`OBJECT_ID` = `t`.`ID`';
+		$criteria->addCondition('`event_log`.`OBJECT_TYPE`=\'Job\'');
+		$criteria->addCondition('`event_log`.`EVENT_ID`='.EventLog::JOB_PICKUP);
+		$criteria->addCondition('`event_log`.`DATE` BETWEEN FROM_UNIXTIME(' . $lastSunday . ') AND FROM_UNIXTIME(' . $nextSaturday . ')');
+		
+		$jobsThisWeek = Job::model()->findAllByAttributes(array(
+			'LEADER_ID'=>$employee_id,
+			'STATUS'=>array(Job::CREATED, Job::INVOICED, Job::PAID, Job::SCHEDULED),	
+		), $criteria);
 		return $jobsThisWeek;
 	}
 	
