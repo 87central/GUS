@@ -54,11 +54,14 @@ class EventController extends Controller
 	 */
 	public function actionSchedule()
 	{
+		$criteria = new CDbCriteria;
+		$criteria->join = 'INNER JOIN `job` ON 	`job`.`ID` = `t`.`OBJECT_ID`';
+		$criteria->addInCondition('`job`.`STATUS`', array(Job::CREATED, Job::INVOICED, Job::PAID, Job::SCHEDULED));
 		$unscheduled = EventLog::model()->findAllByAttributes(array(
 			'USER_ASSIGNED'=>null,
 			'OBJECT_TYPE'=>'Job',		
 			'EVENT_ID'=>EventLog::JOB_PRINT,	
-		));
+		), $criteria);
 		$employees = User::listUsersWithRole(User::DEFAULT_ROLE);
 		$resultEmps = array();
 		foreach($employees as $emp){
