@@ -29,6 +29,7 @@ class Job extends CActiveRecord
 	const SCHEDULED = 28; //the job has been scheduled on the timeline.
 	const COMPLETED = 29; //the job has been completed.
 	const CANCELED = 30; //the job has been canceled.
+	//Job::CREATED, Job::INVOICED, Job::PAID, Job::SCHEDULED, Job::COMPLETED, Job::CANCELED
 	
 	const FEE_TAX_RATE = 110; //identifies the tax rate field.
 	
@@ -354,7 +355,12 @@ class Job extends CActiveRecord
 	}
 	
 	public function getTotalPasses(){
-		return count($this->jobLines) * $this->printJob->PASS;
+		$passes = $this->printJob == null ? 0 : $this->printJob->PASS;
+		$lines = 0; //for quantity of all lines
+		foreach($this->jobLines as $line) {
+			$lines += $line->QUANTITY;
+		}
+		return $passes * $lines;
 	}
 	
 	public function getHasArt(){
@@ -448,12 +454,12 @@ class Job extends CActiveRecord
 	 */
 	public function getScore(){
 		$base = 30; //Ben's request
-		$passes = $this->printJob == null ? 0 : $this->printJob->PASS;
+		/*$passes = $this->printJob == null ? 0 : $this->printJob->PASS;
 		$lines = 0; //for quantity of all lines
 		foreach($this->jobLines as $line) {
 			$lines += $line->QUANTITY;
-		}
-		return $base + $passes * $lines;
+		}*/
+		return $base + $this->totalPasses;
 	}
 	
 	/**
