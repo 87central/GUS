@@ -174,6 +174,7 @@ class PrintJob extends CActiveRecord
 					} else {
 						$line = new PrintArt;
 					}
+					$originalFile = $line['FILE'];
 					$line->attributes = $artFiles[$i];
 					if($files['PrintJob']){
 						$keys = array_keys($files['PrintJob']);
@@ -184,6 +185,9 @@ class PrintJob extends CActiveRecord
 						if(!$file['error']){
 							$line->FILE = $file;
 						}
+					}
+					if($originalFile && !$line->FILE){
+						$line->FILE = $originalFile;
 					}					
 					$newArtFiles[] = $line;
 				}
