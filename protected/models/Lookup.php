@@ -125,8 +125,8 @@ class Lookup extends CActiveRecord
 	/**
 	 * Gets an array of values (id=>name) corresponding to the given lookup type.
 	 */
-	public static function listValues($type){
-		$values = Lookup::listItems($type);
+	public static function listValues($type, $criteria = null){
+		$values = Lookup::listItems($type, $criteria);
 		$result = array();
 		foreach($values as $key=>$item){
 			$result[$key] = $item->TEXT;
@@ -137,11 +137,15 @@ class Lookup extends CActiveRecord
 	/**
 	 * Gets an array of Lookup objects (id=>object) corresponding to the given lookup type.
 	 */
-	public static function listItems($type){
-		$result = Lookup::model()->findAllByAttributes(array('TYPE'=>$type, 'DELETED'=>0), array('order'=>'POSITION'));
+	public static function listItems($type, $criteria = null){
+		$usedCriteria = new CDbCriteria(array('order'=>'POSITION'));
+		if($criteria){
+			$usedCriteria->mergeWith($criteria);
+		}
+		$result = Lookup::model()->findAllByAttributes(array('TYPE'=>$type, 'DELETED'=>0), $usedCriteria);
 		$values = array();
 		foreach($result as $resultVal){
-			$values[(string) $resultVal->ID] = $resultVal;
+			$values[(string) $resultVal->ID] = $resultVal;			
 		}
 		return $values;		
 	}
