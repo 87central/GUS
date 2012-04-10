@@ -69,7 +69,7 @@ class ProductController extends Controller
 	{
 		$model=new ProductForm;
 		$statusList = Lookup::listValues('ProductStatus');
-		$colorList = Lookup::listValues('Color');
+		$colorList = Lookup::listValues('Color', array('order'=>'TEXT'));
 		$styleList = Lookup::listValues('Style');
 		$sizeList = Lookup::listValues('Size');
 		$vendorList = Vendor::model()->findAll();
@@ -113,7 +113,7 @@ class ProductController extends Controller
 		$model->VENDOR_ID = $v;
 		$model->VENDOR_ITEM_ID = $i; //make sure not to use this as a loop variable!
 		$statusList = Lookup::listValues('ProductStatus');
-		$colorList = Lookup::listValues('Color');
+		$colorList = Lookup::listValues('Color', array('order'=>'TEXT')); 
 		$styleList = Lookup::listValues('Style');
 		$sizeList = Lookup::listValues('Size');
 		$vendorList = Vendor::model()->findAll();
