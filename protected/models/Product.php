@@ -192,7 +192,11 @@ class Product extends CActiveRecord
 	
 	public static function getStyle($itemID){
 		$results = Product::model()->findByAttributes(array('VENDOR_ITEM_ID'=>$itemID), 'STATUS <> '.Product::DELETED);
-		return $results->style;
+		if($results){
+			return $results->style;
+		} else {
+			return null;
+		}
 	}
 	
 	/**
@@ -201,7 +205,11 @@ class Product extends CActiveRecord
 	 */
 	public static function getCost($itemID){
 		$results = Product::model()->findByAttributes(array('VENDOR_ITEM_ID'=>$itemID), 'STATUS <> '.Product::DELETED);
-		return $results->COST;
+		if($results) {
+			return $results->COST;
+		} else {
+			return null;
+		}
 	}
 	
 	/**
