@@ -53,7 +53,7 @@ function listColors($model){
 			'urlExpression'=>"array('product/update', 'v'=>\$data->VENDOR_ID, 'i'=>\$data->VENDOR_ITEM_ID)",
 			'labelExpression'=>"\$data->vendorStyle",
 		),
-		array(
+		/*array(
 			'header'=>'Available Sizes',
 			'type'=>'raw',
 			'value'=>"listSizes(\$data)",			
@@ -62,7 +62,7 @@ function listColors($model){
 			'header'=>'Available Colors',
 			'type'=>'raw',
 			'value'=>"listColors(\$data)",
-		),
+		),*/
 		array(
 			'class'=>'CButtonColumn',
 			'viewButtonImageUrl'=>false,
