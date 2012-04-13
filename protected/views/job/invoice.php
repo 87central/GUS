@@ -55,20 +55,22 @@ if($model->garmentCount < 12){
 	<?php /*group lines by style, color, and price*/
 	$finalLines = array();
 	foreach($model->jobLines as $line){
-		$key = $line->product->vendorStyle.$line->product->color->TEXT.($line->total/$line->QUANTITY).$model->printJob->FRONT_PASS.$model->printJob->BACK_PASS.$model->printJob->SLEEVE_PASS;
-		if(isset($finalLines[$key])){
-			$value = $finalLines[$key];
-		} else {
-			$value = array(
-				'text'=>$model->printJob->FRONT_PASS . ' Front/ ' . $model->printJob->BACK_PASS . ' Back/ ' . $model->printJob->SLEEVE_PASS . ' Sleeve on ' . $line->product->vendorStyle . ' - ' . $line->product->color->TEXT . ' ' . ($line->isExtraLarge ? 'Extra Large' : 'Standard'),
-				'quantity'=>0,
-				'unit_cost'=>$line->total / $line->QUANTITY + $base,
-				'total'=>0,
-			);
+		if($line->QUANTITY != 0){
+			$key = $line->product->vendorStyle.$line->product->color->TEXT.($line->total/$line->QUANTITY).$model->printJob->FRONT_PASS.$model->printJob->BACK_PASS.$model->printJob->SLEEVE_PASS;
+			if(isset($finalLines[$key])){
+				$value = $finalLines[$key];
+			} else {
+				$value = array(
+					'text'=>$model->printJob->FRONT_PASS . ' Front/ ' . $model->printJob->BACK_PASS . ' Back/ ' . $model->printJob->SLEEVE_PASS . ' Sleeve on ' . $line->product->vendorStyle . ' - ' . $line->product->color->TEXT . ' ' . ($line->isExtraLarge ? 'Extra Large' : 'Standard'),
+					'quantity'=>0,
+					'unit_cost'=>$line->total / $line->QUANTITY + $base,
+					'total'=>0,
+				);
+			}
+			$value['quantity'] += $line->QUANTITY;
+			$value['total'] += $line->total + $base * $line->QUANTITY;
+			$finalLines[$key] = $value;
 		}
-		$value['quantity'] += $line->QUANTITY;
-		$value['total'] += $line->total + $base * $line->QUANTITY;
-		$finalLines[$key] = $value;
 	}?>
 	<?php /*foreach($model->jobLines as $line){?>
 		<tr class="item_row">
