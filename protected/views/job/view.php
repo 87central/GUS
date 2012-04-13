@@ -135,6 +135,10 @@ $this->menu=array(
 		<?php echo CHtml::button('Edit', array(
 			'onclick'=>"js:window.location.href='".CHtml::normalizeUrl(array('job/update', 'id'=>$model->ID))."';"
 		));?>
+		
+		<?php echo CHtml::button('View Invoice', array(
+			'onclick'=>"js:window.location.href='".CHtml::normalizeUrl(array('job/invoice', 'id'=>$model->ID))."';"
+		));?>
 	</div>
 
 
