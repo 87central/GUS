@@ -141,8 +141,16 @@ class JobController extends Controller
 			$view = '//jobLine/_multiForm';			
 		}
 		
+		//per request of Ben, will be including three "standard" styles under radio buttons.
+		$standardStyles = array(
+			'2001'=>'Standard',
+			'TR401'=>'Deluxe',
+			'Gildan 2000 Ultra Cotton '=>'Economy',
+			''=>'Custom',
+		);		
 		
 		$products['lines'] = $products;
+		$products['standardStyles'] = $standardStyles;
 		$products['style'] = '';
 		$products['availableColors'] = array();
 		$products['currentColor'] = null;
@@ -305,6 +313,14 @@ class JobController extends Controller
 		//should be limited to a few numbers.
 		$print = new PrintJob;
 		
+		//per request of Ben, will be including three "standard" styles under radio buttons.
+		$standardStyles = array(
+			'2001'=>'Standard',
+			'TR401'=>'Deluxe',
+			'Gildan 2000 Ultra Cotton '=>'Economy',
+			''=>'Custom',
+		);
+		
 		$lineData = array();
 		$products = array();	
 		foreach($sizes as $size){
@@ -318,6 +334,7 @@ class JobController extends Controller
 				
 		$products['lines'] = $products;
 		$products['style'] = '';
+		$products['standardStyles'] = $standardStyles;
 		$products['availableColors'] = array();
 		$products['currentColor'] = null;
 		$products['approved'] = false;
@@ -332,6 +349,15 @@ class JobController extends Controller
 			'passes'=>$passes,
 			'lineData'=>$lineData,
 		));
+	}
+	
+	/**
+	 * Views the invoice for the job with the given ID.
+	 */
+	public function actionInvoice($id){
+		$model = $this->loadModel($id);
+		$formatter = new Formatter;
+		$this->render('invoice', array('model'=>$model, 'formatter'=>$formatter));
 	}
 
 	/**
@@ -711,7 +737,7 @@ class JobController extends Controller
 		
 		$jobsThisWeek = Job::model()->findAllByAttributes(array(
 			'LEADER_ID'=>$employee_id,
-			'STATUS'=>array(Job::CREATED, Job::INVOICED, Job::PAID, Job::SCHEDULED),	
+			'STATUS'=>array(Job::CREATED, Job::INVOICED, Job::PAID, Job::SCHEDULED, Job::ORDERED, Job::COUNTED, Job::PRINTED),	
 		), $criteria);
 		return $jobsThisWeek;
 	}
@@ -735,7 +761,7 @@ class JobController extends Controller
 	 */
 	public function actionLoadList($list){
 		switch($list){
-			case 'current' : $filter = array(Job::CREATED, JOB::SCHEDULED, Job::INVOICED, Job::PAID); break;
+			case 'current' : $filter = array(Job::CREATED, JOB::SCHEDULED, Job::INVOICED, Job::PAID, Job::ORDERED, Job::COUNTED, Job::PRINTED); break;
 			case 'canceled' : $filter = Job::CANCELED; break;
 			case 'completed' : $filter = Job::COMPLETED; break;
 			default : $filter = null; break;
@@ -753,7 +779,7 @@ class JobController extends Controller
 	}
 	
 	public function actionList(){		
-		$currentJobs = Job::listJobsByStatus(array(Job::CREATED, JOB::SCHEDULED, Job::INVOICED, Job::PAID));
+		$currentJobs = Job::listJobsByStatus(array(Job::CREATED, JOB::SCHEDULED, Job::INVOICED, Job::PAID, Job::ORDERED, Job::COUNTED, Job::PRINTED));
 		$currentDataProvider = new CArrayDataProvider($currentJobs, array(
 			'keyField'=>'ID',
 			'pagination'=>false,

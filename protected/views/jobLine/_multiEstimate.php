@@ -7,87 +7,145 @@
 	$approved = $products['approved'];
 	$saved = $products['saved'];
 	?>
-	Style <?php $this->widget('zii.widgets.jui.CJuiAutoComplete', array(
-		'sourceUrl'=>array('product/findProduct', 'response'=>'juijson'),
-		'name'=>CHtml::getIdByName($namePrefix).$startIndex.'style',
-		'htmlOptions'=>array(
-			'class'=>'item-select',
-			'disabled'=>$approved,
-			'value'=>$products['style'],
-		),
-		'options'=>array(
-			'select'=>"js:function(event, ui){" .
-				"var count = $('.jobLines').children('.jobLine').children('.part').size();
-				\$.getJSON(
-					'".CHtml::normalizeUrl(array('product/allowedOptions'))."'," .
-					"{
-						itemID: ui.item.id," .
-						"namePrefix: '".$namePrefix."'," .
-						"count: count,
-					}," .
-					"function(data){
-						var colors = data.colors;" .
-						"var sizes = data.sizes;" .
-						"var products = data.products;" .
-						"var cost = data.productCost;" .
-						"\$('#".$div."').children('.jobLine').children('.line-product').val(null);" .
-						"var colorOptions = $('<select></select>')" .
-							".attr('name', 'color-select')" .
-							".attr('class', 'color-select')" .
-							".change(function() {" .
-								"for(var size in sizes){
-									\$('#".$div."').children('.".$div."' + sizes[size].ID).children('.line-product').val(products[\$(colorOptions).val()][sizes[size].ID].ID);
-								}" .
-							"});" .
-						"for(var color in colors){
-							colorOptions.append($('<option></option>').val(colors[color].ID).html(colors[color].TEXT));
-						}" .
-						"\$('#".$div."').children('.color-select').replaceWith(colorOptions);" .
-						"\$('#".$div."').children('.jobLine').children('.hidden_cost').val(cost);" .
-						"\$('#".$div."').children('.jobLine').addClass('hidden-size').children('.score_part').attr('disabled', true).val(0);" .
-						"for(var size in sizes){" .
-							"var firstColor = null;" .
+	<div id="line_style">
+		Style <?php echo CHtml::radioButtonList('standard-style', null, $products['standardStyles'], array(
+			'id'=>'standard_style'.$div,
+			'class'=>'standard_style',
+		));?>
+		
+		<?php
+		$selectId =  
+		Yii::app()->clientScript->registerScript('standard-style-select', "" .
+				"\$('.standard_style').live('change', function(){
+					var count = $('.jobLines').children('.jobLine').children('.part').size();
+					\$.getJSON(
+						'".CHtml::normalizeUrl(array('product/allowedOptions'))."'," .
+						"{
+							itemID: \$(this).val()," .
+							"namePrefix: '".$namePrefix."'," .
+							"count: count,
+						}," .
+						"function(data){
+							var colors = data.colors;" .
+							"var sizes = data.sizes;" .
+							"var products = data.products;" .
+							"var cost = data.productCost;" .
+							"\$('#".$div."').children('.jobLine').children('.line-product').val(null);" .
+							"var colorOptions = $('<select></select>')" .
+								".attr('name', 'color-select')" .
+								".attr('class', 'color-select')" .
+								".change(function() {" .
+									"for(var size in sizes){
+										\$('#".$div."').children('.".$div."' + sizes[size].ID).children('.line-product').val(products[\$(colorOptions).val()][sizes[size].ID].ID);
+									}" .
+								"});" .
 							"for(var color in colors){
-								firstColor = color;" .
-								"break;
+								colorOptions.append($('<option></option>').val(colors[color].ID).html(colors[color].TEXT));
+							}" .
+							"\$('#".$div."').children('#line_style').children('.color-select').replaceWith(colorOptions);" .
+							"\$('#".$div."').children('.jobLine').children('.hidden_cost').val(cost);" .
+							"\$('#".$div."').children('.jobLine').addClass('hidden-size').children('.score_part').attr('disabled', true).val(0);" .
+							"for(var size in sizes){" .
+								"var firstColor = null;" .
+								"for(var color in colors){
+									firstColor = color;" .
+									"break;
+								}
+								\$('#".$div."').children('.".$div."' + sizes[size].ID)" .
+								".removeClass('hidden-size')" .
+								".children('.line-product').val(products[colors[firstColor].ID][sizes[size].ID].ID)" .
+								".parent().children('.score_part').removeAttr('disabled');
 							}
-							\$('#".$div."').children('.".$div."' + sizes[size].ID)" .
-							".removeClass('hidden-size')" .
-							".children('.line-product').val(products[colors[firstColor].ID][sizes[size].ID].ID)" .
-							".parent().children('.score_part').removeAttr('disabled');
-						}
-					});
-			}"
-		),
-	));
-	
-	Yii::app()->clientScript->registerScript('set-style'.$startIndex, "" .
-			"\$('#".CHtml::getIdByName($namePrefix.$startIndex.'style')."').val('".$products['style']."');" , 
-	CClientScript::POS_READY);?>
-	
-	<?php echo CHtml::hiddenField('hidden-style', $products['style'], array(
-		'class'=>'hidden-style',
-		'id'=>CHtml::getIdByName($namePrefix.$startIndex.'style-hidden'),
-	));?> 
-	
-	<?php $colorSelect = CHtml::getIdByName($namePrefix . $startIndex . 'colors');?> 	
-	Color <?php echo CHtml::dropDownList('colors', $products['currentColor'], $products['availableColors'], array(
-		'id'=>$colorSelect, 
-		'disabled'=>(count($products['availableColors']) == 0) || $approved, //only disable if there aren't any colors available. 
-		'class'=>'color-select',
-	));?>
-	<?php Yii::app()->clientScript->registerScript('initial-color-data' . $startIndex, "" .
-			"$('#".$colorSelect."').data('products', ".$products['products'].").data('sizes', ".$products['sizes'].");", 
-	CClientScript::POS_END);?>
-	<?php Yii::app()->clientScript->registerScript('initial-color-select' . $startIndex, "" .
-			"$('#".$colorSelect."').change(function(){
-				var sizes = $(this).data('sizes');" .
-				"var products = $(this).data('products');" .
-				"for(var size in sizes){
-					\$('#".$div."').children('.".$div."' + sizes[size].ID).children('.line-product').val(products[\$(this).val()][sizes[size].ID].ID);
-				}
-			});",
-	CClientScript::POS_END);?>
+						}); \$(this).val() ? \$(this).siblings('.item-select').hide() : \$(this).siblings('.item-select').show();"./*we get away setting disabled to the radio button value because the "value" of the custom radio button evaluates to false.*/
+				"});", 
+		CClientScript::POS_END);?>
+		
+		<?php Yii::app()->clientScript->registerScript('standard-style-default', "" .
+				"$('.standard_style').first().attr('checked', 'checked').change();", 
+		CClientScript::POS_END)?>
+		
+		&nbsp;<?php $this->widget('zii.widgets.jui.CJuiAutoComplete', array(
+			'sourceUrl'=>array('product/findProduct', 'response'=>'juijson'),
+			'name'=>CHtml::getIdByName($namePrefix).$startIndex.'style',
+			'htmlOptions'=>array(
+				'class'=>'item-select',
+				'disabled'=>$approved,
+				'value'=>$products['style'],
+			),
+			'options'=>array(
+				'select'=>"js:function(event, ui){" .
+					"var count = $('.jobLines').children('.jobLine').children('.part').size();
+					\$.getJSON(
+						'".CHtml::normalizeUrl(array('product/allowedOptions'))."'," .
+						"{
+							itemID: ui.item.id," .
+							"namePrefix: '".$namePrefix."'," .
+							"count: count,
+						}," .
+						"function(data){
+							var colors = data.colors;" .
+							"var sizes = data.sizes;" .
+							"var products = data.products;" .
+							"var cost = data.productCost;" .
+							"\$('#".$div."').children('.jobLine').children('.line-product').val(null);" .
+							"var colorOptions = $('<select></select>')" .
+								".attr('name', 'color-select')" .
+								".attr('class', 'color-select')" .
+								".change(function() {" .
+									"for(var size in sizes){
+										\$('#".$div."').children('.".$div."' + sizes[size].ID).children('.line-product').val(products[\$(colorOptions).val()][sizes[size].ID].ID);
+									}" .
+								"});" .
+							"for(var color in colors){
+								colorOptions.append($('<option></option>').val(colors[color].ID).html(colors[color].TEXT));
+							}" .
+							"\$('#".$div."').children('#line_style').children('.color-select').replaceWith(colorOptions);" .
+							"\$('#".$div."').children('.jobLine').children('.hidden_cost').val(cost);" .
+							"\$('#".$div."').children('.jobLine').addClass('hidden-size').children('.score_part').attr('disabled', true).val(0);" .
+							"for(var size in sizes){" .
+								"var firstColor = null;" .
+								"for(var color in colors){
+									firstColor = color;" .
+									"break;
+								}
+								\$('#".$div."').children('.".$div."' + sizes[size].ID)" .
+								".removeClass('hidden-size')" .
+								".children('.line-product').val(products[colors[firstColor].ID][sizes[size].ID].ID)" .
+								".parent().children('.score_part').removeAttr('disabled');
+							}
+						});
+				}"
+			),
+		));
+		
+		Yii::app()->clientScript->registerScript('set-style'.$startIndex, "" .
+				"\$('#".CHtml::getIdByName($namePrefix.$startIndex.'style')."').val('".$products['style']."');" , 
+		CClientScript::POS_READY);?>
+		
+		<?php echo CHtml::hiddenField('hidden-style', $products['style'], array(
+			'class'=>'hidden-style',
+			'id'=>CHtml::getIdByName($namePrefix.$startIndex.'style-hidden'),
+		));?> 
+		
+		<?php $colorSelect = CHtml::getIdByName($namePrefix . $startIndex . 'colors');?> 	
+		Color <?php echo CHtml::dropDownList('colors', $products['currentColor'], $products['availableColors'], array(
+			'id'=>$colorSelect, 
+			'disabled'=>(count($products['availableColors']) == 0) || $approved, //only disable if there aren't any colors available. 
+			'class'=>'color-select',
+		));?>
+		<?php Yii::app()->clientScript->registerScript('initial-color-data' . $startIndex, "" .
+				"$('#".$colorSelect."').data('products', ".$products['products'].").data('sizes', ".$products['sizes'].");", 
+		CClientScript::POS_END);?>
+		<?php Yii::app()->clientScript->registerScript('initial-color-select' . $startIndex, "" .
+				"$('#".$colorSelect."').change(function(){
+					var sizes = $(this).data('sizes');" .
+					"var products = $(this).data('products');" .
+					"for(var size in sizes){
+						\$('#".$div."').children('.".$div."' + sizes[size].ID).children('.line-product').val(products[\$(this).val()][sizes[size].ID].ID);
+					}
+				});",
+		CClientScript::POS_END);?>
+	</div>	
 	
 	<?php
 	foreach($products['lines'] as $dataLine){

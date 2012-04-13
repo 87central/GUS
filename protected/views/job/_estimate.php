@@ -38,7 +38,7 @@ Yii::app()->clientScript->registerScript('add-job', "function addLine(sender, na
 						"for(var color in colors){
 							colorOptions.append($('<option></option>').val(colors[color].ID).html(colors[color].TEXT));
 						}" .
-						"\$('#' + div_id).children('.color-select').replaceWith(colorOptions);\n" .
+						"\$('#' + div_id).children('#line_style').children('.color-select').replaceWith(colorOptions);\n" .
 						"\$('#' + div_id).children('.jobLine').addClass('hidden-size').children('.score_part').attr('disabled', true).val(0);" .
 						"\$('#' + div_id).children('.jobLine').children('.hidden_cost').val(cost);" .
 						"for(var size in sizes){" .
@@ -128,46 +128,22 @@ CClientScript::POS_BEGIN);?>
 	
 	<div class="separator"></div>
 
-	<div class="row">
-		<?php echo $form->labelEx($model,'RUSH'); ?>
-		<?php echo $form->checkBox($model,'RUSH'); ?>
-		<?php echo $form->error($model,'RUSH'); ?>
+	<div class="row">		
+		<?php echo $form->hiddenField($model,'SET_UP_FEE',array('size'=>6,'maxlength'=>6, 'class'=>'part')); ?>
 	</div>
-
-	<div class="row">
-		<?php echo $form->labelEx($model,'SET_UP_FEE'); ?>
-		<?php echo $form->textField($model,'SET_UP_FEE',array('size'=>6,'maxlength'=>6, 'class'=>'part')); ?>
-		<?php echo $form->error($model,'SET_UP_FEE'); ?>
-	</div>
-	
-	<?php foreach($model->additionalFees as $key=>$fee){?>
-		<?php echo $form->labelEx($model, 'additionalFees['.$key.']', array(
-			'label'=>$fee['TEXT'],
-		));?>
-		<?php echo $form->textField($model, 'additionalFees['.$key.']', array(
-			'value'=>$fee['VALUE'],
-			'size'=>6,
-			'maxlength'=>6,
-			'class'=>($fee['CONSTRAINTS']['part'] !== false) ? 'part' : '',
-		));?>
-	<?php }?>
+		
+	<p class="note">
+		Note to say there may be additional fees applied.
+	</p>
 	
 	<div class="row auto_quote">
 		<h5>Auto Quote</h5>		
-		<?php echo CHtml::label('Sub Total', 'auto_total');?>
+		<?php echo CHtml::label('Grand Total', 'auto_total');?>
 		<?php echo CHtml::textField('auto_total', $model->total, array('readonly'=>'readonly', 'id'=>'auto_total'));?>
-		<?php echo CHtml::label('Sub Total Per Garment', 'auto_total_each');?>
+		<?php echo CHtml::label('Grand Total Per Garment', 'auto_total_each');?>
 		<?php echo CHtml::textField('auto_total_each', $model->garmentPrice, array('readonly'=>'readonly', 'id'=>'auto_total_each'));?>
 		<?php $taxRate = $model->additionalFees[Job::FEE_TAX_RATE]['VALUE'] / 100;
 		$taxRateField = CHtml::getIdByName('Job[additionalFees]['.Job::FEE_TAX_RATE.']');?>
-		<?php echo CHtml::label('Total Tax', 'auto_tax');?>
-		<?php echo CHtml::textField('auto_tax', $model->total * $taxRate, array('readonly'=>'readonly', 'id'=>'auto_tax'));?>
-		<?php echo CHtml::label('Total Tax Per Garment', 'auto_tax_each');?>
-		<?php echo CHtml::textField('auto_tax_each', $model->garmentPrice * $taxRate, array('readonly'=>'readonly', 'id'=>'auto_tax_each'));?>
-		<?php echo CHtml::label('Grand Total', 'auto_grand');?>
-		<?php echo CHtml::textField('auto_grand', $model->total * (1 + $taxRate), array('readonly'=>'readonly', 'id'=>'auto_grand'));?>
-		<?php echo CHtml::label('Grand Total Per Garment', 'auto_grand_each');?>
-		<?php echo CHtml::textField('auto_grand_each', $model->garmentPrice * (1 + $taxRate), array('readonly'=>'readonly', 'id'=>'auto_grand_each'));?>		
 		<p id="qty_warning" class="note" style="display: none;">The quote estimator only supports price quotation for up to two hundred (200) garments.</p>
 		<?php echo CHtml::hiddenField('garment_total', $model->garmentTotal - $model->garmentCost, array('id'=>'garment_total', 'class'=>'part'));?>
 		<?php Yii::app()->clientScript->registerScript('auto-garment-totaler', "" .
