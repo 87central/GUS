@@ -56,7 +56,7 @@ class EventController extends Controller
 	{
 		$criteria = new CDbCriteria;
 		$criteria->join = 'INNER JOIN `job` ON 	`job`.`ID` = `t`.`OBJECT_ID`';
-		$criteria->addInCondition('`job`.`STATUS`', array(Job::CREATED, Job::INVOICED, Job::PAID, Job::SCHEDULED));
+		$criteria->addInCondition('`job`.`STATUS`', array(Job::CREATED, Job::INVOICED, Job::PAID, Job::SCHEDULED, Job::ORDERED, Job::COUNTED, Job::PRINTED));
 		$unscheduled = EventLog::model()->findAllByAttributes(array(
 			'USER_ASSIGNED'=>null,
 			'OBJECT_TYPE'=>'Job',		
