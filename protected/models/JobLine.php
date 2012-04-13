@@ -253,13 +253,21 @@ class JobLine extends CActiveRecord
 	}
 	
 	/**
+	 * Gets a value indicating whether or not this line is being charged as "extra large".
+	 */
+	public function getIsExtraLarge(){
+		$xlSizes = array(39, 40, 73, 74, 80);
+		return (array_search($this->size, $xlSizes) !== false);
+	}
+	
+	/**
 	 * Gets the total cost of the job line.
 	 */
 	public function getTotal(){
 		//right now, we just want to hack this for the extra large fee
 		//$xlSizes = array(38, 39, 40, 51, 73, 74, 79, 80, 100);
 		$xlSizes = array(39, 40, 73, 74, 80);
-		if(array_search($this->size, $xlSizes) !== false){
+		if($this->isExtraLarge){
 			$fee = 2;
 		} else {
 			$fee = 0;
