@@ -13,8 +13,7 @@
 			'class'=>'standard_style',
 		));?>
 		
-		<?php
-		$selectId =  
+		<?php		 
 		Yii::app()->clientScript->registerScript('standard-style-select', "" .
 				"\$('.standard_style').live('change', function(){
 					var count = $('.jobLines').children('.jobLine').children('.part').size();
