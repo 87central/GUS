@@ -36,7 +36,7 @@ class CostCalculator extends CComponent {
 		$result += $surcharge;
 		$result *= $garments;
 		
-		if($garments < 12 && $garments != 0){
+		if($garments < 24 && $garments != 0){
 			$result += 30;
 		}
 		
