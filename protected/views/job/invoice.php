@@ -36,7 +36,7 @@
 <?php /*just calculate the "base" cost of garments up here.*/
 $base = CostCalculator::calculateTotal($model->garmentCount, $model->printJob->FRONT_PASS, $model->printJob->BACK_PASS, $model->printJob->SLEEVE_PASS, 0);
 $setup = null;
-if($model->garmentCount < 12){
+if($model->garmentCount < 24){
 	$base = ($base - 30) / $model->garmentCount;
 	$setup = 30;
 } else {
