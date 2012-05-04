@@ -54,7 +54,9 @@ class User extends CActiveRecord
 		// will receive user inputs.
 		return array(
 			array('ROLE', 'numerical', 'integerOnly'=>true),
-			array('EMAIL, PASSWORD, FIRST, LAST', 'length', 'max'=>45),
+			array('PASSWORD, FIRST, LAST', 'length', 'max'=>45),
+			array('EMAIL', 'email'),
+			array('EMAIL', 'length', 'max'=>100),
 			array('PHONE', 'length', 'max'=>20),
 			array('isAdmin, isLead, isCustomer, isPrinter', 'safe'),
 			// The following rule is used by search().
