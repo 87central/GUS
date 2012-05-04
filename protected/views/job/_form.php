@@ -169,7 +169,7 @@ CClientScript::POS_BEGIN);?>
 
 	<div class="row">
 		<?php echo $form->labelEx($model,'RUSH'); ?>
-		<?php echo $form->checkBox($model,'RUSH'); ?>
+		<?php echo $form->textField($model,'RUSH', array('class'=>'part')); ?>
 		<?php echo $form->error($model,'RUSH'); ?>
 	</div>
 

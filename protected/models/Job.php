@@ -63,7 +63,8 @@ class Job extends CActiveRecord
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
 		return array(
-			array('RUSH, SCORE', 'numerical', 'integerOnly'=>true),
+			array('SCORE', 'numerical', 'integerOnly'=>true),
+			array('RUSH', 'numerical'),
 			array('ID, NAME, DESCRIPTION, NOTES, ISSUES, STATUS, additionalFees', 'safe'),
 			// The following rule is used by search().
 			// Please remove those attributes that should not be searched.

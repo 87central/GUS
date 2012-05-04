@@ -90,6 +90,15 @@ if($model->garmentCount < 24){
 			<td><?php echo CHtml::encode($formatter->formatCurrency($line['total']));?></td>
 		</tr>
 	<?php }?>
+	<?php if($model->RUSH != 0){?>
+		<tr class="item_row">
+			<td><?php echo CHtml::encode($model->getAttributeLabel('RUSH'));?></td>
+			<td>Fee for accelerated handling</td>
+			<td></td>
+			<td></td>
+			<td><?php echo CHtml::encode($formatter->formatCurrency($model->RUSH));?></td>
+		</tr>
+	<?php }?>
 	<tr class="item_row">
 		<td>Artwork Charge</td>
 		<td>Fee for design work</td>
