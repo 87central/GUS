@@ -71,7 +71,7 @@ $this->menu=array(
 
 	<div class="row">
 		<?php echo CHtml::activeLabelEx($model,'RUSH'); ?>
-		<?php echo $model->RUSH ? 'Yes' : 'No';?>
+		<?php echo CHtml::encode($formatter->formatCurrency($model->RUSH));?>
 	</div>
 
 	<div class="row">
