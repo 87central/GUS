@@ -12,7 +12,7 @@
 
 	<div class="row">
 		<?php echo $form->labelEx($model,'EMAIL'); ?>
-		<?php echo $form->textField($model,'EMAIL',array('size'=>45,'maxlength'=>45)); ?>
+		<?php echo $form->textField($model,'EMAIL',array('size'=>45)); ?>
 		<?php echo $form->error($model,'EMAIL'); ?>
 	</div>
 
