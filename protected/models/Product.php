@@ -31,6 +31,8 @@ class Product extends CActiveRecord
 							//if ordered, becomes a permanent stock item.
 	const DELETED = 69; //69 in GUS prod
 	
+	const EXTRA_LARGE_FEE = 2;
+	
 	/**
 	 * Returns the static model of the specified AR class.
 	 * @return Product the static model class

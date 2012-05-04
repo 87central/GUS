@@ -268,7 +268,7 @@ class JobLine extends CActiveRecord
 		//$xlSizes = array(38, 39, 40, 51, 73, 74, 79, 80, 100);
 		$xlSizes = array(39, 40, 73, 74, 80);
 		if($this->isExtraLarge){
-			$fee = 2;
+			$fee = Product::EXTRA_LARGE_FEE;
 		} else {
 			$fee = 0;
 		}
