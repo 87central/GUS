@@ -79,13 +79,7 @@ class ProductController extends Controller
 		if(isset($_POST['ProductForm']))
 		{
 			$model->attributes=$_POST['ProductForm'];
-			$save = true;
-			foreach($model->products as $product){
-				if(!$product->save()){
-					$save = false;
-					$model->addErrors($product->errors);
-				}
-			}
+			$save = $model->save();
 			if($save){
 				$this->redirect(array('update','v'=>$model->VENDOR_ID, 'i'=>$model->VENDOR_ITEM_ID));
 			}
@@ -107,9 +101,7 @@ class ProductController extends Controller
 	 */
 	public function actionUpdate($v, $i)
 	{
-		$model = new ProductForm;
-		$model->VENDOR_ID = $v;
-		$model->VENDOR_ITEM_ID = $i; //make sure not to use this as a loop variable!
+		$model = new ProductForm(array('VENDOR_ID'=>$v, 'VENDOR_ITEM_ID'=>$i));
 		$statusList = Lookup::listValues('ProductStatus');
 		$colorList = Lookup::listValues('Color', array('order'=>'TEXT')); 
 		$sizeList = Lookup::listValues('Size');
@@ -121,13 +113,7 @@ class ProductController extends Controller
 		if(isset($_POST['ProductForm']))
 		{
 			$model->attributes=$_POST['ProductForm'];
-			$save = true;
-			foreach($model->products as $product){
-				if(!$product->save()){
-					$save = false;
-					$model->addErrors($product->errors);
-				}
-			}
+			$save = $model->save();
 			if($save)
 				$this->redirect(array('update','v'=>$model->VENDOR_ID, 'i'=>$model->VENDOR_ITEM_ID));
 		}
@@ -151,14 +137,8 @@ class ProductController extends Controller
 	{
 		if(Yii::app()->request->isPostRequest)
 		{
-			$bundle = new ProductForm;
-			$bundle->VENDOR_ID = $v;
-			$bundle->VENDOR_ITEM_ID = $i;
-			$success = true;
-			// we only allow deletion via POST request
-			foreach($bundle->products as $product){
-				$success = $success && $product->delete();
-			}
+			$model = Product::model()->findByAttributes(array('VENDOR_ID'=>$v, 'VENDOR_ITEM_ID'=>$i));
+			$success = $model->delete();
 
 			// if AJAX request (triggered by deletion via admin grid view), we should not redirect the browser
 			if(!isset($_GET['ajax'])){
@@ -177,9 +157,6 @@ class ProductController extends Controller
 	{
 		$dataProvider=new CActiveDataProvider('Product', array(
 			'pagination'=>false,
-			'sort'=>array(
-				'defaultOrder'=>'SIZE, COLOR',
-			),
 			'criteria'=>array(
 				'condition'=>"STATUS <> '".Product::DELETED."'",
 			),
@@ -254,12 +231,13 @@ class ProductController extends Controller
 	
 	public function actionAllowedOptions($itemID, $namePrefix, $count){
 		//ajax only - return json of allowed colors and sizes
+		$product = Product::getProduct($itemID);
 		$results = array(
-			'colors'=>Product::getAllowedColors($itemID),
-			'sizes'=>Product::getAllowedSizes($itemID),
-			'products'=>Product::getProducts($itemID),
+			'colors'=>$product->allowedColors,
+			'sizes'=>$product->allowedSizes,
+			'products'=>array($product),
 			'colors-name'=>CHtml::getIdByName($namePrefix . "[$count]" . 'colors'),
-			'productCost'=>Product::getCost($itemID),
+			'productCost'=>$product->COST,
 		);
 		echo CJSON::encode($results);
 	}

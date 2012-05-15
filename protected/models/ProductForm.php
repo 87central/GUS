@@ -6,53 +6,59 @@
  */
 class ProductForm extends CFormModel {
 	/**
-	 * Holds the array of products associated with the VENDOR_ITEM_ID.
+	 * Holds the array of product lines associated with the product.
 	 */
-	private $_products = array();
-	private $_itemID;//the current vendor item ID.
-	private $_vendorID; //the current vendor ID.
+	private $_productLines = array();
+	/**
+	 * Holds the product associated with this form.
+	 */
+	private $_product;
 	private $_sizes;
 	private $_colors;
-	private $_cost;
+	
+	public function __construct($config = array(), $scenario = ''){
+		parent::__construct($scenario);
+		if(isset($config['VENDOR_ID']) && isset($config['VENDOR_ITEM_ID'])){
+			//find if there is an existing product that matches these criteria
+			$product = Product::model()->findByAttributes(array('VENDOR_ITEM_ID'=>$config['VENDOR_ITEM_ID'], 'VENDOR_ID'=>$config['VENDOR_ID']));			
+		}
+		if(!isset($product)){
+			$product = new Product;
+			$product->STATUS = Product::PLACEHOLDER;
+		}
+		$this->_product = $product;
+	}
 	
 	public function getVENDOR_ITEM_ID(){
-		return $this->_itemID;
+		return $this->_product->VENDOR_ITEM_ID;
 	}
 	
 	public function setVENDOR_ITEM_ID($value){
-		$this->updateProducts($value, $this->_vendorID);
-		$this->_itemID = $value;
+		$this->_product->VENDOR_ITEM_ID = $value;
 	}
 	
 	public function getVENDOR_ID(){
-		return $this->_vendorID;
+		return $this->_product->VENDOR_ID;
 	}
 	
 	public function setVENDOR_ID($value){
-		$this->updateProducts($this->_itemID, $value);
-		$this->_vendorID = $value;
+		$this->_product->VENDOR_ID = $value;
 	}
 	
 	public function getCOST(){
-		if(!$this->_cost){
-			$this->_cost = Product::getCost($this->VENDOR_ITEM_ID);
-		}
-		return $this->_cost;
+		return $this->_product->COST;
 	}
 	
 	public function setCOST($value){
-		$this->_cost = $value;
-		foreach($this->products as $product){
-			$product->COST = $value;
-		}
+		$this->_product->COST = $value;
 	}
 		
 	/**
 	 * Returns array of lookup IDs.
 	 */
 	public function getCOLORS(){
-		if(!$this->_colors){
-			$this->_colors = Product::getAllowedColors($this->VENDOR_ITEM_ID);
+		if(!$this->_colors){			
+			$this->_colors = $this->_product->allowedColors;
 			$newColors = array();
 			foreach($this->_colors as $color){
 				$newColors[] = $color->ID;
@@ -67,8 +73,6 @@ class ProductForm extends CFormModel {
 	 */
 	public function setCOLORS($value){
 		$finalValue = array(); //array of lookup IDs
-		$newProducts = array();
-		$oldProducts = $this->products;
 		
 		//normalize the value array.
 		foreach($value as $color){
@@ -78,42 +82,13 @@ class ProductForm extends CFormModel {
 				$finalValue[] = $color;
 			}
 		}
-		//loop through the existing products and see if each color
-		//is available for every size and style combination. if a "gap"
-		//is found, add a new product with the appropriate attribute values.
-		//if colors are found that are not in the array, (TODO)
-		foreach($this->SIZES as $size){
-			foreach($finalValue as $color){
-				$key = (string) $size . $color;
-				
-				if(!isset($oldProducts[$key])){
-					$newProduct = new Product;
-					$newProduct->COST = $this->COST;
-					$newProduct->SIZE = $size;
-					$newProduct->COLOR = $color;
-					$newProduct->VENDOR_ID = $this->VENDOR_ID;
-					$newProduct->VENDOR_ITEM_ID = $this->VENDOR_ITEM_ID;
-					$newProduct->STATUS = Product::PLACEHOLDER;
-					$newProducts[$key] = $newProduct;
-				} else {
-					$newProducts[$key] = $oldProducts[$key];
-				}
-			}
-		}		
 		
-		foreach($oldProducts as $toDelete){
-			if(!$toDelete->isNewRecord){
-				$toDelete->delete();
-			}
-		}
-		
-		$this->_products = $newProducts;
 		$this->_colors = $finalValue;
 	}
 	
 	public function getSIZES(){
-		if(!$this->_sizes){
-			$this->_sizes = Product::getAllowedSizes($this->VENDOR_ITEM_ID);
+		if(!$this->_sizes){			
+			$this->_sizes = $this->_product->allowedSizes;
 			$newSizes = array();
 			foreach($this->_sizes as $size){
 				$newSizes[] = $size->ID;
@@ -125,7 +100,6 @@ class ProductForm extends CFormModel {
 	
 	public function setSIZES($value){
 		$finalValue = array(); //array of lookup IDs
-		$oldProducts = $this->products;
 		
 		//normalize the value array.
 		foreach($value as $size){
@@ -135,72 +109,16 @@ class ProductForm extends CFormModel {
 				$finalValue[] = $size;
 			}
 		}
-		//loop through the existing products and see if each color
-		//is available for every color and style combination. if a "gap"
-		//is found, add a new product with the appropriate attribute values.
-		//if sizes are found that are not in the array, (TODO)
-		foreach($this->COLORS as $color){
-			foreach($finalValue as $size){
-				$key = (string) $size . $color;
-				
-				if(!isset($oldProducts[$key])){
-					$newProduct = new Product;
-					$newProduct->COST = $this->COST;
-					$newProduct->SIZE = $size;
-					$newProduct->COLOR = $color;
-					$newProduct->VENDOR_ID = $this->VENDOR_ID;
-					$newProduct->VENDOR_ITEM_ID = $this->VENDOR_ITEM_ID;					
-					$newProduct->STATUS = Product::PLACEHOLDER;
-					$newProducts[$key] = $newProduct;
-				} else {
-					$newProducts[$key] = $oldProducts[$key];
-				}
-			}
-		}
 		
-		foreach($oldProducts as $toDelete){
-			if(!$toDelete->isNewRecord){
-				$toDelete->delete();
-			}
-		}
-		
-		$this->_products = $newProducts;
 		$this->_sizes = $finalValue;
 	}
 	
-	/**
-	 * Gets the array of products currently associated with the vendor item ID.
-	 */
-	public function getProducts(){
-		return $this->_products;
-	}
-	
 	public function getVendorStyle(){
-		if(count($this->products) > 0){
-			return $this->products[0]->vendorStyle;
-		} else {
-			return 'New Product';
-		}
+		return $this->_product->vendorStyle;
 	}
 	
-	public function updateProducts($itemID, $vendorID){
-		$results = Product::model()->findAllByAttributes(array('VENDOR_ITEM_ID'=>$itemID, 'VENDOR_ID'=>$vendorID));
-		$newList = array();
-		foreach($results as $result){
-			$newList[(string)$result->COLOR . $result->SIZE] = $result;
-		}
-		$this->_products = $results;
-	}
-	
-	public function getIsNewRecord(){
-		$newRecord = true;
-		foreach($this->products as $product){
-			if(!$product->isNewRecord){
-				$newRecord = false;
-				break;
-			}
-		}
-		return $newRecord;
+	public function getIsNewRecord(){		
+		return $this->_product->isNewRecord;
 	}
 	
 	public function attributeLabels(){
@@ -217,5 +135,55 @@ class ProductForm extends CFormModel {
 		return array(
 			array('VENDOR_ITEM_ID, VENDOR_ID, COST, COLORS, SIZES', 'safe'),
 		);
+	}
+	
+	public function save(){
+		$result = $this->_product->save();
+		if(!$result){
+			$this->addErrors($this->_product->errors);
+		} else {
+			//this might be a pain point if usage ever increases a lot - might delete records
+			//which are still needed, etc.
+			/*What we need to do is move through all existing product lines for the product,
+			 * determine those we want to keep by finding out if the color and sizes is still
+			 * selected, add any that are missing, then delete those where the color and size
+			 * are no longer selected. This may need to change in the future if we ever need to
+			 * keep the product lines around permanently.*/
+			$oldProducts = array(); //products that are already here
+			$newProducts = array(); //Products that need to be added
+			$byeProducts = array(); //products that need to be deleted
+			//first pass - build the keyed list of existing products
+			//and build the keyed list of products to delete
+			foreach($this->_product->lines as $line){
+				$key = (string) $line->SIZE . $line->COLOR;
+				$oldProducts[$key] = $line;
+				$byeProducts[$key] = $line; //assume we're deleting it unless we find it on the next pass
+			}			
+			//second pass - build the keyed list of products to be added
+			foreach($this->SIZES as $size){
+				foreach($this->COLORS as $color){
+					$key = (string) $size . $color;
+					if(isset($oldProducts[$key])){
+						unset($byeProducts[$key]);
+					} else {
+						$newProduct = new ProductLine;
+						$newProduct->AVAILABLE = 0;
+						$newProduct->PRODUCT_ID = $this->_product->ID;
+						$newProduct->COLOR = $color;
+						$newProduct->SIZE = $size;
+						$newProducts[$key] = $newProduct;
+					}
+				}
+			}
+			//third pass - delete the unneeded products out
+			foreach($byeProducts as $byeProduct){
+				$byeProduct->delete();
+			}
+			//fourth pass - add the new products in
+			foreach($newProducts as $newProduct){
+				$newProduct->save();
+			}
+		}
+		return $result;		
 	}
 }

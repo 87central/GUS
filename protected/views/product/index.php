@@ -12,7 +12,7 @@ $this->menu=array(
 <h1>Products</h1>
 
 <?php function listSizes($model){
-	$sizes = Product::getAllowedSizes($model->VENDOR_ITEM_ID);
+	$sizes = $model->allowedSizes;
 	if(count($sizes) == 0){
 		return 'None';
 	} else {
@@ -28,7 +28,7 @@ $this->menu=array(
 }
 
 function listColors($model){
-	$colors = Product::getAllowedColors($model->VENDOR_ITEM_ID);
+	$colors = $model->allowedColors;
 	if(count($colors) == 0){
 		return 'None';
 	} else {

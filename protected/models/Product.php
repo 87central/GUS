@@ -91,6 +91,7 @@ class Product extends CActiveRecord
 			'jobLines' => array(self::HAS_MANY, 'JobLine', 'PRODUCT_ID'),
 			'status' => array(self::BELONGS_TO, 'Lookup', 'STATUS'),
 			'orders' => array(self::HAS_MANY, 'ProductOrder', 'PRODUCT_ID'),
+			'lines'=> array(self::HAS_MANY, 'ProductLine', 'PRODUCT_ID'),
 			'VENDOR'=> array(self::BELONGS_TO, 'Vendor', 'VENDOR_ID'),
 		);
 	}
@@ -161,32 +162,6 @@ class Product extends CActiveRecord
 	}
 	
 	/**
-	 * Gets the colors that are available for the given vendor item ID.
-	 * @return array An array containing instances of Lookup with the allowed colors.
-	 */
-	public static function getAllowedColors($itemID){
-		$results = Product::model()->findAllByAttributes(array('VENDOR_ITEM_ID'=>$itemID), 'STATUS != '.Product::DELETED);
-		$colors = array();
-		foreach($results as $product){
-			$colors[(string) $product->COLOR] = $product->color;
-		}
-		return $colors;
-	}
-	
-	/**
-	 * Gets the sizes that are available for the given vendor item ID.
-	 * @return array An array containing instances of Lookup with the allowed sizes.
-	 */
-	public static function getAllowedSizes($itemID){
-		$results = Product::model()->findAllByAttributes(array('VENDOR_ITEM_ID'=>$itemID), 'STATUS <> '.Product::DELETED);
-		$sizes = array();
-		foreach($results as $product){
-			$sizes[(string) $product->SIZE] = $product->size;
-		}
-		return $sizes;
-	}
-	
-	/**
 	 * Gets the cost of the item, provided by the manufacturer.
 	 * @return float The cost of the item.
 	 */
@@ -202,14 +177,47 @@ class Product extends CActiveRecord
 	/**
 	 * Gets the set of products associated with a given vendor item ID.
 	 * @param string $itemID The vendor item ID.
-	 * @return array An array mapping the set of valid color IDs to the set of valid sizeIDs to the set of products. E.g.
-	 * $result[colorID][sizeID] will be an instance of a Product.
+	 * @return Product The first item matching the search.
 	 */
-	public static function getProducts($itemID){
-		$results = Product::model()->findAllByAttributes(array('VENDOR_ITEM_ID'=>$itemID), 'STATUS <> '.Product::DELETED);
+	public static function getProduct($itemID){
+		$results = Product::model()->findByAttributes(array('VENDOR_ITEM_ID'=>$itemID), 'STATUS <> '.Product::DELETED);		
+		return $results;
+	}
+	
+	/**
+	 * Gets the set of product lines associated with a given vendor item ID.
+	 * @param int $vendorID The vendor ID.
+	 * @param string $itemID The vendor item ID.
+	 * @return array An array mapping the set of valid color IDs to the set of valid sizeIDs to the set of product lines. E.g.
+	 * $result[colorID][sizeID] will be an instance of a ProductLine.
+	 */
+	public static function getProductLines($vendorID, $itemID){
+		$results = Product::model()->findByAttributes(array('VENDOR_ITEM_ID'=>$itemID, 'VENDOR_ID'=>$vendorID), 'STATUS <> '.Product::DELETED);
 		$finalResults = array();
-		foreach($results as $product){
-			$finalResults[(string) $product->COLOR][(string) $product->SIZE] = $product;
+		foreach($results as $line){
+			$finalResults[(string) $line->COLOR][(string) $line->SIZE] = $line;
+		}
+		return $finalResults;
+	}
+	
+	/**
+	 * Gets the colors allowed for the product.
+	 */
+	public function getAllowedColors(){
+		$finalResults = array();
+		foreach($this->lines as $line){
+			$finalResults[(string) $line->COLOR] = $line->color;
+		}
+		return $finalResults;
+	}
+	
+	/**
+	 * Gets the sizes allowed for the product.
+	 */
+	public function getAllowedSizes(){
+		$finalResults = array();
+		foreach($this->lines as $line){
+			$finalResults[(string) $line->SIZE] = $line->size;	
 		}
 		return $finalResults;
 	}
