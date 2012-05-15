@@ -13,7 +13,6 @@ class ProductForm extends CFormModel {
 	private $_vendorID; //the current vendor ID.
 	private $_sizes;
 	private $_colors;
-	private $_style;
 	private $_cost;
 	
 	public function getVENDOR_ITEM_ID(){
@@ -45,20 +44,6 @@ class ProductForm extends CFormModel {
 		$this->_cost = $value;
 		foreach($this->products as $product){
 			$product->COST = $value;
-		}
-	}
-	
-	public function getSTYLE(){
-		if(!$this->_style){
-			$this->_style = Product::getStyle($this->VENDOR_ITEM_ID);
-		}
-		return $this->_style;
-	}
-	
-	public function setSTYLE($value){
-		$this->_style = $value;
-		foreach($this->products as $product){
-			$product->STYLE = $value->ID;
 		}
 	}
 		
@@ -99,11 +84,10 @@ class ProductForm extends CFormModel {
 		//if colors are found that are not in the array, (TODO)
 		foreach($this->SIZES as $size){
 			foreach($finalValue as $color){
-				$key = (string) $this->STYLE->ID . $size . $color;
+				$key = (string) $size . $color;
 				
 				if(!isset($oldProducts[$key])){
 					$newProduct = new Product;
-					$newProduct->STYLE = $this->STYLE->ID;
 					$newProduct->COST = $this->COST;
 					$newProduct->SIZE = $size;
 					$newProduct->COLOR = $color;
@@ -157,11 +141,10 @@ class ProductForm extends CFormModel {
 		//if sizes are found that are not in the array, (TODO)
 		foreach($this->COLORS as $color){
 			foreach($finalValue as $size){
-				$key = (string) $this->STYLE->ID . $size . $color;
+				$key = (string) $size . $color;
 				
 				if(!isset($oldProducts[$key])){
 					$newProduct = new Product;
-					$newProduct->STYLE = $this->STYLE->ID;
 					$newProduct->COST = $this->COST;
 					$newProduct->SIZE = $size;
 					$newProduct->COLOR = $color;
@@ -204,7 +187,7 @@ class ProductForm extends CFormModel {
 		$results = Product::model()->findAllByAttributes(array('VENDOR_ITEM_ID'=>$itemID, 'VENDOR_ID'=>$vendorID));
 		$newList = array();
 		foreach($results as $result){
-			$newList[(string)$result->STYLE . $result->COLOR . $result->SIZE] = $result;
+			$newList[(string)$result->COLOR . $result->SIZE] = $result;
 		}
 		$this->_products = $results;
 	}
@@ -225,7 +208,6 @@ class ProductForm extends CFormModel {
 			'VENDOR_ITEM_ID'=>'Item ID',
 			'VENDOR_ID'=>'Vendor',
 			'COST'=>'Cost',
-			'STYLE'=>'Style',
 			'COLORS'=>'Colors',
 			'SIZES'=>'Sizes',
 		);
@@ -233,7 +215,7 @@ class ProductForm extends CFormModel {
 	
 	public function rules(){
 		return array(
-			array('VENDOR_ITEM_ID, VENDOR_ID, COST, STYLE, COLORS, SIZES', 'safe'),
+			array('VENDOR_ITEM_ID, VENDOR_ID, COST, COLORS, SIZES', 'safe'),
 		);
 	}
 }

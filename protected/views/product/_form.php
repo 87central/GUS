@@ -165,12 +165,6 @@ CClientScript::POS_END);
 		<?php echo $form->error($model,'COST'); ?>
 	</div>
 
-	<div class="row">
-		<?php echo $form->labelEx($model,'STYLE'); ?>
-		<?php echo $form->dropDownList($model,'STYLE', $styleList); ?>
-		<?php echo $form->error($model,'STYLE'); ?>
-	</div>
-
 	<div class="row seperator color-list">
 		<?php echo $form->labelEx($model,'COLORS'); ?>
 		<?php //echo $form->dropDownList($model,'COLOR', $colorList); ?>

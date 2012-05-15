@@ -53,9 +53,9 @@ class Product extends CActiveRecord
 	public function beforeSave(){
 		if(parent::beforeSave()){
 			//change the product status based on the inventory amount.
-			if($this->AVAILABLE > 0){
+			/*if($this->AVAILABLE > 0){
 				$this->STATUS = Product::IN_STOCK;
-			}
+			}*/
 			return true;
 		} else {
 			return false;
@@ -70,13 +70,13 @@ class Product extends CActiveRecord
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
 		return array(
-			array('STATUS, STYLE, COLOR, SIZE, AVAILABLE', 'numerical', 'integerOnly'=>true),
+			array('STATUS', 'numerical', 'integerOnly'=>true),
 			array('COST', 'numerical'),
 			array('VENDOR_ID, VENDOR_ITEM_ID', 'required'),
 			array('VENDOR_ITEM_ID', 'length', 'max'=>50),
 			// The following rule is used by search().
 			// Please remove those attributes that should not be searched.
-			array('ID, COST, STATUS, STYLE, COLOR, SIZE, AVAILABLE', 'safe', 'on'=>'search'),
+			array('ID, COST, STATUS', 'safe', 'on'=>'search'),
 		);
 	}
 
@@ -89,10 +89,7 @@ class Product extends CActiveRecord
 		// class name for the relations automatically generated below.
 		return array(
 			'jobLines' => array(self::HAS_MANY, 'JobLine', 'PRODUCT_ID'),
-			'color' => array(self::BELONGS_TO, 'Lookup', 'COLOR'),
-			'size' => array(self::BELONGS_TO, 'Lookup', 'SIZE'),
 			'status' => array(self::BELONGS_TO, 'Lookup', 'STATUS'),
-			'style' => array(self::BELONGS_TO, 'Lookup', 'STYLE'),
 			'orders' => array(self::HAS_MANY, 'ProductOrder', 'PRODUCT_ID'),
 			'VENDOR'=> array(self::BELONGS_TO, 'Vendor', 'VENDOR_ID'),
 		);
@@ -107,10 +104,6 @@ class Product extends CActiveRecord
 			'ID' => 'ID',
 			'COST' => 'Cost',
 			'STATUS' => 'Status',
-			'STYLE' => 'Style',
-			'COLOR' => 'Color',
-			'SIZE' => 'Size',
-			'AVAILABLE' => 'Surplus Inventory',
 			'VENDOR_ID' => 'Vendor',
 			'VENDOR_ITEM_ID' => 'Vendor Item ID',
 			'vendorStyle' => 'Style',
@@ -151,7 +144,8 @@ class Product extends CActiveRecord
 	 * and size are included.
 	 */
 	public function getSummary(){
-		return $this->color->TEXT . ' ' . $this->style->TEXT . ', ' . $this->size->TEXT;
+		//return $this->color->TEXT . ' ' . $this->style->TEXT . ', ' . $this->size->TEXT;
+		return $this->vendorStyle;
 	}
 	
 	/**
@@ -190,15 +184,6 @@ class Product extends CActiveRecord
 			$sizes[(string) $product->SIZE] = $product->size;
 		}
 		return $sizes;
-	}
-	
-	public static function getStyle($itemID){
-		$results = Product::model()->findByAttributes(array('VENDOR_ITEM_ID'=>$itemID), 'STATUS <> '.Product::DELETED);
-		if($results){
-			return $results->style;
-		} else {
-			return null;
-		}
 	}
 	
 	/**

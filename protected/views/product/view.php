@@ -21,7 +21,6 @@ $this->menu=array(
 		'ID',
 		'COST',
 		'STATUS',
-		'STYLE',
 		'COLOR',
 		'SIZE',
 		'AVAILABLE',
