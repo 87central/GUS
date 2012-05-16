@@ -93,6 +93,7 @@ class JobController extends Controller
 					}
 					if(count($products) > 0){
 						$latestProduct = $line->product;
+						$products['model'] = $line;
 						$products['lines'] = $products;
 						$products['style'] = $latestProduct->vendorStyle;
 						$products['availableColors'] = CHtml::listData($latestProduct->allowedColors, 'ID', 'TEXT');
@@ -151,6 +152,7 @@ class JobController extends Controller
 			''=>'Custom',
 		);		
 		
+		$products['model'] = new JobLine;
 		$products['lines'] = $products;
 		$products['standardStyles'] = $standardStyles;
 		$products['style'] = '';
@@ -210,6 +212,7 @@ class JobController extends Controller
 					}
 					if(count($products) > 0){
 						$latestProduct = $line->product;
+						$products['model'] = $line;
 						$products['lines'] = $products;
 						$products['style'] = $latestProduct->vendorStyle;
 						$products['availableColors'] = CHtml::listData($latestProduct->allowedColors, 'ID', 'TEXT');
@@ -278,6 +281,7 @@ class JobController extends Controller
 					}
 					if(count($products) > 0){
 						$latestProduct = $line->product;
+						$products['model'] = $line;
 						$products['lines'] = $products;
 						$products['style'] = $latestProduct->vendorStyle;
 						$products['availableColors'] = CHtml::listData($latestProduct->allowedColors, 'ID', 'TEXT');
@@ -344,6 +348,7 @@ class JobController extends Controller
 			);	
 		}
 				
+		$products['model'] = new JobLine;
 		$products['lines'] = $products;
 		$products['style'] = '';
 		$products['standardStyles'] = $standardStyles;
@@ -400,6 +405,7 @@ class JobController extends Controller
 			);	
 		}
 				
+		$products['model'] = new JobLine;
 		$products['lines'] = $products;
 		$products['style'] = '';
 		$products['availableColors'] = array();
@@ -543,6 +549,7 @@ class JobController extends Controller
 					}
 					if(count($products) > 0){
 						$latestProduct = $line->product;
+						$products['model'] = $line;
 						$products['lines'] = $products;
 						$products['style'] = $latestProduct->vendorStyle;
 						$products['availableColors'] = CHtml::listData($latestProduct->allowedColors, 'ID', 'TEXT');
