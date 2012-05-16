@@ -292,7 +292,7 @@ class Job extends CActiveRecord
 					} else {
 						$line = new JobLine;
 					}
-					$line->attributes = $jobLines[$i];
+					$line->loadFromArray($jobLines[$i]);
 					if($line->PRODUCT_ID){ //can't have a line that isn't associated with a product
 						$newJobLines[] = $line;
 					}
@@ -368,7 +368,9 @@ class Job extends CActiveRecord
 		$passes = $this->printJob == null ? 0 : $this->printJob->PASS;
 		$lines = 0; //for quantity of all lines
 		foreach($this->jobLines as $line) {
-			$lines += $line->QUANTITY;
+			foreach($line->sizes as $sizeLine){
+				$lines += $sizeLine->QUANTITY;
+			}
 		}
 		return $passes * $lines;
 	}
@@ -441,7 +443,9 @@ class Job extends CActiveRecord
 	public function getGarmentCount(){
 		$garments = 0;
 		foreach($this->jobLines as $line){
-			$garments += $line->QUANTITY;
+			foreach($line->sizes as $sizeLine){
+				$garments += $sizeLine->QUANTITY;
+			}			
 		}
 		return $garments;
 	}

@@ -23,7 +23,6 @@ class JobLine extends CActiveRecord
 {
 	private $_color; //id of the color lookup item
 	private $_size; //id of the size lookup item
-	private $_style; //id of the style lookup item
 	private $_oldQuantity = 0;
 	private $_oldProductID;
 	private $_changed;
@@ -44,7 +43,6 @@ class JobLine extends CActiveRecord
 		$product = $this->product;
 		if($product){
 			$this->_color = $product->COLOR;
-			$this->_style = $product->STYLE;
 			$this->_size = $product->SIZE;
 		}
 	}
@@ -85,14 +83,43 @@ class JobLine extends CActiveRecord
 		}
 	}
 	
-	protected function beforeDelete(){
-		$product = $this->product;
-		if($this->isApproved){
-			$product->AVAILABLE += $this->QUANTITY;
+	protected function beforeDelete(){			
+		$adjusted = true;
+		foreach($this->sizes as $sizeLine){
+			if($this->isApproved){			
+				$sizeLine->productLine->AVAILABLE += $sizeLine->QUANTITY;
+				$adjusted = $adjusted && $sizeLIne->productLine->save();
+			}
+			if($adjusted){
+				$adjusted = $adjusted && $sizeLine->delete();
+			}
 		}
-		return parent::beforeDelete() && $product->save();
+		return parent::beforeDelete() && $adjusted;
+	}
+	
+	protected function beforeValidate(){
+		if(parent::beforeValidate()){
+			$valid = true;
+			foreach($this->sizes as $line){
+				$line->JOB_LINE_ID = $this->ID;
+				$valid = $valid && $line->validate();
+			}
+			return $valid;
+		} else {
+			return false;
+		}
 	}
 
+	protected function afterSave(){
+		parent::afterSave();
+		if(isset($this->sizes)){
+			foreach($this->sizes as $line){
+				$line->JOB_LINE_ID = $this->ID;
+				$line->save();
+			}
+		}
+	}
+	
 	/**
 	 * @return string the associated database table name
 	 */
@@ -112,7 +139,7 @@ class JobLine extends CActiveRecord
 			array('JOB_ID, PRODUCT_ID, QUANTITY, APPROVAL_USER', 'numerical', 'integerOnly'=>true),
 			array('APPROVAL_DATE, ID', 'safe'),
 			array('PRICE', 'numerical'),
-			array('color, size, style', 'numerical'),			
+			array('PRODUCT_COLOR', 'numerical'),			
 			// The following rule is used by search().
 			// Please remove those attributes that should not be searched.
 			array('ID, JOB_ID, PRODUCT_ID, QUANTITY, PRICE, APPROVAL_DATE, APPROVAL_USER', 'safe', 'on'=>'search'),
@@ -131,6 +158,8 @@ class JobLine extends CActiveRecord
 			'aPPROVALUSER' => array(self::BELONGS_TO, 'User', 'APPROVAL_USER'),
 			'job' => array(self::BELONGS_TO, 'Job', 'JOB_ID'),
 			'ORDER_LINE'=>array(self::BELONGS_TO, 'ProductOrder', 'PRODUCT_ORDER_ID'),
+			'sizes'=>array(self::HAS_MANY, 'JobLineSize', 'JOB_LINE_ID'),
+			'color'=>array(self::BELONGS_TO, 'Lookup', 'PRODUCT_COLOR'),
 		);
 	}
 
@@ -143,10 +172,10 @@ class JobLine extends CActiveRecord
 			'ID' => 'ID',
 			'JOB_ID' => 'Job',
 			'PRODUCT_ID' => 'Product',
-			'QUANTITY' => 'Quantity',
 			'PRICE' => 'Price',
 			'APPROVAL_DATE' => 'Approval Date',
 			'APPROVAL_USER' => 'Approval User',
+			'PRODUCT_COLOR'=> 'Color',
 		);
 	}
 
@@ -164,7 +193,6 @@ class JobLine extends CActiveRecord
 		$criteria->compare('ID',$this->ID);
 		$criteria->compare('JOB_ID',$this->JOB_ID);
 		$criteria->compare('PRODUCT_ID',$this->PRODUCT_ID);
-		$criteria->compare('QUANTITY',$this->QUANTITY);
 		$criteria->compare('PRICE',$this->PRICE,true);
 		$criteria->compare('APPROVAL_DATE',$this->APPROVAL_DATE,true);
 		$criteria->compare('APPROVAL_USER',$this->APPROVAL_USER);
@@ -174,57 +202,6 @@ class JobLine extends CActiveRecord
 		));
 	}
 	
-	public function getColor(){
-		if(isset($this->_color)){
-			return $this->_color;
-		} else {
-			if($this->product !== null){
-				return $this->product->COLOR;
-			} else {
-				return null;
-			}
-		}
-	}
-	
-	public function setColor($value){
-		$this->_changed = $value != $this->_color;
-		$this->_color = $value;
-	}
-	
-	public function getSize(){
-		if(isset($this->_size)){
-			return $this->_size;
-		} else {
-			if($this->product !== null){
-				return $this->product->SIZE;
-			} else {
-				return null;
-			}
-		}
-	}
-	
-	public function setSize($value){
-		$this->_changed = $value != $this->_size;
-		$this->_size = $value;
-	}
-	
-	public function getStyle(){
-		if(isset($this->_style)){
-			return $this->_style;
-		} else {
-			if($this->product !== null){
-				return $this->product->STYLE;
-			} else {
-				return null;
-			}
-		}
-	}
-	
-	public function setStyle($value){
-		$this->_changed = $value != $this->_style;
-		$this->_style = $value;
-	}
-	
 	/**
 	 * Approves the job line, which subtracts from inventory.
 	 * Returns true if approved successfully.
@@ -232,11 +209,16 @@ class JobLine extends CActiveRecord
 	public function approve(){
 		$this->APPROVAL_USER = Yii::app()->user->id;
 		$this->APPROVAL_DATE = DateConverter::toDatabaseTime(time(), true);
-		$product = $this->product;
-		$product->AVAILABLE -= $this->QUANTITY;
-		$value = $product->save();
-		$value = $value && $this->save();
-		return $value;
+		
+		$approved = true;
+		foreach($this->sizes as $sizeLine){
+			$productLine = $sizeLine->productLine;
+			$productLine->AVAILABLE -= $sizeLine->QUANTITY;
+			$approved = $approved && $productLine->save();
+		}
+		
+		$value = $approved && $this->save();
+		return $approved;
 	}
 	
 	/**
@@ -245,19 +227,56 @@ class JobLine extends CActiveRecord
 	public function unapprove(){
 		$this->APPROVAL_USER = null;
 		$this->APPROVAL_DATE = null;
-		$product = $this->product;
-		$product->AVAILABLE += $this->QUANTITY;
-		$value = $product->save();
-		$value = $value && $this->save();
-		return $value;
+		
+		$unapproved = true;
+		foreach($this->sizes as $sizeLine){
+			$productLine = $sizeLine->productLine;
+			$productLine->AVAILABLE += $sizeLine->QUANTITY;
+			$unapproved = $unapproved && $productLine->save();
+		}
+		
+		$unapproved = $unapproved && $this->save();
+		return $unapproved;
 	}
 	
-	/**
-	 * Gets a value indicating whether or not this line is being charged as "extra large".
+	/** Fills this model's attributes and relations from an array of attributes.
+	 * @param array $attributes The attribute array. This may contain values for
+	 * all of the attributes as well as the "sizes" relation, which should
+	 * be the key to an array with sets of attributes of JobLineSize models.
 	 */
-	public function getIsExtraLarge(){
-		$xlSizes = array(39, 40, 73, 74, 80);
-		return (array_search($this->size, $xlSizes) !== false);
+	public function loadFromArray($attributes){
+		$attributesInternal = $attributes;
+		if(isset($attributesInternal['sizes'])){
+			$sizes = $attributesInternal['sizes'];
+			unset($attributesInternal['sizes']);
+		} else {
+			$sizes = null;
+		}
+		foreach($attributesInternal as $name=>$value){
+			$this->$name = $value;
+		}
+		if($sizes){
+			$keyedSizeLines = array();
+			foreach($this->sizes as $sizeLine){
+				$keyedSizeLines[(string) $sizeLine->ID] = $sizeLine;
+			}
+			$newSizeLines = array();
+			for($i = 0; $i < count($sizes); $i++){
+				if(isset($sizes[$i]) && is_array($sizes[$i])){
+					$lineID = $sizes[$i]['ID'];
+					if(isset($keyedSizeLines[$lineID])){
+						$line = $keyedSizeLines[$lineID];
+					} else {
+						$line = new JobLineSize;
+					}
+					$line->attributes = $sizes[$i];
+					if($line->SIZE){ //can't have a line that isn't associated with a product
+						$newSizeLines[] = $line;
+					}
+				}
+			}
+			$this->sizes = $newSizeLines;
+		}		
 	}
 	
 	/**
@@ -266,13 +285,14 @@ class JobLine extends CActiveRecord
 	public function getTotal(){
 		//right now, we just want to hack this for the extra large fee
 		//$xlSizes = array(38, 39, 40, 51, 73, 74, 79, 80, 100);
-		$xlSizes = array(39, 40, 73, 74, 80);
-		if($this->isExtraLarge){
-			$fee = Product::EXTRA_LARGE_FEE;
-		} else {
-			$fee = 0;
+		//$xlSizes = array(39, 40, 73, 74, 80);
+		$total = 0;
+		foreach($this->sizes as $sizeLine){
+			$fee = $sizeLine->isExtraLarge;
+			if($fee === false) $fee = 0;
+			$total += ($this->PRICE + $fee) * $sizeLine->QUANTITY;
 		}
-		return ($this->PRICE + $fee) * $this->QUANTITY;
+		return $total;
 	}
 	
 	/**
