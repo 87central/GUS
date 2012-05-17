@@ -25,7 +25,6 @@
 			'index'=>$index,
 			'eachDiv'=>CHtml::getIdByName($namePrefix.'['.$startIndex.']'.'[sizes]'.'item'),
 			'div'=>$div,
-			'approved'=>$approved,
 		));
 		$index++;
 	}?>	
