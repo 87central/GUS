@@ -36,6 +36,7 @@ Yii::app()->clientScript->registerScript('add-job', "function addLine(sender, na
 						"\$('#' + div_id).children('.color-select').replaceWith(colorOptions);\n" .
 						"\$('#' + div_id).children('.jobLine').addClass('hidden-size').children('.score_part').attr('disabled', true).val(0);" .
 						"\$('#' + div_id).children('.jobLine').children('.hidden_cost').val(cost);" .
+						"onGarmentCostUpdate($('#' + div_id).find('.product-cost'), cost, $('#' + div_id).find('.editable-price'), $('#' + div_id).find('.hidden-price'), $('#' + div_id).find('.garment_part'));" .
 						"for(var size in sizes){
 							\$('#' + div_id).children('.' + div_id + sizes[size].ID)" .
 							".removeClass('hidden-size')" .
@@ -54,7 +55,14 @@ Yii::app()->clientScript->registerScript('calculate-total', "" .
 		"function calculateTotal(garments, front, back, sleeve, dest){
 			calculateTotalMain('".CHtml::normalizeUrl(array('job/garmentCost'))."', garments, front, back, sleeve, dest);			
 		}", 
-CClientScript::POS_BEGIN);?>
+CClientScript::POS_BEGIN);
+
+Yii::app()->clientScript->registerScript('calculate-setup-fee', "" .
+		"function calculateSetupFee(garments, front, back, sleeve, dest){
+			calculateSetupFeeMain('".CHtml::normalizeUrl(array('job/setupFee'))."', garments, front, back, sleeve, dest);
+		}",
+CClientScript::POS_BEGIN);
+?>
 
 <div class="form">
 
@@ -75,7 +83,7 @@ CClientScript::POS_BEGIN);?>
 	</div>
 	
 	<div class="row">
-		<?php echo $form->labelEx($model, 'formattedPickUpDate'); ?>
+		<?php echo $form->labelEx($model, 'formattedPickUpDate');?>
 		<?php $this->widget('zii.widgets.jui.CJuiDatePicker', array(
 			'name'=>'Job[formattedPickUpDate]',
 			'model'=>$model,
@@ -151,7 +159,18 @@ CClientScript::POS_BEGIN);?>
 
 	<div class="row">
 		<?php echo $form->labelEx($model,'SET_UP_FEE'); ?>
-		<?php echo $form->textField($model,'SET_UP_FEE',array('size'=>6,'maxlength'=>6, 'class'=>'part')); ?>
+		<?php echo $form->textField($model,'SET_UP_FEE',array(
+			'size'=>6,
+			'maxlength'=>6, 
+			'class'=>'part',
+			'onchange'=>"refreshSetupFee($(this).val(), $(this).parent().children('.hidden-fee').children('.hidden-value').val(), $(this).parent().children('.hidden-fee'));",
+		)); ?>
+		<?php $fee = CostCalculator::calculateSetupFee($model->garmentCount, $print->FRONT_PASS, $print->BACK_PASS, $print->SLEEVE_PASS);
+		$formatter = new Formatter;?>
+		<a class="hidden-fee" href="#" <?php echo ($model->SET_UP_FEE != $fee) ? 'style="display: hidden;"' : '';?> onclick="$(this).parent().children('.part').val($(this).children(':hidden').val()).change(); $(this).hide(); return false;">
+			<span><?php echo CHtml::encode($formatter->formatCurrency($fee));?></span>
+			<?php echo CHtml::hiddenField(CHtml::getIdByName(CHtml::activeName($model, 'SET_UP_FEE').'_hidden'), $fee, array('class'=>'hidden-value'));?>
+		</a>		
 		<?php echo $form->error($model,'SET_UP_FEE'); ?>
 	</div>
 	

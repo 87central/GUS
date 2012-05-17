@@ -34,6 +34,7 @@ Yii::app()->clientScript->registerScript('add-job', "function addLine(sender, na
 						}" .
 						"\$('#' + div_id).children('#line_style').children('.color-select').replaceWith(colorOptions);\n" .
 						"\$('#' + div_id).children('.jobLine').addClass('hidden-size').children('.score_part').attr('disabled', true).val(0);" .
+						"onGarmentCostUpdate($('#' + div_id).find('.product-cost'), cost, $('#' + div_id).find('.editable-price'), $('#' + div_id).find('.hidden-price'), $('#' + div_id).find('.garment_part'));" .
 						"\$('#' + div_id).children('.jobLine').children('.hidden_cost').val(cost);" .
 						"for(var size in sizes){
 							\$('#' + div_id).children('.' + div_id + sizes[size].ID)" .
