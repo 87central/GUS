@@ -1,6 +1,7 @@
 <?php /*needs vars for namePrefix and startIndex (the index from which to start numbering lines)*/?>
 
-<?php $div = CHtml::getIdByName($namePrefix . $startIndex . 'item');?>
+<?php $div = CHtml::getIdByName($namePrefix . $startIndex . 'item');
+$line = $products['model'];?>
 
 <div class="jobLines" id="<?php echo $div;?>">	
 	<?php 
@@ -16,7 +17,7 @@
 		<?php		 
 		Yii::app()->clientScript->registerScript('standard-style-select', "" .
 				"\$('.standard_style').live('change', function(){
-					var count = $('.jobLines').children('.jobLine').children('.part').size();
+					var count = $('.jobLines').children('.jobLine').children('.item_qty').size();
 					\$.getJSON(
 						'".CHtml::normalizeUrl(array('product/allowedOptions'))."'," .
 						"{
@@ -27,34 +28,22 @@
 						"function(data){
 							var colors = data.colors;" .
 							"var sizes = data.sizes;" .
-							"var products = data.products;" .
 							"var cost = data.productCost;" .
-							"\$('#".$div."').children('.jobLine').children('.line-product').val(null);" .
 							"var colorOptions = $('<select></select>')" .
 								".attr('name', 'color-select')" .
-								".attr('class', 'color-select')" .
-								".change(function() {" .
-									"for(var size in sizes){
-										\$('#".$div."').children('.".$div."' + sizes[size].ID).children('.line-product').val(products[\$(colorOptions).val()][sizes[size].ID].ID);
-									}" .
-								"});" .
+								".attr('class', 'color-select');" .
 							"for(var color in colors){
 								colorOptions.append($('<option></option>').val(colors[color].ID).html(colors[color].TEXT));
 							}" .
 							"\$('#".$div."').children('#line_style').children('.color-select').replaceWith(colorOptions);" .
 							"\$('#".$div."').children('.jobLine').children('.hidden_cost').val(cost);" .
 							"\$('#".$div."').children('.jobLine').addClass('hidden-size').children('.score_part').attr('disabled', true).val(0);" .
-							"for(var size in sizes){" .
-								"var firstColor = null;" .
-								"for(var color in colors){
-									firstColor = color;" .
-									"break;
-								}
+							"for(var size in sizes){
 								\$('#".$div."').children('.".$div."' + sizes[size].ID)" .
 								".removeClass('hidden-size')" .
-								".children('.line-product').val(products[colors[firstColor].ID][sizes[size].ID].ID)" .
-								".parent().children('.score_part').removeAttr('disabled');
-							}
+								".children('.score_part').removeAttr('disabled');
+							}" .
+							"\$('#$div').children('.hidden-style').val(\$(this).val());
 						}); \$(this).val() ? \$(this).siblings('.item-select').hide() : \$(this).siblings('.item-select').show();"./*we get away setting disabled to the radio button value because the "value" of the custom radio button evaluates to false.*/
 				"});", 
 		CClientScript::POS_END);?>
@@ -73,7 +62,7 @@
 			),
 			'options'=>array(
 				'select'=>"js:function(event, ui){" .
-					"var count = $('.jobLines').children('.jobLine').children('.part').size();
+					"var count = $('.jobLines').children('.jobLine').children('.item_qty').size();
 					\$.getJSON(
 						'".CHtml::normalizeUrl(array('product/allowedOptions'))."'," .
 						"{
@@ -84,34 +73,22 @@
 						"function(data){
 							var colors = data.colors;" .
 							"var sizes = data.sizes;" .
-							"var products = data.products;" .
 							"var cost = data.productCost;" .
-							"\$('#".$div."').children('.jobLine').children('.line-product').val(null);" .
 							"var colorOptions = $('<select></select>')" .
 								".attr('name', 'color-select')" .
-								".attr('class', 'color-select')" .
-								".change(function() {" .
-									"for(var size in sizes){
-										\$('#".$div."').children('.".$div."' + sizes[size].ID).children('.line-product').val(products[\$(colorOptions).val()][sizes[size].ID].ID);
-									}" .
-								"});" .
+								".attr('class', 'color-select');" .
 							"for(var color in colors){
 								colorOptions.append($('<option></option>').val(colors[color].ID).html(colors[color].TEXT));
 							}" .
 							"\$('#".$div."').children('#line_style').children('.color-select').replaceWith(colorOptions);" .
 							"\$('#".$div."').children('.jobLine').children('.hidden_cost').val(cost);" .
 							"\$('#".$div."').children('.jobLine').addClass('hidden-size').children('.score_part').attr('disabled', true).val(0);" .
-							"for(var size in sizes){" .
-								"var firstColor = null;" .
-								"for(var color in colors){
-									firstColor = color;" .
-									"break;
-								}
+							"for(var size in sizes){
 								\$('#".$div."').children('.".$div."' + sizes[size].ID)" .
 								".removeClass('hidden-size')" .
-								".children('.line-product').val(products[colors[firstColor].ID][sizes[size].ID].ID)" .
-								".parent().children('.score_part').removeAttr('disabled');
-							}
+								".children('.score_part').removeAttr('disabled');
+							}" .
+							"\$('#$div').children('.hidden-style').val(\$(this).val());
 						});
 				}"
 			),
@@ -131,76 +108,47 @@
 			'id'=>$colorSelect, 
 			'disabled'=>(count($products['availableColors']) == 0) || $approved, //only disable if there aren't any colors available. 
 			'class'=>'color-select',
-		));?>
-		<?php Yii::app()->clientScript->registerScript('initial-color-data' . $startIndex, "" .
-				"$('#".$colorSelect."').data('products', ".$products['products'].").data('sizes', ".$products['sizes'].");", 
-		CClientScript::POS_END);?>
-		<?php Yii::app()->clientScript->registerScript('initial-color-select' . $startIndex, "" .
-				"$('#".$colorSelect."').change(function(){
-					var sizes = $(this).data('sizes');" .
-					"var products = $(this).data('products');" .
-					"for(var size in sizes){
-						\$('#".$div."').children('.".$div."' + sizes[size].ID).children('.line-product').val(products[\$(this).val()][sizes[size].ID].ID);
-					}
-				});",
-		CClientScript::POS_END);?>
+		));?>		
 	</div>	
+	<?php $priceSelect = CHtml::getIdByName($namePrefix . $startIndex . 'price');?>
+	<div class="price-select-container"> <!-- Don't remove this container. Needed for some JS stuff.-->
+		Unit Price <?php echo CHtml::activeTextField($line, 'PRICE', array(
+			'id'=>$priceSelect,
+			'disabled'=>true,
+			'class'=>'unit_price',
+			'name'=>$namePrefix."[$startIndex]".'[PRICE]',
+			'value'=>$estimate,
+		));?>
+		<?php /*when the link is clicked, we want to hide the link and set the value of the input field 
+		to the value of the hidden field within the link*/?>
+		<a href="#" <?php echo ($line->PRICE == $estimate) ? 'style="display: hidden;"' : '';?> onclick="$(this).parent().children('#<?php echo $priceSelect;?>').val($(this).children(':hidden').val()).keyup(); $(this).hide(); return false;">
+			<span><?php echo CHtml::encode($formatter->formatCurrency($estimate));?></span>
+			<?php echo CHtml::hiddenField(CHtml::getIdByName($namePrefix.$startIndex.'hidden-price'), $estimate);?>
+		</a>
+		<?php echo CHtml::hiddenField(CHtml::getIdByName($namePrefix.$startIndex.'total-price'), $line->total, array(
+			'class'=>'part garment_part',
+		));?>
+	</div>
 	
 	<?php
+	$index = 0;
 	foreach($products['lines'] as $dataLine){
-		$product = $dataLine['product'];
-		$line = $dataLine['line'];
-		$lineHiddenPrefix = $namePrefix . $startIndex;
-		$linePrefix = $namePrefix . '['.$startIndex++.']';
-		$eachDiv = CHtml::getIdByName($linePrefix.'item');
-		?>
-		<div class="jobLine <?php echo ($product->ID == null) ? 'hidden-size' : '';?> <?php echo $div.$product->SIZE;?>" id="<?php echo $eachDiv;?>">
-			<?php /*vars for JS calculations*/?>
-			<?php $total = '#'.CHtml::getIdByName($lineHiddenPrefix . 'total');?>
-			<?php $qty = '#'.CHtml::getIdByName($linePrefix . '[QUANTITY]');?>
-			<?php $price = '#'.CHtml::getIdByName($linePrefix . '[PRICE]');?>
-
-			<?php echo CHtml::label($product->size->TEXT, CHtml::getIdByName($linePrefix . '[QUANTITY]'));?>
-			<?php echo CHtml::activeTextField($line, 'QUANTITY', array(
-				'name'=>$linePrefix . '[QUANTITY]',
-				'onkeyup'=>"$('".$total."').val((1 * $('".$qty."').val()) * $('".$price."').val()).change();",
-				'class'=>'score_part item_qty',
-				'size'=>5,
-				'disabled'=>($product->ID == null) || $approved, //only disable if the product doesn't seem to exist.
-			));?>
-			
-			<?php echo CHtml::activeHiddenField($line, 'PRICE', array(
-				'name'=>$linePrefix . '[PRICE]',
-				'onchange'=>"$('".$total."').val((1 * $('".$qty."').val()) * $('".$price."').val()).change();",
-				'class'=>'hidden_cost',
-				'value'=>$product->COST, 
-			));?>
-			<?php /*the "PRICE" of a job line, then, is actually the cost to buy
-			the garment from the manufacturer.*/?>
-			
-			<?php echo CHtml::activeHiddenField($line, 'total', array(
-				'class'=>'part',
-				'readonly'=>'readonly',
-				'id'=>CHtml::getIdByName($lineHiddenPrefix . 'total'),
-			));?>
-			
-			<?php echo CHtml::activeHiddenField($line, 'ID', array(
-				'name'=>$linePrefix . '[ID]',
-				'class'=>'line_id',
-			));?>
-			
-			<?php echo CHtml::activeHiddenField($line, 'PRODUCT_ID', array(
-				'name'=>$linePrefix . '[PRODUCT_ID]',
-				'class'=>'line-product',
-				'value'=>$product->ID,
-			));?>
-			
-			<?php echo CHtml::hiddenField('linePrefix', $linePrefix, array(
-				'class'=>'linePrefix',
-				'id'=>CHtml::getIdByName($lineHiddenPrefix . 'linePrefix'),
-			));?>
-		</div>
-		<?php
+		foreach($dataLine as $key=>$dataLineValue){
+			if($key == 'productLine') $productLine = $dataLineValue;
+			if($key == 'line') $sizeLine = $dataLineValue;
+		}	//beats me as to why I needed to do this. For some reason, dataLine thought it was a JobLine instance.
+		$this->renderPartial('//jobLineSize/_estimate', array(
+			'product'=>$productLine,
+			'line'=>$sizeLine,
+			'lineHiddenPrefix'=>$namePrefix.$startIndex.'sizes'.$index,
+			'linePrefix'=>$namePrefix.'['.$startIndex.']'.'[sizes]',
+			'index'=>$index,
+			'eachDiv'=>CHtml::getIdByName($namePrefix.'['.$startIndex.']'.'[sizes]'.'item'),
+			'div'=>$div,
+			'approved'=>$approved,
+			'onQuantityUpdate'=>"updateLineTotal('".CHtml::normalizeUrl(array('job/garmentCost'))."', $('#$priceSelect'), $('#$priceSelect').parent().children('a'), $('#$priceSelect').parent().children(':hidden'));"
+		));
+		$index++;
 	}
 	?>	
 	<?php echo CHtml::hiddenField('prefix', $namePrefix, array(

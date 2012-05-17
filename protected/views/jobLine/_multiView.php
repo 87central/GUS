@@ -8,60 +8,26 @@
 	
 	Color <span class="color-select-approved"><?php $formatter = new Formatter; echo $formatter->formatLookup($products['currentColor']);?></span>
 	
-	<?php foreach($products['lines'] as $dataLine){
-		$product = $dataLine['product'];
-		$line = $dataLine['line'];
-		$lineHiddenPrefix = $namePrefix . $startIndex;
-		$linePrefix = $namePrefix . '['.$startIndex++.']';
-		$eachDiv = CHtml::getIdByName($linePrefix.'item');
-		?>
-		<div class="jobLine <?php echo ($product->ID == null) ? 'hidden-size' : '';?> <?php echo $div.$product->SIZE;?>" id="<?php echo $eachDiv;?>">
-			<?php echo CHtml::label($product->size->TEXT, CHtml::getIdByName($linePrefix . '[QUANTITY]'));?>
-			<?php echo CHtml::activeHiddenField($line, 'QUANTITY', array(
-				'name'=>$linePrefix . '[QUANTITY]',
-				'class'=>'score_part item_qty',
-			));?>
-			<?php echo CHtml::encode($line->QUANTITY);?>
-			
-			<?php echo CHtml::activeHiddenField($line, 'PRICE', array(
-				'name'=>$linePrefix . '[PRICE]',
-				'class'=>'hidden_cost',
-			));?>
-			
-			<?php echo CHtml::activeHiddenField($line, 'total', array(
-				'class'=>'part',
-				'readonly'=>'readonly',
-				'id'=>CHtml::getIdByName($lineHiddenPrefix . 'total'),
-			));?>
-			
-			<?php echo CHtml::activeHiddenField($line, 'ID', array(
-				'name'=>$linePrefix . '[ID]',
-				'class'=>'line_id',
-			));?>
-			
-			<?php echo CHtml::activeHiddenField($line, 'color', array(
-				'name'=>$linePrefix . '[color]',
-				'class'=>'line-color',
-			));?>
-			
-			<?php echo CHtml::activeHiddenField($line, 'size', array(
-				'name'=>$linePrefix . '[size]',
-				'class'=>'line-size',
-				'value'=>$product->SIZE,				
-			));?>
-			
-			<?php echo CHtml::activeHiddenField($line, 'style', array(
-				'name'=>$linePrefix . '[style]',
-				'class'=>'line-style',
-			));?>
-			
-			<?php echo CHtml::hiddenField('linePrefix', $linePrefix, array(
-				'class'=>'linePrefix',
-				'id'=>CHtml::getIdByName($lineHiddenPrefix . 'linePrefix'),
-			));?>
-		</div>
-		
-		<?php
+	Price Each <span class="price-select-approved"><?php echo $formatter->formatCurrency($products['model']->PRICE);?></span>
+	
+	<?php 
+	$index = 0;
+	foreach($products['lines'] as $dataLine){
+		foreach($dataLine as $key=>$dataLineValue){
+			if($key == 'productLine') $productLine = $dataLineValue;
+			if($key == 'line') $sizeLine = $dataLineValue;
+		}	//beats me as to why I needed to do this. For some reason, dataLine thought it was a JobLine instance.
+		$this->renderPartial('//jobLineSize/_view', array(
+			'product'=>$productLine,
+			'line'=>$sizeLine,
+			'lineHiddenPrefix'=>$namePrefix.$startIndex.'sizes'.$index,
+			'linePrefix'=>$namePrefix.'['.$startIndex.']'.'[sizes]',
+			'index'=>$index,
+			'eachDiv'=>CHtml::getIdByName($namePrefix.'['.$startIndex.']'.'[sizes]'.'item'),
+			'div'=>$div,
+			'approved'=>$approved,
+		));
+		$index++;
 	}?>	
 	
 	<?php echo CHtml::hiddenField('prefix', $namePrefix, array(
