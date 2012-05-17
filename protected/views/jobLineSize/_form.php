@@ -12,7 +12,7 @@ $costJS = '#'.$cost;
 $xlJS = '#'.$xl;
 $xlTotalJS = '#' . $xlTotal;
 ?>
-<div class="jobLine <?php echo ($product->PRODUCT_ID == null) ? 'hidden-size' : '';?> <?php echo $div.$product->SIZE;?>" id="<?php echo $eachDiv;?>">
+<div class="jobLine <?php echo ($line->JOB_LINE_ID == null) ? 'hidden-size' : '';?> <?php echo $div.$product->SIZE;?>" id="<?php echo $eachDiv;?>">
 	<?php echo CHtml::errorSummary($line); ?>
 	<?php echo CHtml::label($product->size->TEXT, CHtml::getIdByName($namePrefix . '[QUANTITY]'));?>
 	<?php echo CHtml::activeTextField($line, 'QUANTITY', array(
@@ -20,7 +20,7 @@ $xlTotalJS = '#' . $xlTotal;
 		'onkeyup'=>"$('".$totalJS."').val((1 * $('".$qtyJS."').val()) * $('".$costJS."').val()).change(); $('$xlTotalJS').val($('$qtyJS').val() * 1 * $('$xlJS').val()).change(); ".$onQuantityUpdate,
 		'class'=>'score_part item_qty',
 		'size'=>5,
-		'disabled'=>($product->PRODUCT_ID == null) || $approved, //only disable if the product doesn't seem to exist.
+		'disabled'=>($line->JOB_LINE_ID == null) || $approved, //only disable if the product doesn't seem to exist.
 	));?>
 	
 	<?php $xlFee = $line->isExtraLarge;
