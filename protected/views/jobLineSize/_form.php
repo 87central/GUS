@@ -9,6 +9,7 @@ $qtyJS = '#'.$qty;
 $costJS = '#'.$cost;
 ?>
 <div class="jobLine <?php echo ($product->PRODUCT_ID == null) ? 'hidden-size' : '';?> <?php echo $div.$product->SIZE;?>" id="<?php echo $eachDiv;?>">
+	<?php echo CHtml::errorSummary($line); ?>
 	<?php echo CHtml::label($product->size->TEXT, CHtml::getIdByName($namePrefix . '[QUANTITY]'));?>
 	<?php echo CHtml::activeTextField($line, 'QUANTITY', array(
 		'name'=>$namePrefix . '[QUANTITY]',
