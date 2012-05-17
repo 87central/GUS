@@ -260,12 +260,12 @@ class JobLine extends CActiveRecord
 		if($sizes){
 			$keyedSizeLines = array();
 			foreach($this->sizes as $sizeLine){
-				$keyedSizeLines[(string) $sizeLine->ID] = $sizeLine;
+				$keyedSizeLines[(string) $sizeLine->JOB_LINE_ID . $sizeLine->SIZE] = $sizeLine;
 			}
 			$newSizeLines = array();
 			for($i = 0; $i < count($sizes); $i++){
-				if(isset($sizes[$i]) && is_array($sizes[$i])){
-					$lineID = $sizes[$i]['ID'];
+				if(isset($sizes[$i]) && is_array($sizes[$i])){					
+					$lineID = $sizes[$i]['JOB_LINE_ID'] . $sizes[$i]['SIZE'];
 					if(isset($keyedSizeLines[$lineID])){
 						$line = $keyedSizeLines[$lineID];
 					} else {
