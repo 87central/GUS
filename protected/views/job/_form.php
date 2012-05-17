@@ -162,7 +162,7 @@ CClientScript::POS_BEGIN);
 		<?php echo $form->textField($model,'SET_UP_FEE',array(
 			'size'=>6,
 			'maxlength'=>6, 
-			'class'=>'part',
+			'class'=>'part editable-fee',
 			'onchange'=>"refreshSetupFee($(this).val(), $(this).parent().children('.hidden-fee').children('.hidden-value').val(), $(this).parent().children('.hidden-fee'));",
 		)); ?>
 		<?php $fee = CostCalculator::calculateSetupFee($model->garmentCount, $print->FRONT_PASS, $print->BACK_PASS, $print->SLEEVE_PASS);
@@ -216,38 +216,13 @@ CClientScript::POS_BEGIN);
 						$('#auto_total, #auto_total_each, #auto_tax, #auto_tax_each, #auto_grand, #auto_grand_each').removeAttr('disabled');" .
 						"$('#qty_warning').hide();
 					}" .
-					"$('#garment_qty').val(qty).change();
+					"$('#garment_qty').val(qty).change();" .
+					"updateSetupCost('".CHtml::normalizeUrl(array('job/setupFee'))."', $('.editable-fee'), $('.hidden-fee'), qty);
 				})", 
 		CClientScript::POS_END);
 		
 		Yii::app()->clientScript->registerScript('auto-totaler', "" .
-				"$('.part, #$taxRateField').live('change keyup', function(){
-					var total = 0;" .
-					"var tax = (1 * $('#$taxRateField').val()) / 100;" .
-					"var totalEach = 0;" .
-					"$('.part, .garment_part').each(function(index){
-						total += (1 * $(this).val());
-					});" .
-					"$('#auto_total').val(parseFloat(total).toFixed(2));" .
-					"$('#auto_tax').val(parseFloat(total * tax).toFixed(2));" .
-					"$('#auto_grand').val(parseFloat(total * (1 + tax)).toFixed(2));" .
-					"" .
-					"var qty = 0;" .
-					"$('.item_qty').each(function(index){
-						qty += (1 * $(this).val());
-					});" .
-					"totalEach = (qty == 0) ? 0 : total / qty;" .
-					"$('#auto_total_each').val(parseFloat(totalEach).toFixed(2));" .
-					"$('#auto_tax_each').val(parseFloat(totalEach * tax).toFixed(2));" .
-					"$('#auto_grand_each').val(parseFloat(totalEach * (1 + tax)).toFixed(2));" .
-					"if(qty > 200){
-						$('#auto_total, #auto_total_each, #auto_tax, #auto_tax_each, #auto_grand, #auto_grand_each').val(0).attr('disabled', 'disabled');" .
-						"$('#qty_warning').show();
-					} else {
-						$('#auto_total, #auto_total_each, #auto_tax, #auto_tax_each, #auto_grand, #auto_grand_each').removeAttr('disabled');" .
-						"$('#qty_warning').hide();
-					}
-				});", 
+				"$('.part, #$taxRateField').live('change keyup', autoTotal($('#$taxRateField')));", 
 		CClientScript::POS_END);?>
 	</div>
 	
