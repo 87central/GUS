@@ -56,7 +56,7 @@ function getGarmentCount(estimate){
 
 function refreshEstimate(editVal, estimateVal, estimate){	
 	$(estimate).children('span').html(estimateVal);
-	$(estimate).children(':hidden').val(estimateVal);
+	$(estimate).children('.hidden-price').val(estimateVal);
 	if(estimateVal == editVal){
 		$(estimate).hide();
 	} else {
@@ -71,7 +71,7 @@ function updateLineTotal(calculatorUrl, editable, estimate, total, cost){
 	var garmentCount = getGarmentCount(estimate);
 	var estimateVal = 0;
 	calculateTotalCore(calculatorUrl, garmentCount, getFrontPasses(), getBackPasses(), getSleevePasses(), function(data){
-		var oldEstimate = $(estimate).children(':hidden').val() * 1;
+		var oldEstimate = $(estimate).children('.hidden-price').val() * 1;
 		if(oldEstimate == editVal){
 			editVal = 1 * data.result / garmentCount + costVal;
 			$(editable).val(editVal);
@@ -85,7 +85,7 @@ function updateLineTotal(calculatorUrl, editable, estimate, total, cost){
 function recalculateTotal(editable, estimate, total, cost){
 	var editVal = $(editable).val() * 1;
 	var garmentCount = getGarmentCount(estimate);
-	refreshEstimate(editVal, $(estimate).children(':hidden').val(), estimate);
+	refreshEstimate(editVal, $(estimate).children('.hidden-price').val(), estimate);
 	$(total).val(editVal * garmentCount).change();
 }
 
@@ -133,7 +133,7 @@ function createStyleSelectFunction(div_id, style_id){
 
 function refreshSetupFee(editVal, feeVal, hidden){
 	$(hidden).children('span').html(feeVal);
-	$(hidden).children(':hidden').val(feeVal);
+	$(hidden).children('.hidden-value').val(feeVal);
 	if(feeVal == editVal){
 		$(hidden).hide();
 	} else {
@@ -142,7 +142,7 @@ function refreshSetupFee(editVal, feeVal, hidden){
 }
 
 function updateSetupCost(url, editable, hidden, garmentCount){
-	var oldCost = $(hidden).children(':hidden').val() * 1;
+	var oldCost = $(hidden).children('.hidden-value').val() * 1;
 	var editVal = $(editable).val() * 1;
 	calculateSetupFeeCore(url, garmentCount, getFrontPasses(), getBackPasses(), getSleevePasses(), function(data){
 		var newCost = data.result;
@@ -161,4 +161,35 @@ function preprocessLine(form, line){
 function preprocessForm(form){
 	$(form).find('.hidden-size').remove();
 	$(form).submit();
+}
+
+//returns a function which totals up all of the parts of a job
+function autoTotal(taxRateField){
+	return function(){
+		var total = 0;
+		var tax = (1 * $(taxRateField).val()) / 100;
+		var totalEach = 0;
+		$('.part').each(function(index){
+			total += (1 * $(this).val());
+		});
+		$('#auto_total').val(parseFloat(total).toFixed(2));
+		$('#auto_tax').val(parseFloat(total * tax).toFixed(2));
+		$('#auto_grand').val(parseFloat(total * (1 + tax)).toFixed(2));
+		
+		var qty = 0;
+		$('.item_qty').each(function(index){
+			qty += (1 * $(this).val());
+		});
+		totalEach = (qty == 0) ? 0 : total / qty;
+		$('#auto_total_each').val(parseFloat(totalEach).toFixed(2));
+		$('#auto_tax_each').val(parseFloat(totalEach * tax).toFixed(2));
+		$('#auto_grand_each').val(parseFloat(totalEach * (1 + tax)).toFixed(2));
+		if(qty > 200){
+			$('#auto_total, #auto_total_each, #auto_tax, #auto_tax_each, #auto_grand, #auto_grand_each').val(0).attr('disabled', 'disabled');
+			$('#qty_warning').show();
+		} else {
+			$('#auto_total, #auto_total_each, #auto_tax, #auto_tax_each, #auto_grand, #auto_grand_each').removeAttr('disabled');
+			$('#qty_warning').hide();
+		}
+	};
 }
