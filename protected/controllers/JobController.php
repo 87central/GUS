@@ -323,6 +323,11 @@ class JobController extends Controller
 		echo CJSON::encode($result);
 	}
 	
+	public function actionSetupFee($garments, $front, $back, $sleeve){
+		$result = array('result'=>CostCalculator::calculateSetupFee($garments, $front, $back, $sleeve));
+		echo CJSON::encode($result);
+	}
+	
 	/**
 	 * Allows unauthenticated users to estimate the total cost of an order.
 	 * Essentially a copy of action create, but without any handling of persistence.
