@@ -82,6 +82,7 @@ $line = $products['model'];?>
 							}" .
 							"\$('#".$div."').children('#line_style').children('.color-select').replaceWith(colorOptions);" .
 							"\$('#".$div."').children('.jobLine').children('.hidden_cost').val(cost);" .
+							"onGarmentCostUpdate($('#$div').find('.product-cost'), cost, $('#$div').find('.unit_price'), $('#$div').find('.hidden-price'), $('#$div').find('.garment_part'));" .
 							"\$('#".$div."').children('.jobLine').addClass('hidden-size').children('.score_part').attr('disabled', true).val(0);" .
 							"for(var size in sizes){
 								\$('#".$div."').children('.".$div."' + sizes[size].ID)" .
@@ -121,8 +122,9 @@ $line = $products['model'];?>
 		));?>
 		<?php /*when the link is clicked, we want to hide the link and set the value of the input field 
 		to the value of the hidden field within the link*/
-		$unitEstimate = $line->garmentCount ? ($estimate / $line->garmentCount) : 0;?>
-		<a href="#" <?php echo ($line->PRICE == $unitEstimate) ? 'style="display: hidden;"' : '';?> onclick="$(this).parent().children('#<?php echo $priceSelect;?>').val($(this).children(':hidden').val()).keyup(); $(this).hide(); return false;">
+		$garmentEstimate = $line->product ? $line->product->COST : 0;
+		$unitEstimate = $line->garmentCount ? ($garmentEstimate + $estimate / $line->garmentCount) : 0;?>
+		<a href="#" <?php echo ($line->PRICE != $unitEstimate) ? 'style="display: hidden;"' : '';?> onclick="$(this).parent().children('#<?php echo $priceSelect;?>').val($(this).children('.hidden-price').val()).keyup(); $(this).hide(); return false;">
 			<span><?php echo CHtml::encode($formatter->formatCurrency($unitEstimate));?></span>
 			<?php echo CHtml::hiddenField(CHtml::getIdByName($namePrefix.$startIndex.'hidden-price'), $unitEstimate);?>
 		</a>
@@ -130,6 +132,8 @@ $line = $products['model'];?>
 			'class'=>'part garment_part',
 		));?>
 	</div>
+	
+	<?php echo CHtml::hiddenField('product-cost', $line->product ? $line->product->COST : 0, array('class'=>'product-cost'));?>
 	
 	<?php
 	$index = 0;

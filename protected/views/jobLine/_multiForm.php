@@ -1,7 +1,8 @@
 <?php /*needs vars for namePrefix and startIndex (the index from which to start numbering lines)*/?>
 
 <?php $div = CHtml::getIdByName($namePrefix . $startIndex . 'item');
-$line = $products['model'];?>
+$line = $products['model'];
+$garmentCost = CHtml::getIdByName($namePrefix . $startIndex . 'garment-cost');?>
 
 <div class="jobLines" id="<?php echo $div;?>">
 	<?php echo CHtml::errorSummary($line); ?>	
@@ -41,6 +42,7 @@ $line = $products['model'];?>
 						"colorOptions.attr('name', \$('#$div').children('.color-select').attr('name'));" .
 						"\$('#".$div."').children('.color-select').replaceWith(colorOptions);" .
 						"\$('#".$div."').children('.jobLine').children('.hidden_cost').val(cost);" .
+						"onGarmentCostUpdate($('#$div').find('.product-cost'), cost, $('#$div').find('.unit_price'), $('#$div').find('.hidden-price'), $('#$div').find('.garment_part'));" .
 						"\$('#".$div."').children('.jobLine').addClass('hidden-size').children('.score_part').attr('disabled', true).val(0);" .
 						"for(var size in sizes){
 							\$('#".$div."').children('.".$div."' + sizes[size].ID)" .
@@ -86,19 +88,21 @@ $line = $products['model'];?>
 			'disabled'=>$approved,
 			'class'=>'unit_price',
 			'name'=>$namePrefix."[$startIndex]".'[PRICE]',
-			'onkeyup'=>"recalculateTotal(this, $(this).parent().children('a'), $(this).parent().children(':hidden'));",
+			'onkeyup'=>"recalculateTotal(this, $(this).parent().children('a'), $(this).parent().children('.garment_part'));",
 		));?>
 		<?php /*when the link is clicked, we want to hide the link and set the value of the input field 
 		to the value of the hidden field within the link*/
-		$unitEstimate = $line->garmentCount ? ($estimate / $line->garmentCount) : 0;?>
-		<a href="#" <?php echo ($line->PRICE == $unitEstimate) ? 'style="display: hidden;"' : '';?> onclick="$(this).parent().children('#<?php echo $priceSelect;?>').val($(this).children(':hidden').val()).keyup(); $(this).hide(); return false;">
+		$garmentEstimate = $line->product ? $line->product->COST : 0;
+		$unitEstimate = $line->garmentCount ? ($garmentEstimate + $estimate / $line->garmentCount) : 0;?>
+		<a class="estimate-price" href="#" <?php echo ($line->PRICE != $unitEstimate) ? 'style="display: hidden;"' : '';?> onclick="$(this).parent().children('#<?php echo $priceSelect;?>').val($(this).children('.hidden-price').val()).keyup(); $(this).hide(); return false;">
 			<span><?php echo CHtml::encode($formatter->formatCurrency($unitEstimate));?></span>
-			<?php echo CHtml::hiddenField(CHtml::getIdByName($namePrefix.$startIndex.'hidden-price'), $unitEstimate);?>
+			<?php echo CHtml::hiddenField(CHtml::getIdByName($namePrefix.$startIndex.'hidden-price'), $unitEstimate, array('class'=>'hidden-price hidden-value'));?>
 		</a>
 		<?php echo CHtml::hiddenField(CHtml::getIdByName($namePrefix.$startIndex.'total-price'), $line->total, array(
 			'class'=>'part garment_part',
 		));?>
 	</div>
+	<?php echo CHtml::hiddenField('product-cost', $line->product ? $line->product->COST : 0, array('class'=>'product-cost'));?>
 	
 	<?php
 	$index = 0;
@@ -208,10 +212,11 @@ CClientScript::POS_END);?>
 								"for(var color in colors){
 									colorOptions.append($('<option></option>').val(colors[color].ID).html(colors[color].TEXT));
 								}" .
-								"colorOptions.attr('name', \$('#$div').children('.color-select').attr('name'));" .
+								"colorOptions.attr('name', \$('#' + div_id).children('.color-select').attr('name'));" .
 								"\$('#' + div_id).children('.color-select').replaceWith(colorOptions);" .
 								"\$('#' + div_id).children('.jobLine').addClass('hidden-size').children('.score_part').attr('disabled', true).val(0);" .
 								"\$('#' + div_id).children('.jobLine').children('.hidden_cost').val(cost);" .
+								"onGarmentCostUpdate($('#' + div_id).find('.product-cost'), cost, $('#' + div_id).find('.unit_price'), $('#' + div_id).find('.hidden-price'), $('#' + div_id).find('.garment_part'));" .
 								"for(var size in sizes){
 									\$('#' + div_id).children('.' + div_id + sizes[size].ID)" .
 									".removeClass('hidden-size')" .
