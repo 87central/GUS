@@ -151,7 +151,7 @@ $line = $products['model'];?>
 			'eachDiv'=>CHtml::getIdByName($namePrefix.'['.$startIndex.']'.'[sizes]'.'item'),
 			'div'=>$div,
 			'approved'=>$approved,
-			'onQuantityUpdate'=>"updateLineTotal('".CHtml::normalizeUrl(array('job/garmentCost'))."', $('#$priceSelect'), $('#$priceSelect').parent().children('a'), $('#$priceSelect').parent().children(':hidden'));",
+			'onQuantityUpdate'=>"updateLineTotal('".CHtml::normalizeUrl(array('job/garmentCost'))."', $('#$priceSelect'), $('#$priceSelect').parent().children('a'), $('#$priceSelect').parent().children('.garment_part'), $('#$priceSelect').parentsUntil('.jobLines').parent().find('.product-cost'));",
 			'formatter'=>$formatter,
 		));
 		$index++;
