@@ -4,20 +4,36 @@ $nameHiddenPrefix = $lineHiddenPrefix . $index;
 $total = CHtml::getIdByName($nameHiddenPrefix . 'total');
 $qty = CHtml::getIdByName($namePrefix . '[QUANTITY]');
 $cost = CHtml::getIdByName($nameHiddenPrefix . '[PRICE]');
+$xl = CHtml::getIdByName($nameHiddenPrefix . '[isExtraLarge]');
+$xlTotal = CHtml::getIdByName($nameHiddenPrefix . 'isExtraLargeTotal');
 $totalJS = '#'.$total;
 $qtyJS = '#'.$qty;
 $costJS = '#'.$cost;
+$xlJS = '#'.$xl;
+$xlTotalJS = '#' . $xlTotal;
 ?>
 <div class="jobLine <?php echo ($product->PRODUCT_ID == null) ? 'hidden-size' : '';?> <?php echo $div.$product->SIZE;?>" id="<?php echo $eachDiv;?>">
 	<?php echo CHtml::errorSummary($line); ?>
 	<?php echo CHtml::label($product->size->TEXT, CHtml::getIdByName($namePrefix . '[QUANTITY]'));?>
 	<?php echo CHtml::activeTextField($line, 'QUANTITY', array(
 		'name'=>$namePrefix . '[QUANTITY]',
-		'onkeyup'=>"$('".$totalJS."').val((1 * $('".$qtyJS."').val()) * $('".$costJS."').val()).change(); ".$onQuantityUpdate,
+		'onkeyup'=>"$('".$totalJS."').val((1 * $('".$qtyJS."').val()) * $('".$costJS."').val()).change(); $('$xlTotalJS').val($('$qtyJS').val() * 1 * $('$xlJS').val()).change(); ".$onQuantityUpdate,
 		'class'=>'score_part item_qty',
 		'size'=>5,
 		'disabled'=>($product->PRODUCT_ID == null) || $approved, //only disable if the product doesn't seem to exist.
 	));?>
+	
+	<?php $xlFee = $line->isExtraLarge;
+	if($xlFee){?>
+		<p class="note">* A <?php echo $formatter->formatCurrency($xlFee);?> per garment fee will be added to the total for this size.</p>
+		<?php echo CHtml::hiddenField($xl, $xlFee, array(
+			'id'=>$xl,
+		));?>
+		<?php echo CHtml::hiddenField($xlTotal, $xlFee * $line->QUANTITY, array(
+			'id'=>$xlTotal,
+			'class'=>'part',
+		));?>
+	<?php }?>
 	
 	<?php echo CHtml::hiddenField(CHtml::getIdByName($nameHiddenPrefix . '[PRICE]'), $line->unitCost, array(
 		'onchange'=>"$('".$totalJS."').val((1 * $('".$qtyJS."').val()) * $('".$costJS."').val()).change();",
