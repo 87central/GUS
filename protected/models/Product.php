@@ -33,6 +33,10 @@ class Product extends CActiveRecord
 	
 	const EXTRA_LARGE_FEE = 2;
 	
+	const STANDARD = '46';
+	const DELUXE = '502';
+	const ECONOMY = '634';	
+	
 	/**
 	 * Returns the static model of the specified AR class.
 	 * @return Product the static model class
