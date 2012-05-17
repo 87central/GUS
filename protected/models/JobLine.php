@@ -100,6 +100,7 @@ class JobLine extends CActiveRecord
 	}
 	
 	protected function beforeValidate(){
+		if($this->isNewRecord) $this->ID = null;
 		if(parent::beforeValidate()){
 			$valid = true;
 			foreach($this->sizes as $line){
@@ -138,7 +139,7 @@ class JobLine extends CActiveRecord
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
 		return array(
-			array('JOB_ID, PRODUCT_ID, QUANTITY, APPROVAL_USER', 'numerical', 'integerOnly'=>true),
+			array('JOB_ID, PRODUCT_ID, APPROVAL_USER', 'numerical', 'integerOnly'=>true),
 			array('APPROVAL_DATE, ID', 'safe'),
 			array('PRICE', 'numerical'),
 			array('PRODUCT_COLOR', 'numerical'),			
@@ -155,8 +156,8 @@ class JobLine extends CActiveRecord
 	{
 		// NOTE: you may need to adjust the relation name and the related
 		// class name for the relations automatically generated below.
-		return array(
-			'product' => array(self::BELONGS_TO, 'Product', 'ID'),
+		return array( 
+			'product' => array(self::BELONGS_TO, 'Product', 'PRODUCT_ID'),
 			'aPPROVALUSER' => array(self::BELONGS_TO, 'User', 'APPROVAL_USER'),
 			'job' => array(self::BELONGS_TO, 'Job', 'JOB_ID'),
 			'ORDER_LINE'=>array(self::BELONGS_TO, 'ProductOrder', 'PRODUCT_ORDER_ID'),
@@ -263,7 +264,7 @@ class JobLine extends CActiveRecord
 				$keyedSizeLines[(string) $sizeLine->JOB_LINE_ID . $sizeLine->SIZE] = $sizeLine;
 			}
 			$newSizeLines = array();
-			for($i = 0; $i < count($sizes); $i++){
+			foreach($sizes as $i=>$value){
 				if(isset($sizes[$i]) && is_array($sizes[$i])){					
 					$lineID = $sizes[$i]['JOB_LINE_ID'] . $sizes[$i]['SIZE'];
 					if(isset($keyedSizeLines[$lineID])){
