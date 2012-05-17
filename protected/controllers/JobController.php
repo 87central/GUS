@@ -81,6 +81,7 @@ class JobController extends Controller
 							$productLine = $sizeLine->productLine;							
 						} else {
 							$sizeLine = new JobLineSize;
+							$sizeLine->SIZE = $size->ID;
 							$productLine = new ProductLine;
 							$productLine->PRODUCT_ID = $line->product->ID;
 							$productLine->COLOR = $line->PRODUCT_COLOR;
@@ -130,11 +131,13 @@ class JobController extends Controller
 		$sizes = Lookup::listItems('Size');
 		$products = array();	
 		foreach($sizes as $size){
+			$sizeLine = new JobLineSize;
+			$sizeLine->SIZE = $size->ID;
 			$product = new ProductLine;
 			$product->SIZE = $size->ID;
 			$products[] = array(
 				'productLine'=>$product,
-				'line'=>new JobLineSize,
+				'line'=>$sizeLine,
 			);	
 		}
 		
@@ -200,6 +203,7 @@ class JobController extends Controller
 							$productLine = $sizeLine->productLine;							
 						} else {
 							$sizeLine = new JobLineSize;
+							$sizeLine->SIZE = $size->ID;
 							$productLine = new ProductLine;
 							$productLine->PRODUCT_ID = $line->product->ID;
 							$productLine->COLOR = $line->PRODUCT_COLOR;
@@ -269,6 +273,7 @@ class JobController extends Controller
 							$productLine = $sizeLine->productLine;							
 						} else {
 							$sizeLine = new JobLineSize;
+							$sizeLine->SIZE = $size->ID;
 							$productLine = new ProductLine;
 							$productLine->PRODUCT_ID = $line->product->ID;
 							$productLine->COLOR = $line->PRODUCT_COLOR;
@@ -340,11 +345,13 @@ class JobController extends Controller
 		$lineData = array();
 		$products = array();	
 		foreach($sizes as $size){
+			$sizeLine = new JobLineSize;
+			$sizeLine->SIZE = $size->ID;
 			$product = new ProductLine;
 			$product->SIZE = $size->ID;
 			$products[] = array(
 				'productLine'=>$product,
-				'line'=>new JobLineSize,
+				'line'=>$sizeLine,
 			);	
 		}
 				
@@ -397,11 +404,13 @@ class JobController extends Controller
 		$lineData = array();
 		$products = array();	
 		foreach($sizes as $size){
+			$sizeLine = new JobLineSize;
+			$sizeLine->SIZE = $size->ID;
 			$product = new ProductLine;
 			$product->SIZE = $size->ID;
 			$products[] = array(
 				'productLine'=>$product,
-				'line'=>new JobLineSize,
+				'line'=>$sizeLine,
 			);	
 		}
 				
@@ -537,6 +546,7 @@ class JobController extends Controller
 							$productLine = $sizeLine->productLine;							
 						} else {
 							$sizeLine = new JobLineSize;
+							$sizeLine->SIZE = $size->ID;
 							$productLine = new ProductLine;
 							$productLine->PRODUCT_ID = $line->product->ID;
 							$productLine->COLOR = $line->PRODUCT_COLOR;

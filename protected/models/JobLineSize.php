@@ -52,7 +52,8 @@ class JobLineSize extends CActiveRecord
 		// class name for the relations automatically generated below.
 		return array(
 			'line' => array(self::BELONGS_TO, 'JobLine', 'JOB_LINE_ID'),
-			'productLine'=>array(self::HAS_ONE, 'ProductLine', 'condition'=>'productLine.PRODUCT_ID = line.PRODUCT_ID AND productLine.COLOR = line.PRODUCT_COLOR AND productLine.SIZE = t.SIZE'),
+			'size'=>array(self::BELONGS_TO, 'Lookup', 'SIZE'),
+			//'productLine'=>array(self::HAS_ONE, 'ProductLine', 'condition'=>'productLine.PRODUCT_ID = line.PRODUCT_ID AND productLine.COLOR = line.PRODUCT_COLOR AND productLine.SIZE = t.SIZE'),
 		);
 	}
 	
@@ -66,11 +67,15 @@ class JobLineSize extends CActiveRecord
 	/**
 	 * Gets the product line associated with this job line size.
 	 */
-	/*public function getProductLine(){
+	public function getProductLine(){
 		$jobLine = $this->line;
-		$productLine = ProductLine::model()->findByPk(array('PRODUCT_ID'=>$jobLine->PRODUCT_ID, 'COLOR'=>$jobLine->PRODUCT_COLOR, 'SIZE'=>$this->SIZE));
+		if($jobLine){
+			$productLine = ProductLine::model()->findByPk(array('PRODUCT_ID'=>$jobLine->PRODUCT_ID, 'COLOR'=>$jobLine->PRODUCT_COLOR, 'SIZE'=>$this->SIZE));
+		} else {
+			$productLine = null;
+		}
 		return $productLine;
-	}*/
+	}
 
 	/**
 	 * @return array customized attribute labels (name=>label)
@@ -110,6 +115,30 @@ class JobLineSize extends CActiveRecord
 	 */
 	public function getIsExtraLarge(){
 		$xlSizes = array(39, 40, 73, 74, 80);
-		return (array_search($this->size, $xlSizes) !== false) ? Product::EXTRA_LARGE_FEE : false;
+		return (array_search($this->SIZE, $xlSizes) !== false) ? Product::EXTRA_LARGE_FEE : false;
+	}
+	
+	/**
+	 * Gets the total <i>unit cost</i> of the line, including the extra large fee.
+	 */
+	public function getUnitCost(){
+		$xl = $this->isExtraLarge;
+		$productLine = $this->productLine;
+		if($productLine){
+			$total = $this->productLine->product->COST;
+		} else {
+			$total = 0;
+		}
+		if($xl !== false){
+			$total += $xl;
+		}
+		return $total;
+	}
+	
+	/**
+	 * Gets the total cost of all units in the line.
+	 */
+	public function getTotal(){
+		return $this->unitCost * $this->QUANTITY;
 	}
 }

@@ -1,5 +1,6 @@
 <?php
 Yii::app()->clientScript->registerCoreScript('jquery'); 
+Yii::app()->clientScript->registerScriptFile($this->scriptDirectory . 'jobEdit.js', CClientScript::POS_HEAD);
 Yii::app()->clientScript->registerScript('add-job', "function addLine(sender, namePrefix){
 	var count = $(sender).parent().children('.jobLines').children('.jobLine').children('.part').size();" .
 	"$.ajax({
@@ -24,34 +25,22 @@ Yii::app()->clientScript->registerScript('add-job', "function addLine(sender, na
 					"function(data){
 						var colors = data.colors;" .
 						"var sizes = data.sizes;" .
-						"var products = data.products;" .
 						"var cost = data.productCost;" .
-						"\$('#' + div_id).children('.jobLine').children('.line-product').val(null);" .
 						"var colorOptions = $('<select></select>')" .
 							"\n.attr('name', 'color-select')" .
-							".attr('class', 'color-select')" .
-							".change(function() {" .
-								"for(var size in sizes){
-									\$('#' + div_id).children('.' + div_id + sizes[size].ID).children('.line-product').val(products[\$(colorOptions).val()][sizes[size].ID].ID);
-								}" .
-							"});" .
+							".attr('class', 'color-select');" .
 						"for(var color in colors){
 							colorOptions.append($('<option></option>').val(colors[color].ID).html(colors[color].TEXT));
 						}" .
 						"\$('#' + div_id).children('.color-select').replaceWith(colorOptions);\n" .
 						"\$('#' + div_id).children('.jobLine').addClass('hidden-size').children('.score_part').attr('disabled', true).val(0);" .
 						"\$('#' + div_id).children('.jobLine').children('.hidden_cost').val(cost);" .
-						"for(var size in sizes){" .
-							"var firstColor = null;" .
-							"for(var color in colors){
-								firstColor = color;" .
-								"break;
-							}
+						"for(var size in sizes){
 							\$('#' + div_id).children('.' + div_id + sizes[size].ID)" .
 							".removeClass('hidden-size')" .
-							".children('.line-product').val(products[colors[firstColor].ID][sizes[size].ID].ID)" .
 							".parent().children('.score_part').removeAttr('disabled');
-						}
+						}" .
+						"\$('#' + div_id).children('.hidden-style').val(ui.item.id);
 					});
 				}," .
 				"'source': '".CHtml::normalizeUrl(array('product/findProduct', 'response'=>'juijson'))."'
@@ -62,17 +51,7 @@ Yii::app()->clientScript->registerScript('add-job', "function addLine(sender, na
 
 Yii::app()->clientScript->registerScript('calculate-total', "" .
 		"function calculateTotal(garments, front, back, sleeve, dest){
-			var result = 0;" .
-			"$.getJSON('".CHtml::normalizeUrl(array('job/garmentCost'))."'," .
-			"{
-				garments: garments," .
-				"front: front," .
-				"back: back," .
-				"sleeve: sleeve,
-			}," .
-			"function(data){
-				\$(dest).val(data.result).change();
-			});
+			calculateTotalMain('".CHtml::normalizeUrl(array('job/garmentCost'))."', garments, front, back, sleeve, dest);			
 		}", 
 CClientScript::POS_BEGIN);?>
 
@@ -143,12 +122,6 @@ CClientScript::POS_BEGIN);?>
 	));?>
 	<div class="separator"></div>
 	
-	<?php 
-		$sizeList = CHtml::listData($sizes, 'ID', 'TEXT');
-		$styleList = CHtml::listData($styles, 'ID', 'TEXT');
-		$colorList = CHtml::listData($colors, 'ID', 'TEXT');
-	?>
-	
 	<div id="lines" class="row">
 		<?php
 		$index = 0;
@@ -157,6 +130,8 @@ CClientScript::POS_BEGIN);?>
 				'namePrefix'=>CHtml::activeName($model, 'jobLines'),
 				'startIndex'=>$index,
 				'products'=>$lines,
+				'estimate'=>CostCalculator::calculateTotal($lines['model']->garmentCount, $print->FRONT_PASS, $print->BACK_PASS, $print->SLEEVE_PASS, 0),
+				'formatter'=>new Formatter,
 			));
 			$index += count($lines);
 		}?>
@@ -208,7 +183,6 @@ CClientScript::POS_BEGIN);?>
 		<?php echo CHtml::label('Grand Total Per Garment', 'auto_grand_each');?>
 		<?php echo CHtml::textField('auto_grand_each', $model->garmentPrice * (1 + $taxRate), array('readonly'=>'readonly', 'id'=>'auto_grand_each'));?>		
 		<p id="qty_warning" class="note" style="display: none;">The quote estimator only supports price quotation for up to two hundred (200) garments.</p>
-		<?php echo CHtml::hiddenField('garment_total', $model->garmentTotal - $model->garmentCost, array('id'=>'garment_total', 'class'=>'part'));?>
 		<?php Yii::app()->clientScript->registerScript('auto-garment-totaler', "" .
 				"$('.item_qty, .sleeve_pass, .front_pass, .back_pass').live('change keyup', function(){
 					var qty = 0;" .
@@ -222,8 +196,7 @@ CClientScript::POS_BEGIN);?>
 						$('#auto_total, #auto_total_each, #auto_tax, #auto_tax_each, #auto_grand, #auto_grand_each').removeAttr('disabled');" .
 						"$('#qty_warning').hide();
 					}" .
-					"$('#garment_qty').val(qty).change();" .
-					"calculateTotal(qty, $('.front_pass').val(), $('.back_pass').val(), $('.sleeve_pass').val(), $('#garment_total'));
+					"$('#garment_qty').val(qty).change();
 				})", 
 		CClientScript::POS_END);
 		
@@ -232,7 +205,7 @@ CClientScript::POS_BEGIN);?>
 					var total = 0;" .
 					"var tax = (1 * $('#$taxRateField').val()) / 100;" .
 					"var totalEach = 0;" .
-					"$('.part').each(function(index){
+					"$('.part, .garment_part').each(function(index){
 						total += (1 * $(this).val());
 					});" .
 					"$('#auto_total').val(parseFloat(total).toFixed(2));" .

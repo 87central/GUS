@@ -219,7 +219,7 @@ class ProductController extends Controller
 			$juiResults[] = array(
 				'label'=>$result->vendorStyle,
 				'value'=>$result->vendorStyle,
-				'id'=>$result->VENDOR_ITEM_ID,
+				'id'=>$result->ID,
 			);
 		}
 		switch($response){
@@ -231,11 +231,11 @@ class ProductController extends Controller
 	
 	public function actionAllowedOptions($itemID, $namePrefix, $count){
 		//ajax only - return json of allowed colors and sizes
-		$product = Product::getProduct($itemID);
+		$product = $this->loadModel($itemID);
 		$results = array(
 			'colors'=>$product->allowedColors,
 			'sizes'=>$product->allowedSizes,
-			'products'=>array($product),
+			'product'=>$product,
 			'colors-name'=>CHtml::getIdByName($namePrefix . "[$count]" . 'colors'),
 			'productCost'=>$product->COST,
 		);

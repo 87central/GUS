@@ -18,7 +18,6 @@ $this->menu=array(
 	'newCustomer'=>$newCustomer,
 	'leaders'=>$leaders,
 	'printers'=>$printers,
-	'styles'=>$styles,
 	'colors'=>$colors,
 	'sizes'=>$sizes,
 	'print'=>$print,

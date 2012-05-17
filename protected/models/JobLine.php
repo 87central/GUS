@@ -37,7 +37,8 @@ class JobLine extends CActiveRecord
 		return parent::model($className);
 	}
 	
-	protected function afterFind(){
+	//TODO fix this
+	/*protected function afterFind(){
 		$this->_oldQuantity = $this->QUANTITY;
 		$this->_oldProductID = $this->PRODUCT_ID;
 		$product = $this->product;
@@ -45,13 +46,14 @@ class JobLine extends CActiveRecord
 			$this->_color = $product->COLOR;
 			$this->_size = $product->SIZE;
 		}
-	}
+	}*/
 	
-	protected function beforeSave(){
+	//TODO fix this
+	/*protected function beforeSave(){
 		/*Because lines may be modified by admins AFTER they are approved,
 		 * we need to adjust the inventory quantity appropriately if the quantity changes.
 		 * We also need to ensure that the product described does exist. If not, we will
-		 * create a placeholder stock item.*/
+		 * create a placeholder stock item./
 		$oldProduct = null;
 		if($this->_oldProductID !== null){
 			if($this->_oldProductID != $this->PRODUCT_ID){
@@ -81,7 +83,7 @@ class JobLine extends CActiveRecord
 		} else {
 			return false;
 		}
-	}
+	}*/
 	
 	protected function beforeDelete(){			
 		$adjusted = true;
@@ -154,7 +156,7 @@ class JobLine extends CActiveRecord
 		// NOTE: you may need to adjust the relation name and the related
 		// class name for the relations automatically generated below.
 		return array(
-			'product' => array(self::BELONGS_TO, 'Product', 'PRODUCT_ID'),
+			'product' => array(self::BELONGS_TO, 'Product', 'ID'),
 			'aPPROVALUSER' => array(self::BELONGS_TO, 'User', 'APPROVAL_USER'),
 			'job' => array(self::BELONGS_TO, 'Job', 'JOB_ID'),
 			'ORDER_LINE'=>array(self::BELONGS_TO, 'ProductOrder', 'PRODUCT_ORDER_ID'),
@@ -293,6 +295,17 @@ class JobLine extends CActiveRecord
 			$total += ($this->PRICE + $fee) * $sizeLine->QUANTITY;
 		}
 		return $total;
+	}
+	
+	/**
+	 * Gets the total number of garments in this job line.
+	 */
+	public function getGarmentCount(){
+		$garments = 0;
+		foreach($this->sizes as $sizeLine){
+			$garments += $sizeLine->QUANTITY;
+		}
+		return $garments;
 	}
 	
 	/**
