@@ -89,10 +89,11 @@ $line = $products['model'];?>
 			'onkeyup'=>"recalculateTotal(this, $(this).parent().children('a'), $(this).parent().children(':hidden'));",
 		));?>
 		<?php /*when the link is clicked, we want to hide the link and set the value of the input field 
-		to the value of the hidden field within the link*/?>
-		<a href="#" <?php echo ($line->PRICE == $estimate) ? 'style="display: hidden;"' : '';?> onclick="$(this).parent().children('#<?php echo $priceSelect;?>').val($(this).children(':hidden').val()).keyup(); $(this).hide(); return false;">
-			<span><?php echo CHtml::encode($formatter->formatCurrency($estimate));?></span>
-			<?php echo CHtml::hiddenField(CHtml::getIdByName($namePrefix.$startIndex.'hidden-price'), $estimate);?>
+		to the value of the hidden field within the link*/
+		$unitEstimate = $line->garmentCount ? ($estimate / $line->garmentCount) : 0;?>
+		<a href="#" <?php echo ($line->PRICE == $unitEstimate) ? 'style="display: hidden;"' : '';?> onclick="$(this).parent().children('#<?php echo $priceSelect;?>').val($(this).children(':hidden').val()).keyup(); $(this).hide(); return false;">
+			<span><?php echo CHtml::encode($formatter->formatCurrency($unitEstimate));?></span>
+			<?php echo CHtml::hiddenField(CHtml::getIdByName($namePrefix.$startIndex.'hidden-price'), $unitEstimate);?>
 		</a>
 		<?php echo CHtml::hiddenField(CHtml::getIdByName($namePrefix.$startIndex.'total-price'), $line->total, array(
 			'class'=>'part garment_part',
@@ -115,7 +116,8 @@ $line = $products['model'];?>
 			'eachDiv'=>CHtml::getIdByName($namePrefix.'['.$startIndex.']'.'[sizes]'.'item'),
 			'div'=>$div,
 			'approved'=>$approved,
-			'onQuantityUpdate'=>"updateLineTotal('".CHtml::normalizeUrl(array('job/garmentCost'))."', $('#$priceSelect'), $('#$priceSelect').parent().children('a'), $('#$priceSelect').parent().children(':hidden'));"
+			'onQuantityUpdate'=>"updateLineTotal('".CHtml::normalizeUrl(array('job/garmentCost'))."', $('#$priceSelect'), $('#$priceSelect').parent().children('a'), $('#$priceSelect').parent().children(':hidden'));",
+			'formatter'=>$formatter,
 		));
 		$index++;
 	}
