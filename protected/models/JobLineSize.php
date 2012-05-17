@@ -35,7 +35,7 @@ class JobLineSize extends CActiveRecord
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
 		return array(
-			array('JOB_LINE_ID, SIZE', 'required'),
+			array('SIZE', 'required'),
 			array('JOB_LINE_ID, SIZE, QUANTITY', 'numerical', 'integerOnly'=>true),
 			// The following rule is used by search().
 			// Please remove those attributes that should not be searched.
