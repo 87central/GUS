@@ -149,11 +149,11 @@ class JobController extends Controller
 		
 		//per request of Ben, will be including three "standard" styles under radio buttons.
 		$standardStyles = array(
-			'2001'=>'Standard',
-			'TR401'=>'Deluxe',
-			'Gildan 2000 Ultra Cotton '=>'Economy',
+			Product::STANDARD=>'Standard',
+			Product::DELUXE=>'Deluxe',
+			Product::ECONOMY=>'Economy',
 			''=>'Custom',
-		);		
+		);	
 		
 		$products['model'] = new JobLine;
 		$products['lines'] = $products;
@@ -336,9 +336,9 @@ class JobController extends Controller
 		
 		//per request of Ben, will be including three "standard" styles under radio buttons.
 		$standardStyles = array(
-			'2001'=>'Standard',
-			'TR401'=>'Deluxe',
-			'Gildan 2000 Ultra Cotton '=>'Economy',
+			Product::STANDARD=>'Standard',
+			Product::DELUXE=>'Deluxe',
+			Product::ECONOMY=>'Economy',
 			''=>'Custom',
 		);
 		
@@ -461,7 +461,11 @@ class JobController extends Controller
 			}
 			unset($_POST['Customer']['summary']);
 			$customer->attributes = $_POST['Customer'];
-			$print->loadFromArray($_POST['PrintJob'], $_FILES['PrintJob']);
+			if(isset($_FILES['PrintJob'])){
+				$print->loadFromArray($_POST['PrintJob'], $_FILES['PrintJob']);
+			} else {
+				$print->loadFromArray($_POST['PrintJob'], array());
+			}
 			
 			
 			$saved = true;
