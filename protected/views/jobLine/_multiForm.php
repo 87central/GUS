@@ -60,6 +60,10 @@ $line = $products['model'];?>
 		'name'=>$namePrefix . "[$startIndex]" . '[PRODUCT_ID]',
 	))?>
 	
+	<?php echo CHtml::activeHiddenField($line, 'ID', array(
+		'name'=>$namePrefix . "[$startIndex]" . '[ID]',
+	))?>
+	
 	<?php $colorSelect = CHtml::getIdByName($namePrefix . $startIndex . 'colors');?> 	
 	Color <?php echo CHtml::activeDropDownList($line, 'PRODUCT_COLOR', $products['availableColors'], array(
 		'id'=>$colorSelect, 
@@ -79,16 +83,16 @@ $line = $products['model'];?>
 			'id'=>$priceSelect,
 			'disabled'=>$approved,
 			'class'=>'unit_price',
-			'name'=>$namePrefix.'[PRICE]',
+			'name'=>$namePrefix."[$startIndex]".'[PRICE]',
 			'onkeyup'=>"recalculateTotal(this, $(this).parent().children('a'), $(this).parent().children(':hidden'));",
 		));?>
 		<?php /*when the link is clicked, we want to hide the link and set the value of the input field 
 		to the value of the hidden field within the link*/?>
 		<a href="#" <?php echo ($line->PRICE == $estimate) ? 'style="display: hidden;"' : '';?> onclick="$(this).parent().children('#<?php echo $priceSelect;?>').val($(this).children(':hidden').val()).keyup(); $(this).hide(); return false;">
 			<span><?php echo CHtml::encode($formatter->formatCurrency($estimate));?></span>
-			<?php echo CHtml::hiddenField($namePrefix.$startIndex.'hidden-price', $estimate);?>
+			<?php echo CHtml::hiddenField(CHtml::getIdByName($namePrefix.$startIndex.'hidden-price'), $estimate);?>
 		</a>
-		<?php echo CHtml::hiddenField($namePrefix.$startIndex.'total-price', $line->total, array(
+		<?php echo CHtml::hiddenField(CHtml::getIdByName($namePrefix.$startIndex.'total-price'), $line->total, array(
 			'class'=>'part garment_part',
 		));?>
 	</div>
@@ -111,6 +115,7 @@ $line = $products['model'];?>
 			'approved'=>$approved,
 			'onQuantityUpdate'=>"updateLineTotal('".CHtml::normalizeUrl(array('job/garmentCost'))."', $('#$priceSelect'), $('#$priceSelect').parent().children('a'), $('#$priceSelect').parent().children(':hidden'));"
 		));
+		$index++;
 	}
 	?>	
 	<?php echo CHtml::hiddenField('prefix', $namePrefix, array(
