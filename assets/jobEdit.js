@@ -67,3 +67,12 @@ function recalculateTotal(editable, estimate, total){
 	refreshEstimate(editVal, $(estimate).children(':hidden').val(), estimate);
 	$(total).val(editVal * garmentCount).change();
 }
+
+function preprocessLine(form, line){
+	//$(line).children('.hidden-size').remove();
+}
+
+function preprocessForm(form){
+	$(form).find('.hidden-size').remove();
+	$(form).submit();
+}
