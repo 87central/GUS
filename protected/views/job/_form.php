@@ -32,6 +32,7 @@ Yii::app()->clientScript->registerScript('add-job', "function addLine(sender, na
 						"for(var color in colors){
 							colorOptions.append($('<option></option>').val(colors[color].ID).html(colors[color].TEXT));
 						}" .
+						"colorOptions.attr('name', \$('#' + div_id).children('.color-select').attr('name'));" .
 						"\$('#' + div_id).children('.color-select').replaceWith(colorOptions);\n" .
 						"\$('#' + div_id).children('.jobLine').addClass('hidden-size').children('.score_part').attr('disabled', true).val(0);" .
 						"\$('#' + div_id).children('.jobLine').children('.hidden_cost').val(cost);" .
@@ -289,7 +290,9 @@ CClientScript::POS_BEGIN);?>
 	</div>
 
 	<div class="row buttons">
-		<?php echo CHtml::submitButton($model->isNewRecord ? 'Create' : 'Save'); ?>
+		<?php echo CHtml::submitButton($model->isNewRecord ? 'Create' : 'Save', array(
+			'onclick'=>"preprocessForm($(this).parent().parent()); return false;"
+		)); ?>
 	</div>
 
 <?php $this->endWidget(); ?>
