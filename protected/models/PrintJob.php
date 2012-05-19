@@ -232,7 +232,7 @@ class PrintJob extends CActiveRecord
 	 * @return boolean True if there is art associated, otherwise false.
 	 */
 	public function getHasArt(){
-		$hasArt = PrintArt::model()->findByAttributes(array('PRINT_ID'=>$this->ID, 'FILE_TYPE'=>PrintArt::DESIGN));
+		$hasArt = PrintArt::model()->findByAttributes(array('PRINT_ID'=>$this->ID, 'FILE_TYPE'=>array(PrintArt::DESIGN, PrintArt::IMAGE)));
 		if($hasArt){
 			return true;
 		} else {
