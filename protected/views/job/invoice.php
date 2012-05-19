@@ -35,14 +35,7 @@
 
 <?php /*just calculate the "base" cost of garments up here.*/
 $base = CostCalculator::calculateTotal($model->garmentCount, $model->printJob->FRONT_PASS, $model->printJob->BACK_PASS, $model->printJob->SLEEVE_PASS, 0);
-$setup = null;
-if($model->garmentCount < 24){
-	$base = ($base - 30) / $model->garmentCount;
-	$setup = 30;
-} else {
-	$base = $base / $model->garmentCount;
-	$setup = 0;
-}
+$setup = $model->SET_UP_FEE;
 ?>
 <table id="items">
 	<tr class="header">
@@ -52,44 +45,41 @@ if($model->garmentCount < 24){
 		<th>Rate</th>
 		<th>Amount</th>
 	</tr>
-	<?php /*group lines by style, color, and price*/
-	$finalLines = array();
-	foreach($model->jobLines as $line){
-		if($line->QUANTITY != 0){
-			$key = $line->product->vendorStyle.$line->product->color->TEXT.($line->total/$line->QUANTITY).$model->printJob->FRONT_PASS.$model->printJob->BACK_PASS.$model->printJob->SLEEVE_PASS;
-			if(isset($finalLines[$key])){
-				$value = $finalLines[$key];
+	<?php foreach($model->jobLines as $line){
+		$baseText = $model->printJob->FRONT_PASS . ' Front/ ' . $model->printJob->BACK_PASS . ' Back/ ' . $model->printJob->SLEEVE_PASS . ' Sleeve on ' . $line->product->vendorStyle . ' - ' . $line->	color->TEXT . ' ';
+		$xl = array(
+			'text'=>$baseText . 'Extra Large',
+			'quantity'=>0,
+			'unit_cost'=>0,
+			'total'=>0,
+		);
+		$standard = array(
+			'text'=>$baseText . 'Standard',
+			'quantity'=>0,
+			'unit_cost'=>0,
+			'total'=>0,
+		);
+		foreach($line->sizes as $sizeLine){
+			$group = ($fee = $sizeLine->isExtraLarge) ? $xl : $standard;
+			$group['quantity'] += $sizeLine->QUANTITY * 1;
+			$group['total'] += $sizeLine->QUANTITY * 1 * ($line->PRICE + $fee);
+			$group['unit_cost'] = $line->PRICE * 1 + $fee;
+			if($fee){
+				$xl = $group;
 			} else {
-				$value = array(
-					'text'=>$model->printJob->FRONT_PASS . ' Front/ ' . $model->printJob->BACK_PASS . ' Back/ ' . $model->printJob->SLEEVE_PASS . ' Sleeve on ' . $line->product->vendorStyle . ' - ' . $line->product->color->TEXT . ' ' . ($line->isExtraLarge ? 'Extra Large' : 'Standard'),
-					'quantity'=>0,
-					'unit_cost'=>$line->total / $line->QUANTITY + $base,
-					'total'=>0,
-				);
-			}
-			$value['quantity'] += $line->QUANTITY;
-			$value['total'] += $line->total + $base * $line->QUANTITY;
-			$finalLines[$key] = $value;
+				$standard = $group;
+			}			
 		}
+		foreach(array($standard, $xl) as $group){?>
+			<tr class="item_row">
+				<td>Printing</td>
+				<td><?php echo CHtml::encode($group['text']);?></td>
+				<td><?php echo $formatter->formatNumber($group['quantity']);?></td>
+				<td><?php echo $formatter->formatCurrency($group['unit_cost']);?></td>
+				<td><?php echo $formatter->formatCurrency($group['total']);?></td>
+			</tr>
+		<?php } 		
 	}?>
-	<?php /*foreach($model->jobLines as $line){?>
-		<tr class="item_row">
-			<td>Printing</td>
-			<td><?php echo CHtml::encode($model->printJob->FRONT_PASS . ' Front/ ' . $model->printJob->BACK_PASS . ' Back/ ' . $model->printJob->SLEEVE_PASS . ' Sleeve on ' . $line->product->vendorStyle . ' - ' . $line->product->color->TEXT);?></td>
-			<td><?php echo CHtml::encode($formatter->formatNumber($line->QUANTITY));?></td>
-			<td><?php echo CHtml::encode($formatter->formatCurrency((($line->total / $line->QUANTITY) + $base)));?></td>
-			<td><?php echo CHtml::encode($formatter->formatCurrency($line->total + (($base) * $line->QUANTITY)));?></td>
-		</tr>
-	<?php }*/?>
-	<?php foreach($finalLines as $line){?>
-		<tr class="item_row">
-			<td>Printing</td>
-			<td><?php echo CHtml::encode($line['text']);?></td>
-			<td><?php echo CHtml::encode($formatter->formatNumber($line['quantity']));?></td>
-			<td><?php echo CHtml::encode($formatter->formatCurrency($line['unit_cost']));?></td>
-			<td><?php echo CHtml::encode($formatter->formatCurrency($line['total']));?></td>
-		</tr>
-	<?php }?>
 	<?php if($model->RUSH != 0){?>
 		<tr class="item_row">
 			<td><?php echo CHtml::encode($model->getAttributeLabel('RUSH'));?></td>
