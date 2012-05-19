@@ -81,7 +81,14 @@ $garmentCost = CHtml::getIdByName($namePrefix . $startIndex . 'garment-cost');?>
 	CClientScript::POS_END);?>
 	
 	<?php /*need an update function for recalculating totals, field for unit price (editable), total price (hidden), calculated price (link)*/?>
-	<?php $priceSelect = CHtml::getIdByName($namePrefix . $startIndex . 'price');?>
+	<?php 
+		$priceSelect = CHtml::getIdByName($namePrefix . $startIndex . 'price');
+		$garmentEstimate = $line->product ? $line->product->COST : 0;
+		$unitEstimate = $line->garmentCount ? ($garmentEstimate + $estimate / $line->garmentCount) : 0;
+		if($line->PRICE === null){
+			$line->PRICE = $unitEstimate;
+		}
+	?>
 	<div class="price-select-container"> <!-- Don't remove this container. Needed for some JS stuff.-->
 		Price Select <?php echo CHtml::activeTextField($line, 'PRICE', array(
 			'id'=>$priceSelect,
@@ -91,9 +98,7 @@ $garmentCost = CHtml::getIdByName($namePrefix . $startIndex . 'garment-cost');?>
 			'onkeyup'=>"recalculateTotal(this, $(this).parent().children('a'), $(this).parent().children('.garment_part'));",
 		));?>
 		<?php /*when the link is clicked, we want to hide the link and set the value of the input field 
-		to the value of the hidden field within the link*/
-		$garmentEstimate = $line->product ? $line->product->COST : 0;
-		$unitEstimate = $line->garmentCount ? ($garmentEstimate + $estimate / $line->garmentCount) : 0;?>
+		to the value of the hidden field within the link*/?>
 		<a class="estimate-price" href="#" <?php echo ($line->PRICE != $unitEstimate) ? 'style="display: hidden;"' : '';?> onclick="$(this).parent().children('#<?php echo $priceSelect;?>').val($(this).children('.hidden-price').val()).keyup(); $(this).hide(); return false;">
 			<span><?php echo CHtml::encode($formatter->formatCurrency($unitEstimate));?></span>
 			<?php echo CHtml::hiddenField(CHtml::getIdByName($namePrefix.$startIndex.'hidden-price'), $unitEstimate, array('class'=>'hidden-price hidden-value'));?>

@@ -111,19 +111,24 @@ $line = $products['model'];?>
 			'class'=>'color-select',
 		));?>		
 	</div>	
-	<?php $priceSelect = CHtml::getIdByName($namePrefix . $startIndex . 'price');?>
+	<?php 
+		$priceSelect = CHtml::getIdByName($namePrefix . $startIndex . 'price');
+		$garmentEstimate = $line->product ? $line->product->COST : 0;
+		$unitEstimate = $line->garmentCount ? ($garmentEstimate + $estimate / $line->garmentCount) : 0;
+		if($line->PRICE === null){
+			$line->PRICE = $unitEstimate;
+		}
+	?>
 	<div class="price-select-container"> <!-- Don't remove this container. Needed for some JS stuff.-->
 		Unit Price <?php echo CHtml::activeTextField($line, 'PRICE', array(
 			'id'=>$priceSelect,
 			'disabled'=>true,
 			'class'=>'unit_price',
 			'name'=>$namePrefix."[$startIndex]".'[PRICE]',
-			'value'=>$estimate,
 		));?>
 		<?php /*when the link is clicked, we want to hide the link and set the value of the input field 
 		to the value of the hidden field within the link*/
-		$garmentEstimate = $line->product ? $line->product->COST : 0;
-		$unitEstimate = $line->garmentCount ? ($garmentEstimate + $estimate / $line->garmentCount) : 0;?>
+		?>
 		<a href="#" <?php echo ($line->PRICE != $unitEstimate) ? 'style="display: hidden;"' : '';?> onclick="$(this).parent().children('#<?php echo $priceSelect;?>').val($(this).children('.hidden-price').val()).keyup(); $(this).hide(); return false;">
 			<span><?php echo CHtml::encode($formatter->formatCurrency($unitEstimate));?></span>
 			<?php echo CHtml::hiddenField(CHtml::getIdByName($namePrefix.$startIndex.'hidden-price'), $unitEstimate);?>
