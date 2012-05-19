@@ -283,6 +283,20 @@ class JobLine extends CActiveRecord
 	}
 	
 	/**
+	 * Gets the total extra large fee for all garments in the line.
+	 */
+	public function getExtraLargeFee(){
+		$totalFee = 0;
+		foreach($this->sizes as $sizeLine){
+			$fee = $sizeLine->isExtraLarge;
+			if($fee){
+				$totalFee += $fee * $sizeLine->QUANTITY;
+			}
+		}
+		return $totalFee;
+	}
+	
+	/**
 	 * Gets the total cost of the job line.
 	 */
 	public function getTotal(){

@@ -98,7 +98,7 @@ $garmentCost = CHtml::getIdByName($namePrefix . $startIndex . 'garment-cost');?>
 			<span><?php echo CHtml::encode($formatter->formatCurrency($unitEstimate));?></span>
 			<?php echo CHtml::hiddenField(CHtml::getIdByName($namePrefix.$startIndex.'hidden-price'), $unitEstimate, array('class'=>'hidden-price hidden-value'));?>
 		</a>
-		<?php echo CHtml::hiddenField(CHtml::getIdByName($namePrefix.$startIndex.'total-price'), $line->total, array(
+		<?php echo CHtml::hiddenField(CHtml::getIdByName($namePrefix.$startIndex.'total-price'), $line->total - $line->extraLargeFee, array(
 			'class'=>'part garment_part',
 		));?>
 	</div>
