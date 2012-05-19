@@ -36,10 +36,17 @@ class CostCalculator extends CComponent {
 		$result += $surcharge;
 		$result *= $garments;
 		
-		if($garments < 24 && $garments != 0){
-			$result += 30;
-		}
-		
 		return $result;
+	}
+	
+	/**
+	 * Calculates the total setup fee for a given garment section of a job.
+	 */	
+	public static function calculateSetupFee($garments, $frontPasses, $backPasses, $sleevePasses){
+		if($garments < 24 && $garments != 0){
+			return 30;
+		} else {
+			return 0;
+		}
 	}
 }
