@@ -367,10 +367,8 @@ class Job extends CActiveRecord
 	public function getTotalPasses(){
 		$passes = $this->printJob == null ? 0 : $this->printJob->PASS;
 		$lines = 0; //for quantity of all lines
-		foreach($this->jobLines as $line) {
-			foreach($line->sizes as $sizeLine){
-				$lines += $sizeLine->QUANTITY;
-			}
+		foreach($this->jobLines as $line) {			
+			$lines += $line->garmentCount;
 		}
 		return $passes * $lines;
 	}
@@ -418,17 +416,10 @@ class Job extends CActiveRecord
 	 * Gets the total cost to the customer directly attributable to garments.
 	 */
 	public function getGarmentTotal(){
-		$front = 0;
-		$back = 0;
-		$sleeve = 0;
-		if($this->printJob){
-			$front = $this->printJob->FRONT_PASS;
-			$back = $this->printJob->BACK_PASS;
-			$sleeve = $this->printJob->SLEEVE_PASS;
+		$garmentTotal = 0;
+		foreach($this->jobLines as $line){
+			$garmentTotal += $line->total;
 		}
-		
-		$garmentTotal = CostCalculator::calculateTotal($this->garmentCount, $front, $back, $sleeve, 0);
-		$garmentTotal += $this->garmentCost;
 		return $garmentTotal;
 	}
 	
@@ -442,10 +433,8 @@ class Job extends CActiveRecord
 	
 	public function getGarmentCount(){
 		$garments = 0;
-		foreach($this->jobLines as $line){
-			foreach($line->sizes as $sizeLine){
-				$garments += $sizeLine->QUANTITY;
-			}			
+		foreach($this->jobLines as $line){			
+			$garments += $line->garmentCount;		
 		}
 		return $garments;
 	}
