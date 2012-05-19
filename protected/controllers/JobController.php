@@ -170,6 +170,8 @@ class JobController extends Controller
 			'namePrefix'=>$namePrefix,
 			'startIndex'=>$count,
 			'products'=>$products,
+			'formatter'=>new Formatter,
+			'estimate'=>0,
 		));
 	}
 	
@@ -178,11 +180,13 @@ class JobController extends Controller
 		$startIndex = $_POST['startIndex'];
 		$idList = $_POST['idList'];
 		$models = JobLine::model()->findAllByPk($idList);
+		$job = null;
 		$sizes = Lookup::model()->findAllByAttributes(array('TYPE'=>'Size'));
 		$products = array();
 		$groupedLines = array();
 		foreach($models as $model){			
 			if($model){
+				$job = $model->job;
 				$model->approve();
 				$groupedSizes = array();
 				foreach($model->sizes as $sizeLine){
@@ -240,6 +244,8 @@ class JobController extends Controller
 			'namePrefix'=>$namePrefix,
 			'startIndex'=>$startIndex,
 			'products'=>$products,
+			'formatter'=>new Formatter,
+			'estimate'=>CostCalculator::calculateTotal($job->garmentCount, $job->printJob->FRONT_PASS, $job->printJob->BACK_PASS, $job->printJob->SLEEVE_PASS, 0),
 		));
 	}
 	
@@ -248,11 +254,13 @@ class JobController extends Controller
 		$startIndex = $_POST['startIndex'];
 		$idList = $_POST['idList'];
 		$models = JobLine::model()->findAllByPk($idList);
+		$job = null;
 		$sizes = Lookup::model()->findAllByAttributes(array('TYPE'=>'Size'));
 		$products = array();
 		$groupedLines = array();
 		foreach($models as $model){			
 			if($model){
+				$job = $model->job;
 				$model->unapprove();
 				$groupedSizes = array();
 				foreach($model->sizes as $sizeLine){
@@ -306,6 +314,8 @@ class JobController extends Controller
 			'namePrefix'=>$namePrefix,
 			'startIndex'=>$startIndex,
 			'products'=>$products,
+			'formatter'=>new Formatter,
+			'estimate'=>CostCalculator::calculateTotal($job->garmentCount, $job->printJob->FRONT_PASS, $job->printJob->BACK_PASS, $job->printJob->SLEEVE_PASS, 0),
 		));
 	}
 	
