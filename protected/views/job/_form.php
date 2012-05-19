@@ -40,7 +40,7 @@ Yii::app()->clientScript->registerScript('add-job', "function addLine(sender, na
 						"for(var size in sizes){
 							\$('#' + div_id).children('.' + div_id + sizes[size].ID)" .
 							".removeClass('hidden-size')" .
-							".parent().children('.score_part').removeAttr('disabled');
+							".children('.score_part').removeAttr('disabled');
 						}" .
 						"\$('#' + div_id).children('.hidden-style').val(ui.item.id);
 					});
