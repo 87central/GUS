@@ -2,11 +2,11 @@
 
 <?php $div = CHtml::getIdByName($namePrefix . $startIndex . 'item');?>
 <?php $readonly = isset($readonly) && $readonly;?>
-
+<div class="grid_3 jobGroup">
 <div class="jobLines" id="<?php echo $div;?>">
-	Style <span class="item-select-approved"><?php echo $products['style'];?></span>
-	
-	Color <span class="color-select-approved"><?php $formatter = new Formatter; echo $formatter->formatLookup($products['currentColor']);?></span>
+	<span class="title bold">Style</span> <span class="item-select-approved"><?php echo $products['style'];?></span>
+	<br>
+	<span class="title bold">Color</span> <span class="color-select-approved"><?php $formatter = new Formatter; echo $formatter->formatLookup($products['currentColor']);?></span>
 	
 	Price Each <span class="price-select-approved"><?php echo $formatter->formatCurrency($products['model']->PRICE);?></span>
 	
@@ -35,4 +35,5 @@
 	<?php echo CHtml::hiddenField('startIndex', $startIndex, array(
 		'class'=>'startIndex',
 	));?>
+</div>
 </div>

@@ -108,7 +108,7 @@ $garmentCost = CHtml::getIdByName($namePrefix . $startIndex . 'garment-cost');?>
 		));?>
 	</div>
 	<?php echo CHtml::hiddenField('product-cost', $line->product ? $line->product->COST : 0, array('class'=>'product-cost'));?>
-	
+	<div class="clear"></div>
 	<?php
 	$index = 0;
 	foreach($products['lines'] as $dataLine){
@@ -137,7 +137,7 @@ $garmentCost = CHtml::getIdByName($namePrefix . $startIndex . 'garment-cost');?>
 	<?php echo CHtml::hiddenField('startIndex', $startIndex, array(
 		'class'=>'startIndex',
 	));?>
-	
+	<div class="clear"></div>
 	<?php if($saved){?>
 		<?php if(!$approved){?>
 			<?php echo CHtml::button('Approve', array(
@@ -155,6 +155,7 @@ $garmentCost = CHtml::getIdByName($namePrefix . $startIndex . 'garment-cost');?>
 			'class'=>'line_delete',
 		));?>
 	<?php }?>
+	<div class="line-end"></div>
 </div>
 
 <?php Yii::app()->clientScript->registerScript('line-approve', "" .
