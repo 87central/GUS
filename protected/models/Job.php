@@ -284,7 +284,7 @@ class Job extends CActiveRecord
 				$keyedJobLines[(string) $line->ID] = $line;
 			}
 			$newJobLines = array();
-			for($i = 0; $i < count($jobLines); $i++){
+			foreach($jobLines as $i => $value){
 				if(isset($jobLines[$i]) && is_array($jobLines[$i])){
 					$lineID = $jobLines[$i]['ID'];
 					if(isset($keyedJobLines[$lineID])){
