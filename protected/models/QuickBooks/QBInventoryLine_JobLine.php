@@ -4,14 +4,8 @@ class QBInventoryLine_JobLine extends QBInventoryLine {
 	private $_xl;
 	private $_standard;
 	
-	/**
-	Initializes the inventory item array with values that are common to both standard and extra-large properties.
-	@return array The INVITEM array.
-	*/
-	protected function initInvItem(){
-		$params = $parent::initInvItem();
-		$params['NAME'] = 'Printing_' . $this->owner->ID;
-		$params['INVITEMTYPE'] = 'INVENTORY';
+	private function createInvLine($text, $price){
+		$params = parent::createLine('Printing_' . $this->owner->ID, $text, $price, 'INVENTORY');
 		$params['CUSTFLD1'] = $this->owner->color->TEXT;
 		$params['CUSTFLD2'] = $this->owner->job->printJob->FRONT_PASS;
 		$params['CUSTFLD3'] = $this->owner->job->printJob->BACK_PASS;
@@ -31,19 +25,17 @@ class QBInventoryLine_JobLine extends QBInventoryLine {
 	Gets the INVITEM record for the extra-large sizes of the given job line.
 	*/
 	public function getXl(){
-		if($this->_xl === null){
-			$params = $this->initInvItem();
-			$text = $this->baseText . 'Extra Large';
-			$params['DESC'] = $text;
-			$params['PURCHASEDESC'] = $text;
+		if($this->_xl === null){			
+			$text = $this->baseText . 'Extra Large';			
 			$unit_cost = 0;
 			foreach ($this->owner->sizeLines as $sizeLine) {
 				$fee = $sizeLine->isExtraLarge;
-				$unit_cost = $this->owner->PRICE * 1 + $fee;
-				break;
-			}
-			$params['PRICE'] = $unit_cost;
-			$this->_xl = $params;
+				if($fee){
+					$unit_cost = $this->owner->PRICE * 1 + $fee;
+					break;
+				}	
+			}			
+			$this->_xl = $this->createInvLine($text, $unit_cost);
 		}
 		return $this->_xl;
 	}
@@ -53,20 +45,13 @@ class QBInventoryLine_JobLine extends QBInventoryLine {
 	*/
 	public function getStandard(){
 		if($this->_standard === null){
-			$params = $this->initInvItem();
 			$text = $this->baseText . 'Standard';
-			$params['DESC'] = $text;
-			$params['PURCHASEDESC'] = $text;
-			$params['PRICE'] = $this->owner->PRICE * 1;
-			$this->_standard = $params;	
+			$this->_standard = $this->createInvLine($text, $this->owner->PRICE * 1);	
 		}
 		return $this->_standard;
 	}	
 
-	/**
-	@return array An array containing the standard and xl properties, in that order.
-	*/
-	public function getRecords(){
+	protected function createRecords(){
 		return array($this->standard, $this->xl);
 	}
 }

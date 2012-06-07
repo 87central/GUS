@@ -1,18 +1,8 @@
 <?php
 /*QBInventoryLine_Job wraps a job  and provides records for export to QuickBooks INVITEMS in a records property.*/
 class QBInventoryLine_Job extends QBInventoryLine {
-	private $lines;
 	/*records which need to be translated:
 	rush, art charge, setup time, additional charges, sales tax*/
-	protected function createLine($name, $text, $price, $itemType){
-		$params = $this->initInvItem();
-		$params['NAME'] = $name;
-		$params['DESC'] = $text;
-		$params['PURCHASEDESC'] = $text;
-		$params['PRICE'] = $price;		
-		return $params;
-	}
-
 	protected function createRush(){		
 		return $this->createLine(
 			CHtml::encode($this->owner->getAttributeLabel('RUSH')), 
@@ -58,19 +48,18 @@ class QBInventoryLine_Job extends QBInventoryLine {
 		)
 	}
 
-	public function getRecords(){
-		if($lines === null){
-			$lines[] = $this->createRush();
-			$lines[] = $this->createArtCharge();
-			$lines[] = $this->createSetupFee();			
-			$index = 0;
-			foreach ($this->owner->additionalFees as $fee) {
-				if($fee['CONSTRAINTS']['part'] !== false){
-					$lines[] = $this->createAdditional($fee, $index);
-				}
+	protected function crateRecords(){
+		$lines = array();
+		$lines[] = $this->createRush();
+		$lines[] = $this->createArtCharge();
+		$lines[] = $this->createSetupFee();			
+		$index = 0;
+		foreach ($this->owner->additionalFees as $fee) {
+			if($fee['CONSTRAINTS']['part'] !== false){
+				$lines[] = $this->createAdditional($fee, $index);
 			}
-			$lines[] = $this->createSalesTax();
 		}
+		$lines[] = $this->createSalesTax();
 		return $lines;
 	}
 }

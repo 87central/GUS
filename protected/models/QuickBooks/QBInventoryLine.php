@@ -1,6 +1,8 @@
 <?php 
 /*QBInventoryLine acts as an abstract base class for behaviors which export a certain record type to a QuickBooks IIF INVITEM format.*/
 abstract class QBInventoryLine extends CActiveRecordBehavior {
+	private $lines = null;
+
 	/**
 	Creates an array with all fields in the INVITEM record type of QuickBooks IIF.
 	@return array The array, with all elements set to null.
@@ -55,7 +57,35 @@ abstract class QBInventoryLine extends CActiveRecordBehavior {
 	}
 
 	/**
+	Creates an inventory line with the given name, description, price, and type.
+	@param string $name The name to associate with the line.
+	@param string $text The description to associate with the line.
+	@param float $price The unit price of the item.
+	@param string $itemType One of the item types provided in the QuickBooks IIF documentation.
+	@return array THe resultant array object.
+	*/
+	protected function createLine($name, $text, $price, $itemType){
+		$params = $this->initInvItem();
+		$params['NAME'] = $name;
+		$params['DESC'] = $text;
+		$params['PURCHASEDESC'] = $text;
+		$params['PRICE'] = $price;		
+		return $params;
+	}
+
+	/**
 	@return array An array containing all INVITEM records associated with the decorated class.
 	*/
-	public abstract function getRecords();	
+	public function getRecords(){
+		if($lines === null){
+			$lines = $this->createRecords();
+		}
+		return $lines;
+	}
+
+	/**
+	Constructs the array of INVITEM records associated with the decorated class. This function need not handle caching.
+	@return array An array of INVITEM records, with field names as returned by initInvItem.
+	*/
+	protected abstract function createRecords();	
 }
