@@ -25,7 +25,7 @@ class QBTransactionLine_JobLine extends QBTransactionLine {
 		$params['NAME'] = $this->owner->job->customer->summary;
 		$params['AMOUNT'] = $price;
 		$params['DOCNUM'] = 'GUS-J-' . $this->owner->JOB_ID;
-		$params['CLEAR'] = 'N',
+		$params['CLEAR'] = 'N';
 		$params['PRICE'] = $unit_cost;
 		$params['QNTY'] = $quantity;
 		$params['INVITEM'] = $text;
@@ -53,7 +53,7 @@ class QBTransactionLine_JobLine extends QBTransactionLine {
 		$params['NAME'] = $this->owner->job->customer->summary;
 		$params['AMOUNT'] = $price;
 		$params['DOCNUM'] = 'GUS-J-' . $this->owner->JOB_ID;
-		$params['CLEAR'] = 'N',
+		$params['CLEAR'] = 'N';
 		$params['PRICE'] = $unit_cost;
 		$params['QNTY'] = $quantity;
 		$params['INVITEM'] = $text;

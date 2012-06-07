@@ -10,7 +10,7 @@ class QBTransactionLine_Job extends QBTransactionLine {
 		$params['NAME'] = $this->owner->customer->summary;
 		$params['AMOUNT'] = $amount;
 		$params['DOCNUM'] = 'GUS-J-' . $this->owner->ID;
-		$params['CLEAR'] = 'N',
+		$params['CLEAR'] = 'N';
 		$params['PRICE'] = $price;
 		$params['QNTY'] = $quantity;
 		$params['INVITEM'] = $invitem;
@@ -24,7 +24,7 @@ class QBTransactionLine_Job extends QBTransactionLine {
 			$this->owner->RUSH,
 			null,
 			null,
-			CHtml::encode($this->owner->getAttributeLabel('RUSH')),
+			CHtml::encode($this->owner->getAttributeLabel('RUSH'))
 		);
 	}
 

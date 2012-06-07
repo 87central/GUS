@@ -2,7 +2,7 @@
 /**
 QBTransactionLine acts as an abstract base class for behaviors which export a certain record type to a QuickBooks IIF SPL format.
 */
-class QBTransactionLine extends CActiveRecordBehavior {
+abstract class QBTransactionLine extends CActiveRecordBehavior {
 	private $lines = null;
 
 	/**
@@ -30,7 +30,7 @@ class QBTransactionLine extends CActiveRecordBehavior {
 			'REIMBEXP'=>null,
 			'EXTRA'=>null,
 			'VALDAJ'=>null,			
-		)
+		);
 	}
 
 	/**
@@ -41,9 +41,9 @@ class QBTransactionLine extends CActiveRecordBehavior {
 	*/
 	protected function initItem(){
 		$params = $this->createItem();
-		$params['VALDAJ'] = 'N',
-		$params['TAXABLE'] = 'Y',		
-		$params['ACCNT'] = null, //need a setting for this?
+		$params['VALDAJ'] = 'N';
+		$params['TAXABLE'] = 'Y';		
+		$params['ACCNT'] = null; //need a setting for this?
 		return $params;
 	}
 
@@ -51,10 +51,10 @@ class QBTransactionLine extends CActiveRecordBehavior {
 	@return array An array containing all SPL records associated with the decorated class.
 	*/
 	public function getRecords(){
-		if($lines === null){
-			$lines = $this->createRecords();
+		if($this->lines === null){
+			$this->lines = $this->createRecords();
 		}
-		return $lines;
+		return $this->lines;
 	}
 
 	/**

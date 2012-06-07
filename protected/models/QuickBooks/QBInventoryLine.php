@@ -50,9 +50,9 @@ abstract class QBInventoryLine extends CActiveRecordBehavior {
 		$params['ACCNT'] = null; //need a setting for this
 		$params['ASSETACCNT'] = null; //might need a setting for this
 		$params['COGSACCNT'] = null; //and this
-		$params['TAXABLE'] = 'Y',
-		$params['TOPRINT'] = 'Y',
-		$params['ISPASSEDTHRU'] = 'Y',
+		$params['TAXABLE'] = 'Y';
+		$params['TOPRINT'] = 'Y';
+		$params['ISPASSEDTHRU'] = 'Y';
 		return $params;
 	}
 
@@ -77,10 +77,10 @@ abstract class QBInventoryLine extends CActiveRecordBehavior {
 	@return array An array containing all INVITEM records associated with the decorated class.
 	*/
 	public function getRecords(){
-		if($lines === null){
-			$lines = $this->createRecords();
+		if($this->lines === null){
+			$this->lines = $this->createRecords();
 		}
-		return $lines;
+		return $this->lines;
 	}
 
 	/**

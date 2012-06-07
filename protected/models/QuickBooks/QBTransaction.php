@@ -1,6 +1,6 @@
 <?php
 /*QBTransactionLine_Job wraps a job  and provides a recordsfor export to QuickBooks TRNS in a record property.*/
-class QBTransaction extends CActiveRecordBehavior {
+abstract class QBTransaction extends CActiveRecordBehavior {
 	private $item = null;
 
 	/**
@@ -60,10 +60,10 @@ class QBTransaction extends CActiveRecordBehavior {
 	@return array An array containing all TRNS records associated with the decorated class.
 	*/
 	public function getRecord(){
-		if($item === null){
-			$item = $this->createRecord();
+		if($this->item === null){
+			$this->item = $this->createRecord();
 		}
-		return $item;
+		return $this->item;
 	}
 
 	/**

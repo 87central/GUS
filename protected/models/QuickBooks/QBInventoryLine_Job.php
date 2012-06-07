@@ -34,7 +34,7 @@ class QBInventoryLine_Job extends QBInventoryLine {
 		return $this->createLine(
 			'Sales Tax',
 			'Sales Tax',
-			$this->owner->additionalFees[Job::FEE_TAX_RATE]['VALUE'] / 100),
+			$this->owner->additionalFees[Job::FEE_TAX_RATE]['VALUE'] / 100,
 			'COMPTAX'
 		);
 	}
@@ -45,7 +45,7 @@ class QBInventoryLine_Job extends QBInventoryLine {
 			$additional['TEXT'],			
 			null,
 			'OTHC'
-		)
+		);
 	}
 
 	protected function crateRecords(){
