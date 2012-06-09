@@ -2,7 +2,7 @@
 <?php 
 function renderRecord($record, $separator='\t'){
 	foreach($record as $fieldValue){
-		echo $record . $separator;
+		echo $fieldValue . $separator;
 	}
 	echo '\n';
 }

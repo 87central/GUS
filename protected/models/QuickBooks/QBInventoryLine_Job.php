@@ -1,5 +1,6 @@
 <?php
 /*QBInventoryLine_Job wraps a job  and provides records for export to QuickBooks INVITEMS in a records property.*/
+require_once(YiiBase::getPathOfAlias('application.models.QuickBooks').DIRECTORY_SEPARATOR.'QBInventoryLine.php');
 class QBInventoryLine_Job extends QBInventoryLine {
 	/*records which need to be translated:
 	rush, art charge, setup time, additional charges, sales tax*/
@@ -48,7 +49,7 @@ class QBInventoryLine_Job extends QBInventoryLine {
 		);
 	}
 
-	protected function crateRecords(){
+	protected function createRecords(){
 		$lines = array();
 		$lines[] = $this->createRush();
 		$lines[] = $this->createArtCharge();

@@ -1,13 +1,14 @@
 
 <?php
 /*QBTransactionLine_Job wraps a job  and provides records for export to QuickBooks SPLs in a records property.*/
+require_once(YiiBase::getPathOfAlias('application.models.QuickBooks').DIRECTORY_SEPARATOR.'QBTransactionLine.php');
 class QBTransactionLine_Job extends QBTransactionLine {
 	protected function createLine($id, $amount, $price, $quantity, $invitem, $taxable='Y'){
 		$params = $this->initItem();
 		$params['SPLID'] = $id; //rush, artcharge, setup fee, additionals, sales tax
 		$params['TRNSTYPE'] = 'INVOICE';
 		$params['DATE'] = $this->owner->dueDate; //may need to format this
-		$params['NAME'] = $this->owner->customer->summary;
+		$params['NAME'] = $this->owner->CUSTOMER->summary;
 		$params['AMOUNT'] = $amount;
 		$params['DOCNUM'] = 'GUS-J-' . $this->owner->ID;
 		$params['CLEAR'] = 'N';
@@ -41,9 +42,9 @@ class QBTransactionLine_Job extends QBTransactionLine {
 	protected function createSetupFee(){		
 		return $this->createLine(
 			'3',
-			$this->owner->SETUP_FEE,
+			$this->owner->SET_UP_FEE,
 			30,
-			$this->owner->SETUP_FEE / 30,
+			$this->owner->SET_UP_FEE / 30,
 			'Setup Time'
 		);
 	}
@@ -69,7 +70,7 @@ class QBTransactionLine_Job extends QBTransactionLine {
 		);
 	}
 
-	protected function crateRecords(){
+	protected function createRecords(){
 		$lines = array();
 		$lines[] = $this->createRush();
 		$lines[] = $this->createArtCharge();

@@ -393,10 +393,19 @@ class JobController extends Controller
 	/**
 	 * Views the invoice for the job with the given ID.
 	 */
-	public function actionInvoice($id){
+	public function actionInvoice($id, $type="view"){
 		$model = $this->loadModel($id);
 		$formatter = new Formatter;
-		$this->render('invoice', array('model'=>$model, 'formatter'=>$formatter));
+		$view = 'invoice';
+		switch($type){
+			case "iif" : $view = "invoice_quicken"; break;
+			default : $view = "invoice"; break;
+		}
+		if($type == "iif"){
+			$view = 'invoice_quicken';
+			$model->attachBehavior('quickbooks', 'application.models.QuickBooks.QBInitializer');
+		}
+		$this->render($view, array('model'=>$model, 'formatter'=>$formatter));
 	}
 
 	/**
@@ -834,7 +843,7 @@ class JobController extends Controller
 		$canceledDataProvider = new CArrayDataProvider($canceledJobs, array(
 			'keyField'=>'ID',
 			'pagination'=>false,
-		));
+		));		
 		
 		$completedJobs = Job::listJobsByStatus(Job::COMPLETED);
 		$completedDataProvider = new CArrayDataProvider($completedJobs, array(

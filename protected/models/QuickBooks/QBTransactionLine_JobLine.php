@@ -1,7 +1,8 @@
 <?php
 /*QBTransactionLine_JobLine wraps a job line and provides records for export to quickbooks*/
+require_once(YiiBase::getPathOfAlias('application.models.QuickBooks').DIRECTORY_SEPARATOR.'QBTransactionLine.php');
 class QBTransactionLine_JobLine extends QBTransactionLine {
-	private function getBaseText(){
+	protected function getBaseText(){
 		return $this->owner->job->printJob->FRONT_PASS . ' Front/ ' . $this->owner->job->printJob->BACK_PASS . ' Back/ ' . $this->owner->job->printJob->SLEEVE_PASS . ' Sleeve on ' . $this->owner->product->vendorStyle . ' - ' . $this->owner->color->TEXT . ' ';
 	}
 
@@ -10,7 +11,7 @@ class QBTransactionLine_JobLine extends QBTransactionLine {
 		$unit_cost = 0;
 		$quantity = 0;
 		$price = 0;
-		foreach ($this->owner->sizeLines as $sizeLine) {
+		foreach ($this->owner->sizes as $sizeLine) {
 			$fee = $sizeLine->isExtraLarge;
 			if($fee){
 				$unit_cost = $this->owner->PRICE * 1 + $fee;
@@ -22,7 +23,7 @@ class QBTransactionLine_JobLine extends QBTransactionLine {
 		$params['SPLID'] = $this->owner->ID . '2'; //2 for extra large, 1 for standard
 		$params['TRNSTYPE'] = 'INVOICE';
 		$params['DATE'] = $this->owner->job->dueDate; //may need to format this
-		$params['NAME'] = $this->owner->job->customer->summary;
+		$params['NAME'] = $this->owner->job->CUSTOMER->summary;
 		$params['AMOUNT'] = $price;
 		$params['DOCNUM'] = 'GUS-J-' . $this->owner->JOB_ID;
 		$params['CLEAR'] = 'N';
@@ -38,7 +39,7 @@ class QBTransactionLine_JobLine extends QBTransactionLine {
 		$unit_cost = 0;
 		$quantity = 0;
 		$price = 0;
-		foreach ($this->owner->sizeLines as $sizeLine) {
+		foreach ($this->owner->sizes as $sizeLine) {
 			$fee = $sizeLine->isExtraLarge;
 			if($fee === false){
 				$unit_cost = $this->owner->PRICE * 1 + $fee;
@@ -50,7 +51,7 @@ class QBTransactionLine_JobLine extends QBTransactionLine {
 		$params['SPLID'] = $this->owner->ID . '1'; //2 for extra large, 1 for standard
 		$params['TRNSTYPE'] = 'INVOICE';
 		$params['DATE'] = $this->owner->job->dueDate; //may need to format this
-		$params['NAME'] = $this->owner->job->customer->summary;
+		$params['NAME'] = $this->owner->job->CUSTOMER->summary;
 		$params['AMOUNT'] = $price;
 		$params['DOCNUM'] = 'GUS-J-' . $this->owner->JOB_ID;
 		$params['CLEAR'] = 'N';

@@ -1,5 +1,6 @@
 <?php
 /*QBInventoryLine_JobLine wraps a job line and provides fields for export to quickbooks in two properties. The xl property contains fields appropriate to extra-large sizes, and the standard property contains fields appropriate to standard sizes.*/
+require_once(YiiBase::getPathOfAlias('application.models.QuickBooks').DIRECTORY_SEPARATOR.'QBInventoryLine.php');
 class QBInventoryLine_JobLine extends QBInventoryLine {
 	private $_xl;
 	private $_standard;
@@ -17,7 +18,7 @@ class QBInventoryLine_JobLine extends QBInventoryLine {
 	/**
 	Gets the base text which can be used in the description of each inventory item.
 	*/
-	private function getBaseText(){
+	protected function getBaseText(){
 		return $this->owner->job->printJob->FRONT_PASS . ' Front/ ' . $this->owner->job->printJob->BACK_PASS . ' Back/ ' . $this->owner->job->printJob->SLEEVE_PASS . ' Sleeve on ' . $this->owner->product->vendorStyle . ' - ' . $this->owner->color->TEXT . ' ';
 	}
 
@@ -28,7 +29,7 @@ class QBInventoryLine_JobLine extends QBInventoryLine {
 		if($this->_xl === null){			
 			$text = $this->baseText . 'Extra Large';			
 			$unit_cost = 0;
-			foreach ($this->owner->sizeLines as $sizeLine) {
+			foreach ($this->owner->sizes as $sizeLine) {
 				$fee = $sizeLine->isExtraLarge;
 				if($fee){
 					$unit_cost = $this->owner->PRICE * 1 + $fee;
