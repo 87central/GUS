@@ -18,7 +18,7 @@
 				
 				<?php if(Yii::app()->user->getState('isAdmin')){
 					echo CHtml::button('Export to QuickBooks', array(
-						'onclick'=>"js:window.location.href='".CHtml::normalizeUrl(array('job/invoice', 'id'=>$model->ID, 'view'=>'iif'))."';"
+						'onclick'=>"js:window.location.href='".CHtml::normalizeUrl(array('job/invoice', 'id'=>$model->ID, 'type'=>'iif'))."';"
 					));
 				}?>
 			</div>
@@ -168,7 +168,7 @@
 		
 		<?php if(Yii::app()->user->getState('isAdmin')){
 			echo CHtml::button('Export to QuickBooks', array(
-				'onclick'=>"js:window.location.href='".CHtml::normalizeUrl(array('job/invoice', 'id'=>$model->ID, 'view'=>'iif'))."';"
+				'onclick'=>"js:window.location.href='".CHtml::normalizeUrl(array('job/invoice', 'id'=>$model->ID, 'type'=>'iif'))."';"
 			));
 		}?>				
 	</div>
