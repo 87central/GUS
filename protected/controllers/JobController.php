@@ -404,8 +404,8 @@ class JobController extends Controller
 		$params = array('model'=>$model, 'formatter'=>$formatter);
 		if($type == "iif"){
 			$view = 'invoice_quicken';
-			$model->attachBehavior('quickbooks', 'application.models.QuickBooks.QBInitializer');
-			header('Content-Type: text/plain');
+			header('Content-Type: text/iif');
+			$model->attachBehavior('quickbooks', 'application.models.QuickBooks.QBInitializer');			
 			$this->renderPartial($view, $params);	
 		} else {
 			$this->render($view, $params);
