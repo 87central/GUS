@@ -5,14 +5,14 @@ class QBTransaction_Job extends QBTransaction {
 	protected function createRecord(){
 		$record = $this->initItem();
 		$record['TRNSTYPE'] = 'INVOICE';
-		$record['DATE'] = $this->owner->printDate;
+		$record['DATE'] = date('n/j/Y', strtotime($this->owner->printDate));
 		$record['ACCNT'] = null; //need a setting
 		$record['NAME'] = $this->owner->CUSTOMER->summary;
 		$record['AMOUNT'] = $this->owner->total * (1 + $this->owner->additionalFees[Job::FEE_TAX_RATE]['VALUE']);
 		$record['DOCNUM'] = 'GUS-J-' . $this->owner->ID;
 		$record['CLEAR'] = 'N';
 		$record['TOPRINT'] = 'N';
-		$record['DUEDATE'] = $this->owner->printDate;
+		$record['DUEDATE'] = date('n/j/Y', strtotime($this->owner->printDate));
 		$record['PAID'] = 'N';
 		$record['INVTITLE'] = $this->owner->NAME;
 		$record['NAMEISTAXABLE'] = 'Y';

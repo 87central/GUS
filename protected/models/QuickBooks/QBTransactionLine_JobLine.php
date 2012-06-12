@@ -22,7 +22,7 @@ class QBTransactionLine_JobLine extends QBTransactionLine {
 		$params = $this->initItem();
 		$params['SPLID'] = $this->owner->ID . '2'; //2 for extra large, 1 for standard
 		$params['TRNSTYPE'] = 'INVOICE';
-		$params['DATE'] = $this->owner->job->printDate; //may need to format this
+		$params['DATE'] = date('n/j/Y', strtotime($this->owner->job->printDate)); //may need to format this
 		$params['NAME'] = $this->owner->job->CUSTOMER->summary;
 		$params['AMOUNT'] = $price;
 		$params['DOCNUM'] = 'GUS-J-' . $this->owner->JOB_ID;
@@ -50,7 +50,7 @@ class QBTransactionLine_JobLine extends QBTransactionLine {
 		$params = $this->initItem();
 		$params['SPLID'] = $this->owner->ID . '1'; //2 for extra large, 1 for standard
 		$params['TRNSTYPE'] = 'INVOICE';
-		$params['DATE'] = $this->owner->job->printDate; //may need to format this
+		$params['DATE'] = date('n/j/Y', strtotime($this->owner->job->printDate)); //may need to format this
 		$params['NAME'] = $this->owner->job->CUSTOMER->summary;
 		$params['AMOUNT'] = $price;
 		$params['DOCNUM'] = 'GUS-J-' . $this->owner->JOB_ID;

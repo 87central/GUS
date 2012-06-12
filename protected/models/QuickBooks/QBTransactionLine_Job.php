@@ -7,7 +7,7 @@ class QBTransactionLine_Job extends QBTransactionLine {
 		$params = $this->initItem();
 		$params['SPLID'] = $id; //rush, artcharge, setup fee, additionals, sales tax
 		$params['TRNSTYPE'] = 'INVOICE';
-		$params['DATE'] = $this->owner->printDate; //may need to format this
+		$params['DATE'] = date('n/j/Y', strtotime($this->owner->printDate)); //may need to format this
 		$params['NAME'] = $this->owner->CUSTOMER->summary;
 		$params['AMOUNT'] = $amount;
 		$params['DOCNUM'] = 'GUS-J-' . $this->owner->ID;
