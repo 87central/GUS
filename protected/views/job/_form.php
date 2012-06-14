@@ -1,5 +1,6 @@
 <?php
 Yii::app()->clientScript->registerCoreScript('jquery');
+Yii::app()->clientScript->registerScriptFile($this->scriptDirectory . 'jobOperations.js', CClientScript::POS_HEAD); 
 Yii::app()->clientScript->registerScriptFile($this->scriptDirectory . 'jobEdit.js', CClientScript::POS_HEAD);
 Yii::app()->clientScript->registerScript('add-job', "function addLine(sender, namePrefix){
 	var count = $(sender).parent().children('.jobLines').children('.jobLine').children('.part').size();" .
