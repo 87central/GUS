@@ -99,7 +99,7 @@ $garmentCost = CHtml::getIdByName($namePrefix . $startIndex . 'garment-cost');?>
 		));?>
 		<?php /*when the link is clicked, we want to hide the link and set the value of the input field 
 		to the value of the hidden field within the link*/?>
-		<a class="estimate-price" href="#" <?php echo ($line->PRICE != $unitEstimate) ? 'style="display: hidden;"' : '';?> onclick="$(this).parent().children('#<?php echo $priceSelect;?>').val($(this).children('.hidden-price').val()).keyup(); $(this).hide(); return false;">
+		<a class="estimate-price" href="#" <?php echo ($line->PRICE != $unitEstimate) ? 'style="display: none;"' : '';?> onclick="$(this).parent().children('#<?php echo $priceSelect;?>').val($(this).children('.hidden-price').val()).keyup(); $(this).hide(); return false;">
 			<span><?php echo CHtml::encode($formatter->formatCurrency($unitEstimate));?></span>
 			<?php echo CHtml::hiddenField(CHtml::getIdByName($namePrefix.$startIndex.'hidden-price'), $unitEstimate, array('class'=>'hidden-price hidden-value'));?>
 		</a>
