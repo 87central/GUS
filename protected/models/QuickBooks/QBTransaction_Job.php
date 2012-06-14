@@ -6,7 +6,7 @@ class QBTransaction_Job extends QBTransaction {
 		$record = $this->initItem();
 		$record['TRNSTYPE'] = 'INVOICE';
 		$record['DATE'] = date('n/j/Y', strtotime($this->owner->printDate));
-		$record['ACCNT'] = null; //need a setting
+		$record['ACCNT'] = QBConstants::TRNS_ACCNT; //need a setting
 		$record['NAME'] = $this->owner->CUSTOMER->summary;
 		$record['AMOUNT'] = $this->owner->total * (1 + $this->owner->additionalFees[Job::FEE_TAX_RATE]['VALUE']);
 		$record['DOCNUM'] = 'GUS-J-' . $this->owner->ID;

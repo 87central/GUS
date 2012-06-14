@@ -31,6 +31,7 @@ class QBTransactionLine_JobLine extends QBTransactionLine {
 		$params['QNTY'] = $quantity;
 		$params['INVITEM'] = $text;
 		$params['TAXABLE'] = 'Y';
+		$params['ACCNT'] = QBConstants::PRINTING_ACCNT;
 		return $params;		
 	}
 
@@ -59,6 +60,7 @@ class QBTransactionLine_JobLine extends QBTransactionLine {
 		$params['QNTY'] = $quantity;
 		$params['INVITEM'] = $text;
 		$params['TAXABLE'] = 'Y';
+		$params['ACCNT'] = QBConstants::PRINTING_ACCNT;
 		return $params;		
 	}
 

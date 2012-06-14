@@ -3,7 +3,7 @@
 /*QBTransactionLine_Job wraps a job  and provides records for export to QuickBooks SPLs in a records property.*/
 require_once(YiiBase::getPathOfAlias('application.models.QuickBooks').DIRECTORY_SEPARATOR.'QBTransactionLine.php');
 class QBTransactionLine_Job extends QBTransactionLine {
-	protected function createLine($id, $amount, $price, $quantity, $invitem, $taxable='Y'){
+	protected function createLine($id, $amount, $price, $quantity, $invitem, $accnt, $taxable='Y'){
 		$params = $this->initItem();
 		$params['SPLID'] = $id; //rush, artcharge, setup fee, additionals, sales tax
 		$params['TRNSTYPE'] = 'INVOICE';
@@ -16,6 +16,7 @@ class QBTransactionLine_Job extends QBTransactionLine {
 		$params['QNTY'] = $quantity;
 		$params['INVITEM'] = $invitem;
 		$params['TAXABLE'] = $taxable;
+		$params['ACCNT'] = $accnt;
 		return $params;		
 	}
 
@@ -25,7 +26,8 @@ class QBTransactionLine_Job extends QBTransactionLine {
 			$this->owner->RUSH,
 			null,
 			null,
-			CHtml::encode($this->owner->getAttributeLabel('RUSH'))
+			CHtml::encode($this->owner->getAttributeLabel('RUSH')),
+			QBConstants::RUSH_ACCNT
 		);
 	}
 
@@ -35,7 +37,8 @@ class QBTransactionLine_Job extends QBTransactionLine {
 			$this->owner->printJob->COST,//art charge
 			40,
 			$this->owner->printJob->COST / 40,
-			'Artwork Charge'
+			'Artwork Charge',
+			QBConstants::ART_ACCNT
 		);
 	}
 
@@ -45,7 +48,8 @@ class QBTransactionLine_Job extends QBTransactionLine {
 			$this->owner->SET_UP_FEE,
 			30,
 			$this->owner->SET_UP_FEE / 30,
-			'Setup Time'
+			'Setup Time',
+			QBConstants::SETUP_ACCNT
 		);
 	}
 
@@ -55,7 +59,8 @@ class QBTransactionLine_Job extends QBTransactionLine {
 			$this->owner->total * $this->owner->additionalFees[Job::FEE_TAX_RATE]['VALUE'] / 100,
 			null,
 			null,
-			'Sales Tax',
+			'Sales Tax',			
+			QBConstants::TAX_ACCNT,
 			'N'
 		);
 	}
@@ -66,7 +71,8 @@ class QBTransactionLine_Job extends QBTransactionLine {
 			$additional['VALUE'],
 			null,
 			null,
-			'Additional_'.$index
+			'Additional_'.$index,
+			QBConstants::TRNS_ACCNT
 		);
 	}
 

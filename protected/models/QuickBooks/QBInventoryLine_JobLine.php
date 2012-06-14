@@ -6,7 +6,7 @@ class QBInventoryLine_JobLine extends QBInventoryLine {
 	private $_standard;
 	
 	private function createInvLine($text, $price){
-		$params = parent::createLine('Printing_' . $this->owner->ID, $text, $price, 'INVENTORY');
+		$params = parent::createLine('Printing_' . $this->owner->ID, $text, $price, 'INVENTORY', QBConstants::PRINTING_ACCNT);
 		$params['CUSTFLD1'] = $this->owner->color->TEXT;
 		$params['CUSTFLD2'] = $this->owner->job->printJob->FRONT_PASS;
 		$params['CUSTFLD3'] = $this->owner->job->printJob->BACK_PASS;

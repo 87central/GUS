@@ -1,5 +1,6 @@
 <?php
 /*QBTransactionLine_Job wraps a job  and provides a recordsfor export to QuickBooks TRNS in a record property.*/
+require_once(YiiBase::getPathOfAlias('application.models.QuickBooks').DIRECTORY_SEPARATOR.'QBConstants.php');
 abstract class QBTransaction extends CActiveRecordBehavior {
 	private $item = null;
 

@@ -9,7 +9,8 @@ class QBInventoryLine_Job extends QBInventoryLine {
 			CHtml::encode($this->owner->getAttributeLabel('RUSH')), 
 			'Fee for accelerated handling', 
 			$this->owner->RUSH,
-			'OTHC'
+			'OTHC',
+			QBConstants::RUSH_ACCNT
 		);
 	}
 
@@ -18,7 +19,8 @@ class QBInventoryLine_Job extends QBInventoryLine {
 			'Artwork Charge',
 			'Fee for design work',
 			40, //hourly rate
-			'SERV'
+			'SERV',
+			QBConstants::ART_ACCNT
 		);
 	}
 
@@ -27,7 +29,8 @@ class QBInventoryLine_Job extends QBInventoryLine {
 			'Setup Time',
 			'Fee for setup (waived for larger orders)',
 			30, //hourly rate
-			'SERV'
+			'SERV',
+			QBConstants::SETUP_ACCNT
 		);
 	}
 
@@ -36,7 +39,8 @@ class QBInventoryLine_Job extends QBInventoryLine {
 			'Sales Tax',
 			'Sales Tax',
 			$this->owner->additionalFees[Job::FEE_TAX_RATE]['VALUE'] / 100,
-			'COMPTAX'
+			'COMPTAX',
+			QBConstants::TAX_ACCNT
 		);
 	}
 
@@ -45,7 +49,8 @@ class QBInventoryLine_Job extends QBInventoryLine {
 			'Additional_'.$index,
 			$additional['TEXT'],			
 			null,
-			'OTHC'
+			'OTHC',
+			QBConstants::TRNS_ACCNT
 		);
 	}
 

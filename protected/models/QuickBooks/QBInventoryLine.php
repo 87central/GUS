@@ -1,5 +1,6 @@
 <?php 
 /*QBInventoryLine acts as an abstract base class for behaviors which export a certain record type to a QuickBooks IIF INVITEM format.*/
+require_once(YiiBase::getPathOfAlias('application.models.QuickBooks').DIRECTORY_SEPARATOR.'QBConstants.php');
 abstract class QBInventoryLine extends CActiveRecordBehavior {
 	private $lines = null;
 
@@ -64,12 +65,13 @@ abstract class QBInventoryLine extends CActiveRecordBehavior {
 	@param string $itemType One of the item types provided in the QuickBooks IIF documentation.
 	@return array THe resultant array object.
 	*/
-	protected function createLine($name, $text, $price, $itemType){
+	protected function createLine($name, $text, $price, $itemType, $accnt){
 		$params = $this->initInvItem();
 		$params['NAME'] = $name;
 		$params['DESC'] = $text;
 		$params['PURCHASEDESC'] = $text;
 		$params['PRICE'] = $price;		
+		$params['ACCNT'] = $accnt;
 		return $params;
 	}
 
