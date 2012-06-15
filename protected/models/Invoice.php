@@ -183,4 +183,15 @@ class Invoice extends CActiveRecord
 			$this->lines = $newLines;
 		}		
 	}
+	
+	/**
+	 * Gets the total of all lines in the invoice
+	 */
+	public function getTotal(){
+		$total = 0;
+		foreach($this->lines as $line){
+			$total += $line->AMOUNT;		
+		}
+		return $total;
+	}
 }
