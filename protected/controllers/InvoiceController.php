@@ -3,12 +3,6 @@
 class InvoiceController extends Controller
 {
 	/**
-	 * @var string the default layout for the views. Defaults to '//layouts/column2', meaning
-	 * using two-column layout. See 'protected/views/layouts/column2.php'.
-	 */
-	public $layout='//layouts/column2';
-
-	/**
 	 * @return array action filters
 	 */
 	public function filters()
@@ -26,17 +20,28 @@ class InvoiceController extends Controller
 	public function accessRules()
 	{
 		return array(
-			array('allow',  // allow all users to perform 'index' and 'view' actions
-				'actions'=>array('index','view'),
+			array('allow', 
+				'actions'=>array(),
 				'users'=>array('*'),
 			),
-			array('allow', // allow authenticated user to perform 'create' and 'update' actions
-				'actions'=>array('create','update'),
+			array('allow',
+				'actions'=>array('view', 'create', 'update', 'deleteLine', 'delete', 'newLine', 'index', 'loadList'),
 				'users'=>array('@'),
+				'expression'=>"Yii::app()->user->getState('isDefaultRole');",
 			),
-			array('allow', // allow admin user to perform 'admin' and 'delete' actions
-				'actions'=>array('admin','delete'),
-				'users'=>array('admin'),
+			array('allow',
+				'actions'=>array('view', 'create', 'update', 'deleteLine', 'delete', 'newLine', 'index', 'loadList'),
+				'users'=>array('@'),
+				'expression'=>"Yii::app()->user->getState('isLead');",
+			),
+			array('allow',
+				'actions'=>array('view'),
+				'users'=>array('@'),
+				'expression'=>"Yii::app()->user->getState('isCustomer');",
+			),
+			array('allow',
+				'users'=>array('@'),
+				'expression'=>"Yii::app()->user->getState('isAdmin');",
 			),
 			array('deny',  // deny all users
 				'users'=>array('*'),
@@ -50,8 +55,17 @@ class InvoiceController extends Controller
 	 */
 	public function actionView($id)
 	{
+		$model = $this->loadModel($id);
+		$dataProvider = new CActiveDataProvider('InvoiceLine', array(
+			'criteria'=>array(
+				'condition'=>'INVOICE_ID = ' . $id,
+			),
+			'pagination'=>false,
+		));
 		$this->render('view',array(
 			'model'=>$this->loadModel($id),
+			'dataProvider'=>$dataProvider,
+			'formatter'=>new Formatter,
 		));
 	}
 
@@ -62,6 +76,8 @@ class InvoiceController extends Controller
 	public function actionCreate()
 	{
 		$model=new Invoice;
+		$customer = new Customer;
+		$itemTypeList = CHtml::listData(Lookup::listItems('InvoiceItemType'), 'ID', 'TEXT');
 
 		// Uncomment the following line if AJAX validation is needed
 		// $this->performAjaxValidation($model);
@@ -69,12 +85,29 @@ class InvoiceController extends Controller
 		if(isset($_POST['Invoice']))
 		{
 			$model->attributes=$_POST['Invoice'];
-			if($model->save())
+			$model->DATE = DateConverter::toDatabaseTime(strtotime($model->DATE));
+			$customerWasNew = true;
+			if(isset($_POST['Customer']['ID']) && $_POST['Customer']['ID'] != null){
+				$customer = Customer::model()->findByPk((int) $_POST['Customer']['ID']);
+				$customerWasNew = false;
+			} else {
+				unset($_POST['Customer']['ID']);
+			}
+			unset($_POST['Customer']['summary']);
+			$customer->attributes = $_POST['Customer'];
+			if($customer->save()){
+				$model->CUSTOMER_ID = $customer->ID;
+			}
+			if($model->save()){				
 				$this->redirect(array('view','id'=>$model->ID));
+			}			
 		}
 
 		$this->render('create',array(
 			'model'=>$model,
+			'newCustomer'=>$customer,
+			'customerList'=>Customer::model()->findAll(),
+			'itemTypeList'=>$itemTypeList,
 		));
 	}
 
@@ -86,6 +119,8 @@ class InvoiceController extends Controller
 	public function actionUpdate($id)
 	{
 		$model=$this->loadModel($id);
+		$customer = $model->CUSTOMER;
+		$itemTypeList = CHtml::listData(Lookup::listItems('InvoiceItemType'), 'ID', 'TEXT');
 
 		// Uncomment the following line if AJAX validation is needed
 		// $this->performAjaxValidation($model);
@@ -93,12 +128,28 @@ class InvoiceController extends Controller
 		if(isset($_POST['Invoice']))
 		{
 			$model->attributes=$_POST['Invoice'];
-			if($model->save())
+			$model->DATE = DateConverter::toDatabaseTime(strtotime($model->DATE));
+			$customerWasNew = true;
+			if(isset($_POST['Customer']['ID']) && $_POST['Customer']['ID'] != null){
+				$customer = Customer::model()->findByPk((int) $_POST['Customer']['ID']);
+				$customerWasNew = false;
+			} else {
+				unset($_POST['Customer']['ID']);
+			}
+			unset($_POST['Customer']['summary']);
+			$customer->attributes = $_POST['Customer'];
+			if($customer->save()){
+				$model->CUSTOMER_ID = $customer->ID;
+			}
+			if($model->save()){				
 				$this->redirect(array('view','id'=>$model->ID));
+			}
 		}
 
 		$this->render('update',array(
 			'model'=>$model,
+			'newCustomer'=>$customer,
+			'customerList'=>Customer::model()->findAll(),
 		));
 	}
 
@@ -130,21 +181,7 @@ class InvoiceController extends Controller
 		$dataProvider=new CActiveDataProvider('Invoice');
 		$this->render('index',array(
 			'dataProvider'=>$dataProvider,
-		));
-	}
-
-	/**
-	 * Manages all models.
-	 */
-	public function actionAdmin()
-	{
-		$model=new Invoice('search');
-		$model->unsetAttributes();  // clear any default values
-		if(isset($_GET['Invoice']))
-			$model->attributes=$_GET['Invoice'];
-
-		$this->render('admin',array(
-			'model'=>$model,
+			'formatter'=>new Formatter,
 		));
 	}
 
