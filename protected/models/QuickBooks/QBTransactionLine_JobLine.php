@@ -15,7 +15,7 @@ class QBTransactionLine_JobLine extends QBTransactionLine {
 			if($fee){
 				$unit_cost = $this->owner->PRICE * 1 + $fee;
 				$quantity += $sizeLine->QUANTITY;
-				$price += $unit_cost * $quantity;
+				$price += $unit_cost * $sizeLine->QUANTITY;
 			}
 		}			
 		$params = $this->initItem();
@@ -44,7 +44,7 @@ class QBTransactionLine_JobLine extends QBTransactionLine {
 			if($fee === false){
 				$unit_cost = $this->owner->PRICE * 1 + $fee;
 				$quantity += $sizeLine->QUANTITY;
-				$price += $unit_cost * $quantity;
+				$price += $unit_cost * $sizeLine->QUANTITY;
 			}
 		}			
 		$params = $this->initItem();
