@@ -1,6 +1,5 @@
 <?php
 /*QBTransactionLine_JobLine wraps a job line and provides records for export to quickbooks*/
-require_once(YiiBase::getPathOfAlias('application.models.QuickBooks').DIRECTORY_SEPARATOR.'QBTransactionLine.php');
 class QBTransactionLine_JobLine extends QBTransactionLine {
 	protected function getBaseText(){
 		return $this->owner->job->printJob->FRONT_PASS . ' Front/ ' . $this->owner->job->printJob->BACK_PASS . ' Back/ ' . $this->owner->job->printJob->SLEEVE_PASS . ' Sleeve on ' . $this->owner->product->vendorStyle . ' - ' . $this->owner->color->TEXT . ' ';

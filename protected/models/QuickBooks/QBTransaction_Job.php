@@ -1,6 +1,5 @@
 <?php
 /*Wraps job to a TRNS record in QuickBooks IIF.*/
-require_once(YiiBase::getPathOfAlias('application.models.QuickBooks').DIRECTORY_SEPARATOR.'QBTransaction.php');
 class QBTransaction_Job extends QBTransaction {
 	protected function createRecord(){
 		$record = $this->initItem();

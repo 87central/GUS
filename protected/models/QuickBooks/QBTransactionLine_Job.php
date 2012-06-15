@@ -1,7 +1,5 @@
-
 <?php
 /*QBTransactionLine_Job wraps a job  and provides records for export to QuickBooks SPLs in a records property.*/
-require_once(YiiBase::getPathOfAlias('application.models.QuickBooks').DIRECTORY_SEPARATOR.'QBTransactionLine.php');
 class QBTransactionLine_Job extends QBTransactionLine {
 	protected function createLine($id, $amount, $price, $quantity, $invitem, $accnt, $taxable='Y'){
 		$params = $this->initItem();

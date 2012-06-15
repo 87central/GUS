@@ -1,5 +1,6 @@
 <?php
 /*When attached to a job, attaches the appropriate behaviors to the job and associated job lines for export to quickbooks.*/
+YiiBase::import('application.models.QuickBooks.*');
 class QBInitializer extends CActiveRecordBehavior {
 	public function attach($owner){
 		parent::attach($owner);

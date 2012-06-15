@@ -2,7 +2,6 @@
 /**
 QBTransactionLine acts as an abstract base class for behaviors which export a certain record type to a QuickBooks IIF SPL format.
 */
-require_once(YiiBase::getPathOfAlias('application.models.QuickBooks').DIRECTORY_SEPARATOR.'QBConstants.php');
 abstract class QBTransactionLine extends CActiveRecordBehavior {
 	private $lines = null;
 

@@ -1,6 +1,5 @@
 <?php 
 /*QBInventoryLine acts as an abstract base class for behaviors which export a certain record type to a QuickBooks IIF INVITEM format.*/
-require_once(YiiBase::getPathOfAlias('application.models.QuickBooks').DIRECTORY_SEPARATOR.'QBConstants.php');
 abstract class QBInventoryLine extends CActiveRecordBehavior {
 	private $lines = null;
 

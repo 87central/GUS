@@ -1,6 +1,5 @@
 <?php
 /*QBInventoryLine_JobLine wraps a job line and provides fields for export to quickbooks in two properties. The xl property contains fields appropriate to extra-large sizes, and the standard property contains fields appropriate to standard sizes.*/
-require_once(YiiBase::getPathOfAlias('application.models.QuickBooks').DIRECTORY_SEPARATOR.'QBInventoryLine.php');
 class QBInventoryLine_JobLine extends QBInventoryLine {
 	private $_xl;
 	private $_standard;
