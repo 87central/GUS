@@ -20,6 +20,11 @@
  */
 class Invoice extends CActiveRecord
 {
+	const CREATED = 116;
+	const SENT = 117;
+	const COMPLETED = 118;
+	const CANCELLED = 119;
+	
 	/**
 	 * Returns the static model of the specified AR class.
 	 * @return Invoice the static model class
@@ -45,10 +50,11 @@ class Invoice extends CActiveRecord
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
 		return array(
-			array('CUSTOMER_ID, USER_ID, TITLE, TIMESTAMP', 'required'),
+			array('TITLE', 'required'),
 			array('CUSTOMER_ID, USER_ID', 'numerical', 'integerOnly'=>true),
 			array('TITLE', 'length', 'max'=>200),
-			array('TAX_RATE', 'length', 'max'=>3),
+			array('TAX_RATE', 'length', 'max'=>4),
+			array('TAX_RATE', 'numerical'),
 			array('DATE, TERMS', 'safe'),
 			// The following rule is used by search().
 			// Please remove those attributes that should not be searched.
@@ -64,9 +70,9 @@ class Invoice extends CActiveRecord
 		// NOTE: you may need to adjust the relation name and the related
 		// class name for the relations automatically generated below.
 		return array(
-			'cUSTOMER' => array(self::BELONGS_TO, 'Customer', 'CUSTOMER_ID'),
-			'uSER' => array(self::BELONGS_TO, 'User', 'USER_ID'),
-			'invoiceLines' => array(self::HAS_MANY, 'InvoiceLine', 'INVOICE_ID'),
+			'CUSTOMER' => array(self::BELONGS_TO, 'Customer', 'CUSTOMER_ID'),
+			'USER' => array(self::BELONGS_TO, 'User', 'USER_ID'),
+			'lines' => array(self::HAS_MANY, 'InvoiceLine', 'INVOICE_ID'),
 		);
 	}
 
@@ -110,5 +116,71 @@ class Invoice extends CActiveRecord
 		return new CActiveDataProvider(get_class($this), array(
 			'criteria'=>$criteria,
 		));
+	}
+	
+	protected function beforeValidate(){
+		if(parent::beforeValidate()){
+			if($this->STATUS_ID == null){
+				$this->STATUS_ID = Invoice::CREATED;
+			}
+			$valid = true;
+			foreach($this->lines as $line){
+				$line->INVOICE_ID = $this->ID;
+				$valid = $valid && $line->validate();
+			}
+			return $valid;
+		} else {
+			return false;
+		}
+	}
+	
+	protected function afterSave(){
+		parent::afterSave();
+		if(isset($this->lines)){
+			foreach($this->lines as $line){
+				$line->INVOICE_ID = $this->ID;
+				$line->save();
+			}
+		}
+	}
+	
+	/** Fills this model's attributes and relations from an array of attributes.
+	 * @param array $attributes The attribute array. This may contain values for
+	 * all of the attributes as well as the "jobLines" relation, which should
+	 * be the key to an array with sets of attributes of JobLine models.
+	 */
+	public function loadFromArray($attributes){
+		$attributesInternal = $attributes;
+		if(isset($attributesInternal['lines'])){
+			$lines = $attributesInternal['lines'];
+			unset($attributesInternal['lines']);
+		} else {
+			$lines = null;
+		}
+		foreach($attributesInternal as $name=>$value){
+			$this->$name = $value;
+		}
+		if($lines){
+			$keyedLines = array();
+			foreach($this->jobLines as $line){
+				$keyedLines[(string) $line->ID] = $line;
+			}
+			$newLines = array();
+			foreach($lines as $i => $value){
+				if(isset($lines[$i]) && is_array($lines[$i])){
+					$lineID = $lines[$i]['ID'];
+					if(isset($keyedLines[$lineID])){
+						$line = $keyedLines[$lineID];
+					} else {
+						$line = new InvoiceLine;
+					}					
+					$line->attributes = $lines[$i];
+					if($line->INVOICE_ID){ //can't have a line that isn't associated with an invoice
+						$newLines[] = $line;
+					}
+				}
+			}
+			$this->lines = $newLines;
+		}		
 	}
 }

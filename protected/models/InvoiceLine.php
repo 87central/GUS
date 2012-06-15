@@ -18,6 +18,12 @@
  */
 class InvoiceLine extends CActiveRecord
 {
+	const PRINTING = 111;
+	const GENERAL = 112;
+	const ARTWORK = 113;
+	const SETUP = 114;
+	const RUSH = 115;
+	
 	/**
 	 * Returns the static model of the specified AR class.
 	 * @return InvoiceLine the static model class
@@ -43,11 +49,12 @@ class InvoiceLine extends CActiveRecord
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
 		return array(
-			array('INVOICE_ID, ITEM_TYPE_ID, DESCRIPTION, AMOUNT', 'required'),
+			array('DESCRIPTION, AMOUNT', 'required'),
 			array('INVOICE_ID, ITEM_TYPE_ID', 'numerical', 'integerOnly'=>true),
 			array('DESCRIPTION', 'length', 'max'=>300),
 			array('QUANTITY, RATE', 'length', 'max'=>6),
 			array('AMOUNT', 'length', 'max'=>8),
+			array('QUANTITY, RATE, AMOUNT', 'numerical'),
 			// The following rule is used by search().
 			// Please remove those attributes that should not be searched.
 			array('ID, INVOICE_ID, ITEM_TYPE_ID, DESCRIPTION, QUANTITY, RATE, AMOUNT', 'safe', 'on'=>'search'),
