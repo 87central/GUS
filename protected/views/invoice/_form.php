@@ -8,10 +8,12 @@
 	<?php Yii::app()->clientScript->registerScript('add-line', "" .
 			"function addLine(lineCountField, linePrototype, token){
 				var lineCount = $(lineCountField).val();" .
+				"var regExp = new RegExp(token, 'g');" .
 				"var insertBefore = $('#lines .tax');" .
 				"var insertItem = $(linePrototype).clone();" .
-				"insertItem.html(insertItem.html().replace(token, lineCount));" .
-				"$(insertBefore).before(insertItem.children());
+				"insertItem.html(insertItem.html().replace(regExp, lineCount));" .
+				"$(insertBefore).before(insertItem.children());" .
+				"$(lineCountField).val(lineCount * 1 + 1);
 			}", 
 	CClientScript::POS_HEAD);?>
 
@@ -55,7 +57,7 @@
 		<tr>
 			<td>
 				<?php $this->widget('zii.widgets.jui.CJuiDatePicker', array(
-					'name'=>'Job[DATE]',
+					'name'=>'Invoice[DATE]',
 					'model'=>$model,
 					'attribute'=>'DATE',
 					'options'=>array(

@@ -150,6 +150,7 @@ class InvoiceController extends Controller
 			'model'=>$model,
 			'newCustomer'=>$customer,
 			'customerList'=>Customer::model()->findAll(),
+			'itemTypeList'=>$itemTypeList,
 		));
 	}
 
