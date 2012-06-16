@@ -3,6 +3,9 @@
 <?php $form=$this->beginWidget('CActiveForm', array(
 	'id'=>'invoice-form',
 	'enableAjaxValidation'=>false,
+	'htmlOptions'=>array(
+		'onsubmit'=>"$('#line_prototype').remove(); return true;"
+	),
 )); ?>
 	
 	<?php Yii::app()->clientScript->registerScript('add-line', "" .
@@ -143,7 +146,7 @@
 		<?php echo CHtml::button('Add Line', array(
 			'onclick'=>"addLine('#line_count', $('#line_prototype').children(), '%%%COUNT%%%');"
 		));?>
-		<?php echo CHtml::submitButton($model->isNewRecord ? 'Create' : 'Save'); ?>
+		<?php echo CHtml::submitButton($model->isNewRecord ? 'Create' : 'Save');?>
 	</div>
 
 <?php $this->endWidget(); ?>

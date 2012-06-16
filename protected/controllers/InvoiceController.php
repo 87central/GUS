@@ -84,7 +84,7 @@ class InvoiceController extends Controller
 
 		if(isset($_POST['Invoice']))
 		{
-			$model->attributes=$_POST['Invoice'];
+			$model->loadFromArray($_POST['Invoice']);
 			$model->DATE = DateConverter::toDatabaseTime(strtotime($model->DATE));
 			$customerWasNew = true;
 			if(isset($_POST['Customer']['ID']) && $_POST['Customer']['ID'] != null){
@@ -126,8 +126,8 @@ class InvoiceController extends Controller
 		// $this->performAjaxValidation($model);
 
 		if(isset($_POST['Invoice']))
-		{
-			$model->attributes=$_POST['Invoice'];
+		{			
+			$model->loadFromArray($_POST['Invoice']);
 			$model->DATE = DateConverter::toDatabaseTime(strtotime($model->DATE));
 			$customerWasNew = true;
 			if(isset($_POST['Customer']['ID']) && $_POST['Customer']['ID'] != null){

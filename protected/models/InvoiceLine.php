@@ -55,6 +55,7 @@ class InvoiceLine extends CActiveRecord
 			array('QUANTITY, RATE', 'length', 'max'=>6),
 			array('AMOUNT', 'length', 'max'=>8),
 			array('QUANTITY, RATE, AMOUNT', 'numerical'),
+			array('ID', 'safe'),
 			// The following rule is used by search().
 			// Please remove those attributes that should not be searched.
 			array('ID, INVOICE_ID, ITEM_TYPE_ID, DESCRIPTION, QUANTITY, RATE, AMOUNT', 'safe', 'on'=>'search'),
@@ -69,8 +70,8 @@ class InvoiceLine extends CActiveRecord
 		// NOTE: you may need to adjust the relation name and the related
 		// class name for the relations automatically generated below.
 		return array(
-			'iNVOICE' => array(self::BELONGS_TO, 'Invoice', 'INVOICE_ID'),
-			'iTEMTYPE' => array(self::BELONGS_TO, 'Lookup', 'ITEM_TYPE_ID'),
+			'INVOICE' => array(self::BELONGS_TO, 'Invoice', 'INVOICE_ID'),
+			'ITEM_TYPE' => array(self::BELONGS_TO, 'Lookup', 'ITEM_TYPE_ID'),
 		);
 	}
 
@@ -112,5 +113,10 @@ class InvoiceLine extends CActiveRecord
 		return new CActiveDataProvider(get_class($this), array(
 			'criteria'=>$criteria,
 		));
+	}
+	
+	protected function beforeValidate(){
+		if($this->isNewRecord) $this->ID = null;
+		return parent::beforeValidate();
 	}
 }

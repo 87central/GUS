@@ -162,7 +162,7 @@ class Invoice extends CActiveRecord
 		}
 		if($lines){
 			$keyedLines = array();
-			foreach($this->jobLines as $line){
+			foreach($this->lines as $line){
 				$keyedLines[(string) $line->ID] = $line;
 			}
 			$newLines = array();
@@ -175,7 +175,7 @@ class Invoice extends CActiveRecord
 						$line = new InvoiceLine;
 					}					
 					$line->attributes = $lines[$i];
-					if($line->INVOICE_ID){ //can't have a line that isn't associated with an invoice
+					if(!$line->INVOICE_ID){ //can't have a line that isn't associated with an invoice
 						$newLines[] = $line;
 					}
 				}
