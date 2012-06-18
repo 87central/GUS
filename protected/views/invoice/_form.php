@@ -140,7 +140,7 @@
 	</table><!-- don't remove this element!-->
 	
 	<div id="total">
-		<span class="total_label">TOTAL</span>$<span class="total_amt"><?php echo CHtml::encode($model->total * (1 + $model->TAX_RATE / 100));?></span>
+		<span class="total_label">TOTAL</span>&nbsp;$<span class="total_amt"><?php echo CHtml::encode($model->total * (1 + $model->TAX_RATE / 100));?></span>
 	</div>
 
 	<div class="row buttons">
