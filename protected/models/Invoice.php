@@ -175,9 +175,7 @@ class Invoice extends CActiveRecord
 						$line = new InvoiceLine;
 					}					
 					$line->attributes = $lines[$i];
-					if($line->INVOICE_ID){ //can't have a line that isn't associated with an invoice
-						$newLines[] = $line;
-					}
+					$newLines[] = $line;
 				}
 			}				
 			$this->lines = $newLines;
