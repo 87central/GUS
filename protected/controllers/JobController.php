@@ -406,7 +406,7 @@ class JobController extends Controller
 			$view = 'invoice_quicken';
 			$name = $model->ID . '_invoice.iif';
 			$mime = 'text/iif';
-			$model->attachBehavior('quickbooks', 'application.models.QuickBooks.QBInitializer');						
+			$model->attachBehavior('quickbooks', 'application.behaviors.Job.QBInitializer');						
 			Yii::app()->request->sendFile($name, $this->renderPartial($view, $params, true), $mime);	
 		} else {
 			$this->render($view, $params);
