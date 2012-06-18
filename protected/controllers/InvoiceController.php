@@ -184,15 +184,53 @@ class InvoiceController extends Controller
 			}
 		}
 	}
+	
+	/**
+	 * Loads the contents of a job listing tab.
+	 * @param string $list The type of list to load. Valid values are "current", "canceled", and "completed"
+	 */
+	public function actionLoadList($list){
+		switch($list){
+			case 'current' : $filter = array(Invoice::CREATED, Invoice::SENT); break;
+			case 'canceled' : $filter = Invoice::CANCELLED; break;
+			case 'completed' : $filter = Invoice::COMPLETED; break;
+			default : $filter = null; break;
+		}
+		$invoices = Invoice::listInvoicesByStatus($filter);
+		$dataProvider = new CArrayDataProvider($invoices, array(
+			'keyField'=>'ID',
+			'pagination'=>false,
+		));
+		
+		$this->renderPartial('_listSection', array(
+			'dataProvider'=>$dataProvider,
+			'statuses'=> CHtml::listData(Lookup::listItems('InvoiceStatus'), 'ID', 'TEXT'),
+			'formatter'=>new Formatter,
+		));
+	}
+	
+	public function actionStatus($id){
+		$model = $this->loadModel($id);
+		$model->STATUS_ID = $_POST['status'];
+		$model->save();
+	}
 
 	/**
 	 * Lists all models.
 	 */
 	public function actionIndex()
 	{
-		$dataProvider=new CActiveDataProvider('Invoice');
-		$this->render('index',array(
-			'dataProvider'=>$dataProvider,
+		$currentInvoices = Invoice::listInvoicesByStatus(array(Invoice::CREATED, Invoice::SENT));
+		$currentDataProvider = new CArrayDataProvider($currentInvoices, array(
+			'keyField'=>'ID',
+			'pagination'=>false,
+		));
+		
+		$statuses = CHtml::listData(Lookup::listItems('InvoiceStatus'), 'ID', 'TEXT');
+		
+		$this->render('index', array(
+			'currentDataProvider'=>$currentDataProvider,
+			'statuses'=>$statuses,
 			'formatter'=>new Formatter,
 		));
 	}

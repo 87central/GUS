@@ -90,6 +90,7 @@ class Invoice extends CActiveRecord
 			'TERMS' => 'Terms',
 			'TAX_RATE' => 'Tax Rate',
 			'TIMESTAMP' => 'Timestamp',
+			'STATUS_ID' => 'Status',
 		);
 	}
 
@@ -191,5 +192,14 @@ class Invoice extends CActiveRecord
 			$total += $line->AMOUNT;		
 		}
 		return $total;
+	}
+	
+	/**
+	 * Gets a list of invoices with the given status value.
+	 * @param mixed $status The status value, or array of status values, by which to filter.
+	 * @return array The set of invoices with the given status(es).
+	 */
+	public static function listInvoicesByStatus($status){
+		return Invoice::model()->findAllByAttributes(array('STATUS_ID'=>$status));
 	}
 }
