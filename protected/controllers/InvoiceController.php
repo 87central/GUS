@@ -108,6 +108,7 @@ class InvoiceController extends Controller
 			'newCustomer'=>$customer,
 			'customerList'=>Customer::model()->findAll(),
 			'itemTypeList'=>$itemTypeList,
+			'formatter'=>new Formatter,
 		));
 	}
 
@@ -151,6 +152,7 @@ class InvoiceController extends Controller
 			'newCustomer'=>$customer,
 			'customerList'=>Customer::model()->findAll(),
 			'itemTypeList'=>$itemTypeList,
+			'formatter'=>new Formatter,
 		));
 	}
 

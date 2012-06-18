@@ -122,9 +122,9 @@
 			<td></td>
 			<td><?php echo CHtml::encode($model->getAttributeLabel('TAX_RATE'));?></td>
 			<td></td>
-			<td><?php echo $form->textField($model, 'TAX_RATE');?></td>
-			<td><?php echo CHtml::textField('tax_rate', $model->total * $model->TAX_RATE / 100, array(
-				'class'=>'tax_rate',
+			<td><?php echo $form->textField($model, 'TAX_RATE', array('class'=>'tax_rate'));?></td>
+			<td><?php echo CHtml::textField('tax_amount', $model->total * $model->TAX_RATE / 100, array(
+				'class'=>'tax_amount',
 			));?></td>
 		</tr>
 	</table>
@@ -138,6 +138,10 @@
 			'itemTypeList'=>$itemTypeList,
 		));?>
 	</table><!-- don't remove this element!-->
+	
+	<div id="total">
+		<span class="total_label">TOTAL</span>$<span class="total_amt"><?php echo CHtml::encode($model->total * (1 + $model->TAX_RATE / 100));?></span>
+	</div>
 
 	<div class="row buttons">
 		<?php echo CHtml::hiddenField('line_count', $model->isNewRecord ? 1 : $index, array(
@@ -150,5 +154,20 @@
 	</div>
 
 <?php $this->endWidget(); ?>
+
+<?php Yii::app()->clientScript->registerScript('auto-totaler', "" .
+		"$('.part').live('change', function(){
+			var taxRate = $('.tax_rate').val() * 1 / 100;" .
+			"var totalField = $('.total_amt');" .
+			"var taxAmountField = $('.tax_amount');" .
+			"var subTotal = 0;" .
+			"$('.part').each(function(){
+				subTotal += $(this).val() * 1;
+			});" .
+			"var taxAmount = taxRate * subTotal;" .
+			"taxAmountField.val(taxAmount.toFixed(2));" .
+			"totalField.text((taxAmount + subTotal).toFixed(2));
+		})", 
+CClientScript::POS_END);?>
 
 </div><!-- form -->
