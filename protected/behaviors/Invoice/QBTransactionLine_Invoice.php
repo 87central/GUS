@@ -21,7 +21,7 @@ class QBTransactionLine_Invoice extends QBTransactionLine {
 	protected function createSalesTax(){		
 		return $this->createLine(
 			'0',
-			$this->owner->total * $this->owner->additionalFees[Job::FEE_TAX_RATE]['VALUE'] / 100,
+			$this->owner->total * $this->owner->TAX_RATE / 100,
 			null,
 			null,
 			'Sales Tax',			

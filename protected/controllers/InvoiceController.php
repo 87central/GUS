@@ -53,20 +53,28 @@ class InvoiceController extends Controller
 	 * Displays a particular model.
 	 * @param integer $id the ID of the model to be displayed
 	 */
-	public function actionView($id)
+	public function actionView($id, $type='view')
 	{
 		$model = $this->loadModel($id);
+		$formatter = new Formatter;
+		$view = 'view';
 		$dataProvider = new CActiveDataProvider('InvoiceLine', array(
 			'criteria'=>array(
 				'condition'=>'INVOICE_ID = ' . $id,
 			),
 			'pagination'=>false,
 		));
-		$this->render('view',array(
-			'model'=>$this->loadModel($id),
-			'dataProvider'=>$dataProvider,
-			'formatter'=>new Formatter,
-		));
+		
+		$params = array('model'=>$model, 'formatter'=>$formatter, 'dataProvider'=>$dataProvider);
+		if($type == "iif"){
+			$view = 'view_quickbooks';
+			$name = $model->ID . '_quick_invoice.iif';
+			$mime = 'text/iif';
+			$model->attachBehavior('quickbooks', 'application.behaviors.Invoice.QBInitializer');						
+			Yii::app()->request->sendFile($name, $this->renderPartial($view, $params, true), $mime);	
+		} else {
+			$this->render($view, $params);
+		}
 	}
 
 	/**

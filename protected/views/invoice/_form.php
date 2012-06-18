@@ -153,6 +153,18 @@
 			'onclick'=>"addLine('#line_count', $('#line_prototype').children(), '%%%COUNT%%%');"
 		));?>
 		<?php echo CHtml::submitButton($model->isNewRecord ? 'Create' : 'Save');?>
+		
+		<?php if(!$model->isNewRecord){?>
+			<?php echo CHtml::button('View Invoice', array(
+				'onclick'=>"js:window.location.href='".CHtml::normalizeUrl(array('invoice/view', 'id'=>$model->ID))."';"
+			));?>
+			
+			<?php if(Yii::app()->user->getState('isAdmin')){
+				echo CHtml::button('Export to QuickBooks', array(
+					'onclick'=>"js:window.location.href='".CHtml::normalizeUrl(array('invoice/view', 'id'=>$model->ID, 'type'=>'iif'))."';"
+				));
+			}?>		
+		<?php }?>
 	</div>
 
 <?php $this->endWidget(); ?>
