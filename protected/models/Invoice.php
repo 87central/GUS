@@ -135,8 +135,8 @@ class Invoice extends CActiveRecord
 	}
 	
 	protected function afterSave(){
-		parent::afterSave();
-		if(isset($this->lines)){
+		parent::afterSave();		
+		if(isset($this->lines)){			
 			foreach($this->lines as $line){
 				$line->INVOICE_ID = $this->ID;
 				$line->save();
@@ -175,11 +175,11 @@ class Invoice extends CActiveRecord
 						$line = new InvoiceLine;
 					}					
 					$line->attributes = $lines[$i];
-					if(!$line->INVOICE_ID){ //can't have a line that isn't associated with an invoice
+					if($line->INVOICE_ID){ //can't have a line that isn't associated with an invoice
 						$newLines[] = $line;
 					}
 				}
-			}
+			}				
 			$this->lines = $newLines;
 		}		
 	}

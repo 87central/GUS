@@ -117,6 +117,8 @@ class InvoiceLine extends CActiveRecord
 	
 	protected function beforeValidate(){
 		if($this->isNewRecord) $this->ID = null;
+		if(!is_numeric($this->QUANTITY)) $this->QUANTITY = null;
+		if(!is_numeric($this->RATE)) $this->RATE = null;
 		return parent::beforeValidate();
 	}
 }
