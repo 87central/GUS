@@ -96,6 +96,7 @@
 			<th><?php echo $lineModel->getAttributeLabel('QUANTITY');?></th>
 			<th><?php echo $lineModel->getAttributeLabel('RATE');?></th>
 			<th><?php echo $lineModel->getAttributeLabel('AMOUNT');?></th>
+			<th>Action</th>
 		</tr>
 		<?php if($model->isNewRecord){
 			$this->renderPartial('/invoiceLine/_form', array(
@@ -126,6 +127,7 @@
 			<td><?php echo CHtml::textField('tax_amount', $model->total * $model->TAX_RATE / 100, array(
 				'class'=>'tax_amount',
 			));?></td>
+			<td></td>
 		</tr>
 	</table>
 

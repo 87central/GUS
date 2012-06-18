@@ -25,12 +25,12 @@ class InvoiceController extends Controller
 				'users'=>array('*'),
 			),
 			array('allow',
-				'actions'=>array('view', 'create', 'update', 'deleteLine', 'delete', 'newLine', 'index', 'loadList'),
+				'actions'=>array('view', 'create', 'update', 'deleteLine', 'delete', 'index', 'loadList'),
 				'users'=>array('@'),
 				'expression'=>"Yii::app()->user->getState('isDefaultRole');",
 			),
 			array('allow',
-				'actions'=>array('view', 'create', 'update', 'deleteLine', 'delete', 'newLine', 'index', 'loadList'),
+				'actions'=>array('view', 'create', 'update', 'deleteLine', 'delete', 'index', 'loadList'),
 				'users'=>array('@'),
 				'expression'=>"Yii::app()->user->getState('isLead');",
 			),
@@ -174,6 +174,15 @@ class InvoiceController extends Controller
 		}
 		else
 			throw new CHttpException(400,'Invalid request. Please do not repeat this request again.');
+	}
+	
+	public function actionDeleteLine(){
+		$model = InvoiceLine::model()->findByPk((int) $_POST['id']);
+		if($model){
+			if(!$model->delete()){
+				throw new CException('Could not delete the invoice line.');
+			}
+		}
 	}
 
 	/**

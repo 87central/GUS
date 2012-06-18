@@ -2,6 +2,7 @@
 <tr class="item_row">
 	<?php echo $form->hiddenField($model, 'ID', array(
 		'name'=>$namePrefix . '['.$count.'][ID]',
+		'class'=>'item_id',
 	));?>
 	<td><?php echo $form->dropDownList($model, 'ITEM_TYPE_ID', $itemTypeList, array(
 		'name'=>$namePrefix . '['.$count.'][ITEM_TYPE_ID]',		
@@ -22,6 +23,9 @@
 	<td><?php echo $form->textField($model, 'AMOUNT', array(
 		'name'=>$namePrefix . '['.$count.'][AMOUNT]',
 		'class'=>'part', 
+	));?></td>
+	<td><?php echo CHtml::button('Delete', array(
+		'class'=>'delete-button',
 	));?></td>
 </tr>
 
@@ -46,3 +50,17 @@ CClientScript::POS_END)?>
 			}
 		});", 
 CClientScript::POS_END)?>
+
+<?php Yii::app()->clientScript->registerScript('line-delete', "" .
+		"$('.delete-button').live('click', function(){" .
+			"var row = $(this).parent().parent();
+			$.post('".CHtml::normalizeUrl(array('invoice/deleteLine'))."'," .
+					"{
+						id: $(this).parent().parent().find('.item_id').val(),
+					}," .
+					"function(){
+						$(row).remove();" .
+						"$('.part').first().change();
+					});
+		});", 
+CClientScript::POS_END);?>
