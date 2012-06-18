@@ -36,19 +36,31 @@
 	</tr>
 </table>
 
-<?php $this->widget('zii.widgets.grid.CGridView', array(
-	'dataProvider'=>$dataProvider,
-	'formatter'=>$formatter,
-	'rowCssClass'=>'item_row',
-	'summaryText'=>'',
-	'columns'=>array(
-		'ITEM_TYPE_ID:lookup',
-		'DESCRIPTION',
-		'QUANTITY:number',
-		'RATE:currency',
-		'AMOUNT:currency',
-	),
-)); /*need to remember tax rate!*/?>
+<table id="items">
+	<tr class="header">
+		<th>Item</th>
+		<th>Description</th>
+		<th>Quantity</th>
+		<th>Rate</th>
+		<th>Amount</th>
+	</tr>	
+	<?php foreach($model->lines as $line){?>
+		<tr class="item_row">
+			<td><?php echo CHtml::encode($formatter->formatLookup($line->ITEM_TYPE_ID));?></td>
+			<td><?php echo CHtml::encode($formatter->formatText($line->DESCRIPTION));?></td>
+			<td><?php echo CHtml::encode($line->QUANTITY);?></td>
+			<td><?php echo $formatter->formatCurrency($line->RATE);?></td>
+			<td><?php echo $formatter->formatCurrency($line->AMOUNT);?></td>
+		</tr>
+	<?php }?>
+	<tr class="item_row">
+		<td></td>
+		<td><?php echo CHtml::encode($model->getAttributeLabel('TAX_RATE'));?></td>
+		<td></td>
+		<td><?php echo Yii::app()->numberFormatter->formatPercentage($model->TAX_RATE / 100);?></td>
+		<td><?php echo $formatter->formatCurrency($model->total * $model->TAX_RATE / 100);?></td>
+	</tr>
+</table>
 
 <div id="footnotes">
 *Make checks payable to 8|7 Central.  Cash and all major credit cards also accepted.<br/>
