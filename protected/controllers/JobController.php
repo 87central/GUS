@@ -23,7 +23,7 @@ class JobController extends Controller
 	{
 		return array(
 			array('allow', 
-				'actions'=>array('newLine', 'garmentCost', 'estimate'),
+				'actions'=>array('newLine', 'garmentCost', 'estimate', 'invoice'),
 				'users'=>array('*'),
 			),
 			array('allow',

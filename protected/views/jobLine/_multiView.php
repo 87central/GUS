@@ -7,8 +7,8 @@
 	<span class="title bold">Style</span> <span class="item-select-approved"><?php echo $products['style'];?></span>
 	<br>
 	<span class="title bold">Color</span> <span class="color-select-approved"><?php $formatter = new Formatter; echo $formatter->formatLookup($products['currentColor']);?></span>
-	
-	Price Each <span class="price-select-approved"><?php echo $formatter->formatCurrency($products['model']->PRICE);?></span>
+	<br>
+	<span class="title bold">Price Each</span> <span class="price-select-approved"><?php echo $formatter->formatCurrency($products['model']->PRICE);?></span>
 	
 	<?php 
 	$index = 0;

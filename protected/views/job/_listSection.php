@@ -18,13 +18,8 @@ $this->widget('zii.widgets.grid.CGridView', array(
 	'formatter'=>new Formatter,
 	'columns'=>array(
 		array(
-			'name'=>'pickUpDate',
-			'value'=>"(strtotime(\$data->pickUpDate) <= 0) ? '(None)' : date('l (n/j)', strtotime(\$data->pickUpDate));",
-			'header'=>'Pick-Up',
-		),
-		array(
 			'class'=>'CLinkColumn',
-			'header'=>'Open Jobs',
+			'header'=>'Jobs',
 			'labelExpression'=>"((\$data->RUSH != 0) ? '<span class=\"warning\">RUSH</span>&nbsp;' : '') . \$data->NAME;",
 			'urlExpression'=>"CHtml::normalizeUrl(array('job/view', 'id'=>\$data->ID));",
 		),
@@ -38,21 +33,6 @@ $this->widget('zii.widgets.grid.CGridView', array(
 			'name'=>'printDate',
 			'value'=>"(strtotime(\$data->printDate) <= 0) ? '(None)' : date('l (n/j)', strtotime(\$data->printDate));",
 		),
-		array(
-			'header'=>'Due',
-			'name'=>'dueDate',
-			'value'=>"(strtotime(\$data->pickUpDate) <= 0) ? '(None)' : date('l (n/j)', strtotime(\$data->pickUpDate));"
-		),
 		'totalPasses::Passes',
-		array(
-			'header'=>'Art',
-			'value'=>"CHtml::image(Yii::app()->request->baseUrl . '/images/' . (\$data->hasArt ? 'checked.png' : 'unchecked.png'));",
-			'type'=>'raw',
-		),
-		array(
-			'header'=>'Sizes',
-			'value'=>"CHtml::image(Yii::app()->request->baseUrl . '/images/' . (\$data->hasSizes ? 'checked.png' : 'unchecked.png'));",
-			'type'=>'raw',
-		)
 	)
 ));
