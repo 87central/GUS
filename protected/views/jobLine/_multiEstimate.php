@@ -143,23 +143,29 @@ $line = $products['model'];?>
 	<?php
 	$index = 0;
 	foreach($products['lines'] as $dataLine){
+		$continue = false;
 		foreach($dataLine as $key=>$dataLineValue){
 			if($key == 'productLine') $productLine = $dataLineValue;
 			if($key == 'line') $sizeLine = $dataLineValue;
+			$continue = $sizeLine && $productLine;
 		}	//beats me as to why I needed to do this. For some reason, dataLine thought it was a JobLine instance.
-		$this->renderPartial('//jobLineSize/_estimate', array(
-			'product'=>$productLine,
-			'line'=>$sizeLine,
-			'lineHiddenPrefix'=>$namePrefix.$startIndex.'sizes'.$index,
-			'linePrefix'=>$namePrefix.'['.$startIndex.']'.'[sizes]',
-			'index'=>$index,
-			'eachDiv'=>CHtml::getIdByName($namePrefix.'['.$startIndex.']'.'[sizes]'.'item'),
-			'div'=>$div,
-			'approved'=>$approved,
-			'onQuantityUpdate'=>"updateLineTotal('".CHtml::normalizeUrl(array('job/garmentCost'))."', $('#$priceSelect'), $('#$priceSelect').parent().children('a'), $('#$priceSelect').parent().children('.garment_part'), $('#$priceSelect').parentsUntil('.jobLines').parent().find('.product-cost'));",
-			'formatter'=>$formatter,
-		));
-		$index++;
+		if($continue){
+			$this->renderPartial('//jobLineSize/_estimate', array(
+				'product'=>$productLine,
+				'line'=>$sizeLine,
+				'lineHiddenPrefix'=>$namePrefix.$startIndex.'sizes'.$index,
+				'linePrefix'=>$namePrefix.'['.$startIndex.']'.'[sizes]',
+				'index'=>$index,
+				'eachDiv'=>CHtml::getIdByName($namePrefix.'['.$startIndex.']'.'[sizes]'.'item'),
+				'div'=>$div,
+				'approved'=>$approved,
+				'onQuantityUpdate'=>"updateLineTotal('".CHtml::normalizeUrl(array('job/garmentCost'))."', $('#$priceSelect'), $('#$priceSelect').parent().children('a'), $('#$priceSelect').parent().children('.garment_part'), $('#$priceSelect').parentsUntil('.jobLines').parent().find('.product-cost'));",
+				'formatter'=>$formatter,
+			));
+			$index++;
+		}
+		$productLine = false;
+		$sizeLine = false;
 	}
 	?>	
 	<?php echo CHtml::hiddenField('prefix', $namePrefix, array(
